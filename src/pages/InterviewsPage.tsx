@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import type { CustomerInterview } from '../types';
 import { db } from '../db';
+import { generateInterviewSample, suggestProjectField } from '../ai/autoCompleteService';
+import { AIAutoFillButton } from '../components/ai/AIAutoFillButton';
 
 interface InterviewsPageProps {
   projectId: string;
@@ -23,6 +25,10 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
   onOpenAICofounderWithPrompt,
 }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isSynthesizing, setIsSynthesizing] = useState(false);
+  const [isFillingModal, setIsFillingModal] = useState(false);
+  const [isSuggestingWorkaround, setIsSuggestingWorkaround] = useState(false);
+  const [isSuggestingQuotes, setIsSuggestingQuotes] = useState(false);
 
   // Form state
   const [intervieweeIdentifier, setIntervieweeIdentifier] = useState('');
@@ -33,6 +39,95 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
   const [keyQuotesText, setKeyQuotesText] = useState('');
   const [notesOrTranscript, setNotesOrTranscript] = useState('');
   const [surprisesOrObjections, setSurprisesOrObjections] = useState('');
+
+  const handleSynthesizeInterview = async () => {
+    setIsSynthesizing(true);
+    try {
+      const project = await db.projects.get(projectId);
+      if (!project) return;
+      const sample = await generateInterviewSample(project);
+      const now = Date.now();
+      await db.interviews.put({
+        id: `int-${now}-${Math.random().toString(36).substring(2, 6)}`,
+        projectId,
+        intervieweeIdentifier: sample.intervieweeIdentifier || 'Lead Target Customer Discovery',
+        participantRole: sample.participantRole || 'Domain Specialist / Key Decision Maker',
+        date: sample.date || new Date().toISOString().split('T')[0],
+        objectives: 'Customer discovery & past behavioral patterns (The Mom Test)',
+        severityRating: sample.severityRating || 'severe',
+        existingWorkarounds: sample.existingWorkarounds || 'Manual spreadsheets and daily manual reconciliation',
+        willingnessToPayNotes: sample.willingnessToPayNotes || 'Already paying for suboptimal point tools',
+        verbatimQuotes: sample.verbatimQuotes || [
+          '“We waste 5+ hours every week dealing with this breakdown manually.”',
+          '“If you can guarantee reliability, we would gladly sign up immediately.”'
+        ],
+        notesOrTranscript: sample.notesOrTranscript || 'Detailed Mom Test discovery conversation focused purely on historical habits.',
+        recurringPainPoints: [],
+        surprisesOrObjections: sample.surprisesOrObjections || 'Prioritizes seamless local reliability over cloud connectivity.',
+        createdAt: now,
+      });
+      onInterviewsUpdated();
+    } catch (err) {
+      console.error('Failed to synthesize interview:', err);
+    } finally {
+      setIsSynthesizing(false);
+    }
+  };
+
+  const handleAutoFillModal = async () => {
+    setIsFillingModal(true);
+    try {
+      const project = await db.projects.get(projectId);
+      if (!project) return;
+      const sample = await generateInterviewSample(project);
+      if (sample.intervieweeIdentifier) setIntervieweeIdentifier(sample.intervieweeIdentifier);
+      if (sample.participantRole) setParticipantRole(sample.participantRole);
+      if (sample.severityRating) setSeverityRating(sample.severityRating);
+      if (sample.existingWorkarounds) setExistingWorkarounds(sample.existingWorkarounds);
+      if (sample.willingnessToPayNotes) setWillingnessToPayNotes(sample.willingnessToPayNotes);
+      if (sample.verbatimQuotes) setKeyQuotesText(sample.verbatimQuotes.join('\n'));
+      if (sample.notesOrTranscript) setNotesOrTranscript(sample.notesOrTranscript);
+      if (sample.surprisesOrObjections) setSurprisesOrObjections(sample.surprisesOrObjections);
+    } catch (err) {
+      console.error('Failed to auto-fill interview modal:', err);
+    } finally {
+      setIsFillingModal(false);
+    }
+  };
+
+  const handleSuggestWorkaround = async () => {
+    setIsSuggestingWorkaround(true);
+    try {
+      const project = await db.projects.get(projectId);
+      const res = await suggestProjectField('currentAlternatives', {
+        name: project?.name,
+        problemStatement: project?.problemStatement,
+        targetMarket: project?.targetMarket,
+      });
+      if (res) {
+        setExistingWorkarounds(`Currently relies on: ${res}`);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSuggestingWorkaround(false);
+    }
+  };
+
+  const handleSuggestQuotes = async () => {
+    setIsSuggestingQuotes(true);
+    try {
+      const project = await db.projects.get(projectId);
+      const sample = await generateInterviewSample(project || {});
+      if (sample.verbatimQuotes && sample.verbatimQuotes.length > 0) {
+        setKeyQuotesText(sample.verbatimQuotes.join('\n'));
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSuggestingQuotes(false);
+    }
+  };
 
   const handleAddInterview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,13 +189,23 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs self-start"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Record Interview</span>
-        </button>
+        <div className="flex items-center space-x-2 self-start">
+          <AIAutoFillButton
+            onClick={handleSynthesizeInterview}
+            isLoading={isSynthesizing}
+            label="⚡ AI Synthesize Mom Test Interview"
+            loadingLabel="Synthesizing interview..."
+            size="sm"
+            variant="subtle"
+          />
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Record Interview</span>
+          </button>
+        </div>
       </div>
 
       {/* The Mom Test Golden Rules Warning */}
@@ -246,9 +351,17 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-lg w-full p-5 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                Log Customer Discovery Interview
-              </h3>
+              <div className="flex items-center space-x-2">
+                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                  Log Customer Discovery Interview
+                </h3>
+                <AIAutoFillButton
+                  onClick={handleAutoFillModal}
+                  isLoading={isFillingModal}
+                  label="AI Auto-Fill Form"
+                  size="xs"
+                />
+              </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
                 className="text-zinc-400 hover:text-zinc-600"
@@ -303,9 +416,17 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
               </div>
 
               <div>
-                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                  How are they currently solving or hacking around this?
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-medium text-zinc-700 dark:text-zinc-300">
+                    How are they currently solving or hacking around this?
+                  </label>
+                  <AIAutoFillButton
+                    onClick={handleSuggestWorkaround}
+                    isLoading={isSuggestingWorkaround}
+                    label="AI Suggest Workaround"
+                    size="xs"
+                  />
+                </div>
                 <input
                   type="text"
                   placeholder="e.g. Spends $800/mo on Angi leads, plus manual text messages"
@@ -329,9 +450,17 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
               </div>
 
               <div>
-                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                  Verbatim Quotes (One per line)
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-medium text-zinc-700 dark:text-zinc-300">
+                    Verbatim Quotes (One per line)
+                  </label>
+                  <AIAutoFillButton
+                    onClick={handleSuggestQuotes}
+                    isLoading={isSuggestingQuotes}
+                    label="AI Generate Quotes"
+                    size="xs"
+                  />
+                </div>
                 <textarea
                   rows={3}
                   placeholder="&quot;If you send me a job that's already booked, I'll pay you on the spot.&quot;&#10;&quot;I hate paying for tire-kickers who don't answer their phones.&quot;"

@@ -2,10 +2,38 @@ import { z } from 'zod';
 import type { ExportPackage } from '../types';
 
 // Safe bounds & regexes
-const ID_REGEX = /^[a-zA-Z0-9_-]{1,128}$/;
+export const ID_REGEX = /^[a-zA-Z0-9_-]{1,128}$/;
+export const SafeIdSchema = z
+  .string()
+  .regex(ID_REGEX, { message: 'ID must consist of alphanumeric characters, hyphens or underscores (1-128 chars).' });
+
+export const SafeUrlSchema = z
+  .string()
+  .max(1000)
+  .refine(
+    (val) => {
+      if (!val || val.trim() === '') return true;
+      const trimmed = val.trim().toLowerCase();
+      if (
+        trimmed.startsWith('javascript:') ||
+        trimmed.startsWith('data:') ||
+        trimmed.startsWith('vbscript:')
+      ) {
+        return false;
+      }
+      try {
+        const parsed = new URL(val);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+      } catch {
+        return false;
+      }
+    },
+    { message: 'URL must be a valid http:// or https:// address.' }
+  )
+  .optional();
 
 export const ProjectSchema = z.object({
-  id: z.string().min(1).max(128),
+  id: SafeIdSchema,
   name: z.string().min(1).max(250),
   oneSentenceIdea: z.string().max(1000).default(''),
   category: z.string().max(200).default('General'),
@@ -20,7 +48,7 @@ export const ProjectSchema = z.object({
   ]).default('idea'),
   targetMarket: z.string().max(500).default(''),
   location: z.string().max(200).default(''),
-  website: z.string().max(500).optional(),
+  website: SafeUrlSchema,
   existingResearch: z.string().max(10000).optional(),
   problemStatement: z.string().max(5000).default(''),
   targetUserGroup: z.string().max(500).default(''),
@@ -59,8 +87,8 @@ export const ProjectSchema = z.object({
 });
 
 export const EvidenceItemSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
   claim: z.string().min(1).max(2000),
   type: z.enum(['problem', 'customer', 'market', 'pricing', 'feasibility', 'distribution', 'retention']),
   status: z.enum([
@@ -72,7 +100,7 @@ export const EvidenceItemSchema = z.object({
     'experiment_confirmed',
   ]),
   evidenceNotes: z.string().max(10000).default(''),
-  sourceUrl: z.string().max(1000).optional(),
+  sourceUrl: SafeUrlSchema,
   sourceTitle: z.string().max(500).optional(),
   confidence: z.enum(['low', 'medium', 'high']),
   nextTest: z.string().max(2000).default(''),
@@ -82,10 +110,10 @@ export const EvidenceItemSchema = z.object({
 });
 
 export const ResearchSourceSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
   title: z.string().min(1).max(500),
-  url: z.string().max(1000).optional(),
+  url: SafeUrlSchema,
   publisherOrDomain: z.string().max(300).optional(),
   sourceType: z.enum([
     'academic',
@@ -113,17 +141,30 @@ export const ResearchSourceSchema = z.object({
   keyFindings: z.array(z.string().max(2000)).max(50).default([]),
   relevance: z.enum(['high', 'medium', 'low']),
   confidence: z.enum(['high', 'medium', 'low']),
-  claimLinkedIds: z.array(z.string().max(128)).max(100).optional(),
+  claimLinkedIds: z.array(SafeIdSchema).max(100).optional(),
   notes: z.string().max(5000).optional(),
   isSynthetic: z.boolean().optional(),
   createdAt: z.number(),
 });
 
+export const CommunityInsightSchema = z.object({
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
+  sourceCommunity: z.string().min(1).max(300),
+  query: z.string().max(1000).default(''),
+  directQuotes: z.array(z.string().max(2000)).max(50).default([]),
+  aiInterpretation: z.string().max(5000).default(''),
+  problemMentioned: z.string().max(3000).default(''),
+  willingnessToPaySignal: z.enum(['strong', 'moderate', 'weak', 'none', 'negative']),
+  url: SafeUrlSchema,
+  createdAt: z.number(),
+});
+
 export const CompetitorSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
   name: z.string().min(1).max(300),
-  url: z.string().max(1000).optional(),
+  url: SafeUrlSchema,
   productDescription: z.string().max(5000).default(''),
   pricingModel: z.string().max(2000).default(''),
   targetAudience: z.string().max(2000).default(''),
@@ -139,8 +180,8 @@ export const CompetitorSchema = z.object({
 });
 
 export const ExperimentSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
   hypothesis: z.string().min(1).max(3000),
   targetAudience: z.string().max(1000).optional(),
   dimension: z.enum(['problem', 'customer', 'solution', 'market', 'commercial']).optional(),
@@ -165,7 +206,7 @@ export const ExperimentSchema = z.object({
   status: z.enum(['planned', 'running', 'completed', 'inconclusive', 'passed', 'failed']),
   resultSummary: z.string().max(10000).optional(),
   results: z.string().max(10000).optional(),
-  evidenceId: z.string().max(128).optional(),
+  evidenceId: SafeIdSchema.optional(),
   decisionTaken: z.string().max(2000).optional(),
   startDate: z.string().max(50).optional(),
   endDate: z.string().max(50).optional(),
@@ -175,8 +216,8 @@ export const ExperimentSchema = z.object({
 });
 
 export const CustomerInterviewSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
   intervieweeIdentifier: z.string().min(1).max(300),
   participantRole: z.string().max(300).default(''),
   date: z.string().max(50),
@@ -193,8 +234,8 @@ export const CustomerInterviewSchema = z.object({
 });
 
 export const FeatureItemSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
   title: z.string().min(1).max(300),
   description: z.string().max(3000).default(''),
   priority: z.enum(['must', 'should', 'could', 'wont']),
@@ -207,8 +248,8 @@ export const FeatureItemSchema = z.object({
 });
 
 export const RoadmapItemSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
   title: z.string().min(1).max(300),
   objective: z.string().max(3000).default(''),
   status: z.enum(['not_started', 'in_progress', 'blocked', 'completed']),
@@ -217,15 +258,15 @@ export const RoadmapItemSchema = z.object({
   evidenceRequired: z.string().max(2000).default(''),
   estimatedEffort: z.string().max(200).default(''),
   orderIndex: z.number().int().default(0),
-  dependencies: z.array(z.string().max(128)).max(50).optional(),
+  dependencies: z.array(SafeIdSchema).max(50).optional(),
   isSynthetic: z.boolean().optional(),
   createdAt: z.number(),
   updatedAt: z.number(),
 });
 
 export const CanvasNodeSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
   type: z.enum([
     'problem',
     'customer',
@@ -245,24 +286,26 @@ export const CanvasNodeSchema = z.object({
   width: z.number().optional(),
   height: z.number().optional(),
   color: z.string().max(50).optional(),
+  entityType: z.enum(['problem', 'customer', 'solution', 'evidence', 'experiment', 'competitor', 'feature', 'decision']).optional(),
+  entityId: SafeIdSchema.optional(),
 });
 
 export const CanvasEdgeSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
-  fromNodeId: z.string().min(1).max(128),
-  toNodeId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
+  fromNodeId: SafeIdSchema,
+  toNodeId: SafeIdSchema,
   label: z.string().max(200).optional(),
 });
 
 export const ProjectDecisionSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
   title: z.string().min(1).max(300),
   context: z.string().max(3000).optional(),
   rationale: z.string().max(5000).default(''),
   rejectedAlternatives: z.string().max(5000).default(''),
-  evidenceConsideredIds: z.array(z.string().max(128)).max(50).optional(),
+  evidenceConsideredIds: z.array(SafeIdSchema).max(50).optional(),
   options: z.array(z.string().max(1000)).max(20).optional(),
   chosenOption: z.string().max(1000).optional(),
   confidence: z.enum(['low', 'medium', 'high']).optional(),
@@ -276,8 +319,8 @@ export const ProjectDecisionSchema = z.object({
 });
 
 export const RiskItemSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
   title: z.string().min(1).max(300),
   category: z.enum([
     'desirability',
@@ -302,8 +345,8 @@ export const RiskItemSchema = z.object({
 });
 
 export const BusinessModelSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
   monthlyPrice: z.number().min(0).max(10000000).optional(),
   grossMarginPct: z.number().min(0).max(100).optional(),
   monthlyChurnPct: z.number().min(0).max(100).optional(),
@@ -322,8 +365,8 @@ export const BusinessModelSchema = z.object({
 });
 
 export const GTMPlanSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
   targetUser: z.string().max(1000).optional(),
   need: z.string().max(1000).optional(),
   productName: z.string().max(300).optional(),
@@ -341,7 +384,7 @@ export const GTMPlanSchema = z.object({
   ).max(50).optional(),
   checklist: z.array(
     z.object({
-      id: z.string().max(128),
+      id: SafeIdSchema,
       title: z.string().max(300),
       desc: z.string().max(1000),
       done: z.boolean(),
@@ -351,8 +394,8 @@ export const GTMPlanSchema = z.object({
 });
 
 export const LandingPageSpecSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().min(1).max(128),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
   headline: z.string().max(1000),
   subheadline: z.string().max(2000),
   ctaText: z.string().max(200),
@@ -369,8 +412,8 @@ export const LandingPageSpecSchema = z.object({
 });
 
 export const AIChatMessageSchema = z.object({
-  id: z.string().min(1).max(128),
-  projectId: z.string().max(128).optional(),
+  id: SafeIdSchema,
+  projectId: SafeIdSchema.optional(),
   role: z.enum(['user', 'assistant', 'system']),
   content: z.string().max(50000),
   timestamp: z.number(),
@@ -390,7 +433,7 @@ export const ExportPackageSchema = z.object({
   project: ProjectSchema,
   evidence: z.array(EvidenceItemSchema).max(2000).default([]),
   research: z.array(ResearchSourceSchema).max(2000).default([]),
-  communityInsights: z.array(z.any()).max(1000).default([]),
+  communityInsights: z.array(CommunityInsightSchema).max(1000).default([]),
   competitors: z.array(CompetitorSchema).max(500).default([]),
   experiments: z.array(ExperimentSchema).max(1000).default([]),
   interviews: z.array(CustomerInterviewSchema).max(1000).default([]),

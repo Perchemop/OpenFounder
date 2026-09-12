@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import type { Project, LandingPageSpec } from '../types';
 import { db } from '../db';
+import { generateLandingPageCopy } from '../ai/autoCompleteService';
+import { AIAutoFillButton } from '../components/ai/AIAutoFillButton';
 
 interface LandingPageStudioProps {
   project: Project | null;
@@ -24,6 +26,7 @@ export const LandingPageStudio: React.FC<LandingPageStudioProps> = ({
 }) => {
   const [deviceMode, setDeviceMode] = useState<'desktop' | 'mobile'>('desktop');
   const [copied, setCopied] = useState(false);
+  const [isGeneratingCopy, setIsGeneratingCopy] = useState(false);
 
   // Landing page copy state
   const [headline, setHeadline] = useState(
@@ -48,6 +51,30 @@ export const LandingPageStudio: React.FC<LandingPageStudioProps> = ({
   const [faq1A, setFaq1A] = useState('We offer a generous free tier during early access. Paid tiers start at straightforward transparent rates.');
   const [faq2Q, setFaq2Q] = useState('How does this protect my data?');
   const [faq2A, setFaq2A] = useState('Zero third-party trackers, local-first storage options, and strict privacy boundaries.');
+
+  const handleAutoGenerateCopy = async () => {
+    if (!project) return;
+    setIsGeneratingCopy(true);
+    try {
+      const generated = await generateLandingPageCopy(project);
+      if (generated.headline) setHeadline(generated.headline);
+      if (generated.subheadline) setSubheadline(generated.subheadline);
+      if (generated.ctaText) setCtaText(generated.ctaText);
+      if (generated.problemHeadline) setProblemHeadline(generated.problemHeadline);
+      if (generated.problemBody) setProblemBody(generated.problemBody);
+      if (generated.step1) setStep1(generated.step1);
+      if (generated.step2) setStep2(generated.step2);
+      if (generated.step3) setStep3(generated.step3);
+      if (generated.faq1Q) setFaq1Q(generated.faq1Q);
+      if (generated.faq1A) setFaq1A(generated.faq1A);
+      if (generated.faq2Q) setFaq2Q(generated.faq2Q);
+      if (generated.faq2A) setFaq2A(generated.faq2A);
+    } catch (err) {
+      console.error('Failed to generate landing page copy:', err);
+    } finally {
+      setIsGeneratingCopy(false);
+    }
+  };
 
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle');
   const [lastSaved, setLastSaved] = useState<string | null>(null);
@@ -336,6 +363,14 @@ export const LandingPageStudio: React.FC<LandingPageStudioProps> = ({
         </div>
 
         <div className="flex items-center space-x-2 self-start">
+          <AIAutoFillButton
+            onClick={handleAutoGenerateCopy}
+            isLoading={isGeneratingCopy}
+            label="⚡ AI Auto-Write Landing Page Copy"
+            loadingLabel="Generating copy..."
+            size="sm"
+            variant="subtle"
+          />
           <button
             onClick={handleCopy}
             className="flex items-center space-x-1.5 px-3 py-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-lg text-xs font-semibold hover:bg-zinc-200 transition-colors"

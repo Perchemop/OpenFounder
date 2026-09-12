@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import type { Project, BusinessModelData } from '../types';
 import { db } from '../db';
+import { generateLeanCanvas } from '../ai/autoCompleteService';
+import { AIAutoFillButton } from '../components/ai/AIAutoFillButton';
 
 interface BusinessModelPageProps {
   project: Project | null;
@@ -23,6 +25,8 @@ export const BusinessModelPage: React.FC<BusinessModelPageProps> = ({
   project,
   onOpenAICofounderWithPrompt,
 }) => {
+  const [isGeneratingCanvas, setIsGeneratingCanvas] = useState(false);
+
   // Unit economics state
   const [monthlyPrice, setMonthlyPrice] = useState<number>(49);
   const [grossMarginPct, setGrossMarginPct] = useState<number>(85);
@@ -51,6 +55,35 @@ export const BusinessModelPage: React.FC<BusinessModelPageProps> = ({
     keyMetrics: 'Monthly active users, 30-day retention, customer referral rate.',
     unfairAdvantage: project?.founderSkills || 'Domain expertise and direct relationships with initial prospects.',
   });
+
+  const handleAutoGenerateCanvas = async () => {
+    if (!project) return;
+    setIsGeneratingCanvas(true);
+    try {
+      const generated = await generateLeanCanvas(project);
+      if (generated.monthlyPrice) setMonthlyPrice(generated.monthlyPrice);
+      if (generated.grossMarginPct) setGrossMarginPct(generated.grossMarginPct);
+      if (generated.monthlyChurnPct) setMonthlyChurnPct(generated.monthlyChurnPct);
+      if (generated.cac) setCac(generated.cac);
+      if (generated.fixedMonthlyCost) setFixedMonthlyCost(generated.fixedMonthlyCost);
+
+      setLeanCanvas({
+        problem: generated.problem || leanCanvas.problem,
+        customerSegments: generated.customerSegments || leanCanvas.customerSegments,
+        uniqueValue: generated.uniqueValue || leanCanvas.uniqueValue,
+        solution: generated.solution || leanCanvas.solution,
+        channels: generated.channels || leanCanvas.channels,
+        revenueStreams: generated.revenueStreams || leanCanvas.revenueStreams,
+        costStructure: generated.costStructure || leanCanvas.costStructure,
+        keyMetrics: generated.keyMetrics || leanCanvas.keyMetrics,
+        unfairAdvantage: generated.unfairAdvantage || leanCanvas.unfairAdvantage,
+      });
+    } catch (err) {
+      console.error('Failed to auto-generate lean canvas:', err);
+    } finally {
+      setIsGeneratingCanvas(false);
+    }
+  };
 
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle');
   const [lastSaved, setLastSaved] = useState<string | null>(null);
@@ -174,17 +207,28 @@ export const BusinessModelPage: React.FC<BusinessModelPageProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={() =>
-            onOpenAICofounderWithPrompt(
-              'Audit our unit economics and pricing model. Does an LTV:CAC ratio and payback period make sense for this customer type?'
-            )
-          }
-          className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs self-start"
-        >
-          <Sparkles className="w-4 h-4 text-amber-400" />
-          <span>Audit Economics with AI</span>
-        </button>
+        <div className="flex items-center space-x-2 self-start">
+          <AIAutoFillButton
+            onClick={handleAutoGenerateCanvas}
+            isLoading={isGeneratingCanvas}
+            label="⚡ AI Auto-Model Lean Canvas & Pricing"
+            loadingLabel="Modeling economics..."
+            size="sm"
+            variant="subtle"
+          />
+
+          <button
+            onClick={() =>
+              onOpenAICofounderWithPrompt(
+                'Audit our unit economics and pricing model. Does an LTV:CAC ratio and payback period make sense for this customer type?'
+              )
+            }
+            className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs"
+          >
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span>Audit Economics with AI</span>
+          </button>
+        </div>
       </div>
 
       {/* Audit Disclaimer / Transparency */}

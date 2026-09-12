@@ -19,8 +19,17 @@ import type {
   AIChatMessage,
   ExportPackage,
   AIProviderConfig,
+  ProjectWorkspace,
 } from '../types';
 import { validateExportPackage } from './validation';
+
+// Cryptographically secure ID generator with fallback
+export function generateId(prefix = 'id'): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `${prefix}_${crypto.randomUUID().replace(/-/g, '').substring(0, 12)}`;
+  }
+  return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 8)}`;
+}
 
 export class OpenFounderDB extends Dexie {
   projects!: Table<Project, string>;
@@ -318,10 +327,10 @@ export async function importProjectPackage(
   const featureIdMap = new Map<string, string>();
   const decisionIdMap = new Map<string, string>();
   const riskIdMap = new Map<string, string>();
+  const roadmapIdMap = new Map<string, string>();
 
   if (shouldRemap) {
-    const uniqueSuffix = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-    targetProjectId = `proj_${uniqueSuffix}`;
+    targetProjectId = generateId('proj');
     targetProject = {
       ...pkg.project,
       id: targetProjectId,
@@ -329,27 +338,30 @@ export async function importProjectPackage(
       updatedAt: Date.now(),
     };
 
-    // Pre-populate ID maps for all sub-entities
+    // Pre-populate ID maps for all sub-entities using secure generateId
     pkg.canvasNodes.forEach((node) => {
-      nodeIdMap.set(node.id, `node_${Math.random().toString(36).substring(2, 9)}`);
+      nodeIdMap.set(node.id, generateId('node'));
     });
     pkg.evidence.forEach((ev) => {
-      evidenceIdMap.set(ev.id, `ev_${Math.random().toString(36).substring(2, 9)}`);
+      evidenceIdMap.set(ev.id, generateId('ev'));
     });
     pkg.experiments.forEach((exp) => {
-      experimentIdMap.set(exp.id, `exp_${Math.random().toString(36).substring(2, 9)}`);
+      experimentIdMap.set(exp.id, generateId('exp'));
     });
     pkg.interviews.forEach((inv) => {
-      interviewIdMap.set(inv.id, `inv_${Math.random().toString(36).substring(2, 9)}`);
+      interviewIdMap.set(inv.id, generateId('inv'));
     });
     pkg.features.forEach((feat) => {
-      featureIdMap.set(feat.id, `feat_${Math.random().toString(36).substring(2, 9)}`);
+      featureIdMap.set(feat.id, generateId('feat'));
     });
     pkg.decisions.forEach((dec) => {
-      decisionIdMap.set(dec.id, `dec_${Math.random().toString(36).substring(2, 9)}`);
+      decisionIdMap.set(dec.id, generateId('dec'));
     });
     pkg.risks?.forEach((r) => {
-      riskIdMap.set(r.id, `risk_${Math.random().toString(36).substring(2, 9)}`);
+      riskIdMap.set(r.id, generateId('risk'));
+    });
+    pkg.roadmap?.forEach((rm) => {
+      roadmapIdMap.set(rm.id, generateId('rm'));
     });
   }
 
@@ -362,7 +374,7 @@ export async function importProjectPackage(
 
   const remappedEdges: CanvasEdge[] = pkg.canvasEdges.map((edge) => ({
     ...edge,
-    id: shouldRemap ? `edge_${Math.random().toString(36).substring(2, 9)}` : edge.id,
+    id: shouldRemap ? generateId('edge') : edge.id,
     projectId: targetProjectId,
     fromNodeId: nodeIdMap.get(edge.fromNodeId) || edge.fromNodeId,
     toNodeId: nodeIdMap.get(edge.toNodeId) || edge.toNodeId,
@@ -383,7 +395,7 @@ export async function importProjectPackage(
 
   const remappedResearch: ResearchSource[] = pkg.research.map((res) => ({
     ...res,
-    id: shouldRemap ? `res_${Math.random().toString(36).substring(2, 9)}` : res.id,
+    id: shouldRemap ? generateId('res') : res.id,
     projectId: targetProjectId,
     claimLinkedIds: res.claimLinkedIds?.map((cid) => evidenceIdMap.get(cid) || cid),
   }));
@@ -415,21 +427,37 @@ export async function importProjectPackage(
 
   const remappedRoadmap: RoadmapItem[] = pkg.roadmap.map((rm) => ({
     ...rm,
-    id: shouldRemap ? `rm_${Math.random().toString(36).substring(2, 9)}` : rm.id,
+    id: roadmapIdMap.get(rm.id) || rm.id,
     projectId: targetProjectId,
+    dependencies: rm.dependencies?.map((depId) => roadmapIdMap.get(depId) || depId),
   }));
 
   const remappedCompetitors: Competitor[] = pkg.competitors.map((comp) => ({
     ...comp,
-    id: shouldRemap ? `comp_${Math.random().toString(36).substring(2, 9)}` : comp.id,
+    id: shouldRemap ? generateId('comp') : comp.id,
     projectId: targetProjectId,
   }));
 
   const remappedInsights: CommunityInsight[] = pkg.communityInsights.map((ins) => ({
     ...ins,
-    id: shouldRemap ? `ins_${Math.random().toString(36).substring(2, 9)}` : ins.id,
+    id: shouldRemap ? generateId('ins') : ins.id,
     projectId: targetProjectId,
   }));
+
+  // Validate relational integrity post-remap before persisting
+  const integrityCheck = validateWorkspaceReferences({
+    nodes: remappedNodes,
+    edges: remappedEdges,
+    evidence: remappedEvidence,
+    experiments: remappedExperiments,
+    research: remappedResearch,
+    decisions: remappedDecisions,
+    roadmap: remappedRoadmap,
+  });
+
+  if (!integrityCheck.valid) {
+    console.warn('Workspace referential warnings detected upon import:', integrityCheck.warnings);
+  }
 
   // 4. Perform atomic transactional replacement or insertion
   await db.transaction(
@@ -596,14 +624,141 @@ export async function wipeAllLocalData(options: { preserveSettings?: boolean } =
   }
 }
 
+// Relational integrity validator for workspace references
+export function validateWorkspaceReferences(records: {
+  nodes?: CanvasNode[];
+  edges?: CanvasEdge[];
+  evidence?: EvidenceItem[];
+  experiments?: Experiment[];
+  research?: ResearchSource[];
+  decisions?: ProjectDecision[];
+  roadmap?: RoadmapItem[];
+}): { valid: boolean; warnings: string[] } {
+  const warnings: string[] = [];
+  const nodeIds = new Set((records.nodes || []).map((n) => n.id));
+  const evidenceIds = new Set((records.evidence || []).map((e) => e.id));
+  const roadmapIds = new Set((records.roadmap || []).map((r) => r.id));
+
+  // 1. Canvas edge endpoints
+  for (const edge of records.edges || []) {
+    if (!nodeIds.has(edge.fromNodeId)) {
+      warnings.push(`Canvas edge ${edge.id} references missing source node ${edge.fromNodeId}.`);
+    }
+    if (!nodeIds.has(edge.toNodeId)) {
+      warnings.push(`Canvas edge ${edge.id} references missing target node ${edge.toNodeId}.`);
+    }
+  }
+
+  // 2. Experiment evidence links
+  for (const exp of records.experiments || []) {
+    if (exp.evidenceId && !evidenceIds.has(exp.evidenceId)) {
+      warnings.push(`Experiment "${exp.hypothesis.substring(0, 35)}..." references missing evidence ID: ${exp.evidenceId}`);
+    }
+  }
+
+  // 3. Research evidence claim links
+  for (const res of records.research || []) {
+    if (res.claimLinkedIds) {
+      for (const cid of res.claimLinkedIds) {
+        if (!evidenceIds.has(cid)) {
+          warnings.push(`Research "${res.title.substring(0, 35)}" references missing evidence claim: ${cid}`);
+        }
+      }
+    }
+  }
+
+  // 4. Decision evidence links
+  for (const dec of records.decisions || []) {
+    if (dec.evidenceConsideredIds) {
+      for (const eid of dec.evidenceConsideredIds) {
+        if (!evidenceIds.has(eid)) {
+          warnings.push(`Decision "${dec.title.substring(0, 35)}" references missing evidence ID: ${eid}`);
+        }
+      }
+    }
+  }
+
+  // 5. Roadmap item dependencies
+  for (const rm of records.roadmap || []) {
+    if (rm.dependencies) {
+      for (const depId of rm.dependencies) {
+        if (!roadmapIds.has(depId)) {
+          warnings.push(`Roadmap milestone "${rm.title.substring(0, 35)}" references missing dependency: ${depId}`);
+        }
+      }
+    }
+  }
+
+  return { valid: warnings.length === 0, warnings };
+}
+
+// Complete Project Workspace query service
+export async function getProjectWorkspace(projectId: string): Promise<ProjectWorkspace | null> {
+  const project = await db.projects.get(projectId);
+  if (!project) return null;
+
+  const [
+    evidence,
+    research,
+    communityInsights,
+    competitors,
+    experiments,
+    interviews,
+    features,
+    roadmap,
+    canvasNodes,
+    canvasEdges,
+    businessModel,
+    gtmPlan,
+    landingPage,
+    decisions,
+    risks,
+  ] = await Promise.all([
+    db.evidence.where('projectId').equals(projectId).toArray(),
+    db.research.where('projectId').equals(projectId).toArray(),
+    db.communityInsights.where('projectId').equals(projectId).toArray(),
+    db.competitors.where('projectId').equals(projectId).toArray(),
+    db.experiments.where('projectId').equals(projectId).toArray(),
+    db.interviews.where('projectId').equals(projectId).toArray(),
+    db.features.where('projectId').equals(projectId).toArray(),
+    db.roadmap.where('projectId').equals(projectId).toArray(),
+    db.canvasNodes.where('projectId').equals(projectId).toArray(),
+    db.canvasEdges.where('projectId').equals(projectId).toArray(),
+    db.businessModel.where('projectId').equals(projectId).first(),
+    db.gtmPlan.where('projectId').equals(projectId).first(),
+    db.landingPage.where('projectId').equals(projectId).first(),
+    db.decisions.where('projectId').equals(projectId).toArray(),
+    db.risks.where('projectId').equals(projectId).toArray(),
+  ]);
+
+  return {
+    project,
+    evidence,
+    research,
+    communityInsights,
+    competitors,
+    experiments,
+    interviews,
+    features,
+    roadmap,
+    canvasNodes,
+    canvasEdges,
+    businessModel,
+    gtmPlan,
+    landingPage,
+    decisions,
+    risks,
+  };
+}
+
 // Run integrity diagnostics on a project
 export async function runWorkspaceDiagnostics(projectId: string): Promise<{
   integrityOk: boolean;
   issues: string[];
   stats: Record<string, number>;
 }> {
-  const project = await db.projects.get(projectId);
-  if (!project) {
+  const workspace = await getProjectWorkspace(projectId);
+  if (!workspace) {
     return {
       integrityOk: false,
       issues: [`Project ${projectId} does not exist.`],
@@ -611,53 +766,32 @@ export async function runWorkspaceDiagnostics(projectId: string): Promise<{
     };
   }
 
-  const [
-    evidence,
-    experiments,
-    nodes,
-    edges,
-    decisions,
-    risks,
-  ] = await Promise.all([
-    db.evidence.where('projectId').equals(projectId).toArray(),
-    db.experiments.where('projectId').equals(projectId).toArray(),
-    db.canvasNodes.where('projectId').equals(projectId).toArray(),
-    db.canvasEdges.where('projectId').equals(projectId).toArray(),
-    db.decisions.where('projectId').equals(projectId).toArray(),
-    db.risks.where('projectId').equals(projectId).toArray(),
-  ]);
-
-  const issues: string[] = [];
-  const nodeIds = new Set(nodes.map((n) => n.id));
-  const evidenceIds = new Set(evidence.map((e) => e.id));
-
-  // Check for orphan edges
-  for (const edge of edges) {
-    if (!nodeIds.has(edge.fromNodeId)) {
-      issues.push(`Canvas edge points from nonexistent node: ${edge.fromNodeId}`);
-    }
-    if (!nodeIds.has(edge.toNodeId)) {
-      issues.push(`Canvas edge points to nonexistent node: ${edge.toNodeId}`);
-    }
-  }
-
-  // Check for broken experiment evidence links
-  for (const exp of experiments) {
-    if (exp.evidenceId && !evidenceIds.has(exp.evidenceId)) {
-      issues.push(`Experiment "${exp.hypothesis.substring(0, 30)}..." links to missing evidence claim: ${exp.evidenceId}`);
-    }
-  }
+  const check = validateWorkspaceReferences({
+    nodes: workspace.canvasNodes,
+    edges: workspace.canvasEdges,
+    evidence: workspace.evidence,
+    experiments: workspace.experiments,
+    research: workspace.research,
+    decisions: workspace.decisions,
+    roadmap: workspace.roadmap,
+  });
 
   return {
-    integrityOk: issues.length === 0,
-    issues,
+    integrityOk: check.valid,
+    issues: check.warnings,
     stats: {
-      evidenceCount: evidence.length,
-      experimentsCount: experiments.length,
-      canvasNodesCount: nodes.length,
-      canvasEdgesCount: edges.length,
-      decisionsCount: decisions.length,
-      risksCount: risks.length,
+      evidenceCount: workspace.evidence.length,
+      researchCount: workspace.research.length,
+      communityInsightsCount: workspace.communityInsights.length,
+      competitorsCount: workspace.competitors.length,
+      experimentsCount: workspace.experiments.length,
+      interviewsCount: workspace.interviews.length,
+      featuresCount: workspace.features.length,
+      roadmapCount: workspace.roadmap.length,
+      canvasNodesCount: workspace.canvasNodes.length,
+      canvasEdgesCount: workspace.canvasEdges.length,
+      decisionsCount: workspace.decisions.length,
+      risksCount: workspace.risks.length,
     },
   };
 }

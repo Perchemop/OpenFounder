@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import type { Competitor } from '../types';
 import { db } from '../db';
+import { discoverCompetitors, suggestProjectField } from '../ai/autoCompleteService';
+import { AIAutoFillButton } from '../components/ai/AIAutoFillButton';
 
 interface CompetitorsPageProps {
   projectId: string;
@@ -29,6 +31,8 @@ export const CompetitorsPage: React.FC<CompetitorsPageProps> = ({
 }) => {
   const [viewMode, setViewMode] = useState<'cards' | 'matrix'>('cards');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDiscovering, setIsDiscovering] = useState(false);
+  const [isSuggestingWeakness, setIsSuggestingWeakness] = useState(false);
 
   // Add competitor form state
   const [name, setName] = useState('');
@@ -42,6 +46,59 @@ export const CompetitorsPage: React.FC<CompetitorsPageProps> = ({
   const [customerComplaintsText, setCustomerComplaintsText] = useState('');
   const [keyDifferentiatorsText, setKeyDifferentiatorsText] = useState('');
   const [evidenceNotes, setEvidenceNotes] = useState('');
+
+  const handleAutoDiscoverCompetitors = async () => {
+    setIsDiscovering(true);
+    try {
+      const project = await db.projects.get(projectId);
+      if (!project) return;
+      const discovered = await discoverCompetitors(project);
+      const now = Date.now();
+      for (let i = 0; i < discovered.length; i++) {
+        const comp = discovered[i];
+        await db.competitors.put({
+          id: `comp-${now}-${i}-${Math.random().toString(36).substring(2, 6)}`,
+          projectId,
+          name: comp.name,
+          url: comp.url,
+          productDescription: comp.productDescription,
+          pricingModel: comp.pricingModel,
+          targetAudience: comp.targetAudience,
+          positioning: comp.positioning,
+          strengths: comp.strengths,
+          weaknesses: comp.weaknesses,
+          customerComplaints: comp.customerComplaints,
+          keyDifferentiators: comp.keyDifferentiators,
+          evidenceNotes: comp.evidenceNotes,
+          createdAt: now + i,
+          updatedAt: now + i,
+        });
+      }
+      onCompetitorsUpdated();
+    } catch (err) {
+      console.error('Failed to discover competitors:', err);
+    } finally {
+      setIsDiscovering(false);
+    }
+  };
+
+  const handleSuggestWeaknesses = async () => {
+    setIsSuggestingWeakness(true);
+    try {
+      const project = await db.projects.get(projectId);
+      const res = await suggestProjectField('currentAlternatives', {
+        name: project?.name,
+        problemStatement: project?.problemStatement,
+      });
+      if (res) {
+        setWeaknessesText(`Users complain about: ${res}\nLacks real-time auditability and local data sovereignty`);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSuggestingWeakness(false);
+    }
+  };
 
   const handleAddCompetitor = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,6 +166,15 @@ export const CompetitorsPage: React.FC<CompetitorsPageProps> = ({
         </div>
 
         <div className="flex items-center space-x-2 self-start">
+          <AIAutoFillButton
+            onClick={handleAutoDiscoverCompetitors}
+            isLoading={isDiscovering}
+            label="⚡ AI Auto-Discover Competitor Landscape"
+            loadingLabel="Mapping competitors..."
+            size="sm"
+            variant="subtle"
+          />
+
           <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg border border-zinc-200 dark:border-zinc-700">
             <button
               onClick={() => setViewMode('cards')}
@@ -412,9 +478,17 @@ export const CompetitorsPage: React.FC<CompetitorsPageProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                    Weaknesses & Customer Complaints
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="font-medium text-zinc-700 dark:text-zinc-300">
+                      Weaknesses & Customer Complaints
+                    </label>
+                    <AIAutoFillButton
+                      onClick={handleSuggestWeaknesses}
+                      isLoading={isSuggestingWeakness}
+                      label="AI Suggest Gaps"
+                      size="xs"
+                    />
+                  </div>
                   <textarea
                     rows={2}
                     placeholder="Shared leads sell to 4+ competitors&#10;Auto-renew contracts"

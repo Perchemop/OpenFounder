@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import type { Project, GTMPlan } from '../types';
 import { db } from '../db';
+import { generateGTMStrategy } from '../ai/autoCompleteService';
+import { AIAutoFillButton } from '../components/ai/AIAutoFillButton';
 
 interface GTMPageProps {
   project: Project | null;
@@ -30,6 +32,8 @@ export const GTMPage: React.FC<GTMPageProps> = ({
   project,
   onOpenAICofounderWithPrompt,
 }) => {
+  const [isGeneratingGTM, setIsGeneratingGTM] = useState(false);
+
   // Positioning statement template: For [target], who [need], our [product] is a [category] that [benefit], unlike [competitor], our product [differentiator].
   const [targetUser, setTargetUser] = useState(project?.targetMarket || 'ideal customer profile');
   const [need, setNeed] = useState(project?.problemStatement || 'suffer from an acute unaddressed pain');
@@ -60,6 +64,28 @@ export const GTMPage: React.FC<GTMPageProps> = ({
       notes: 'Partnering with existing service providers who already serve this customer.',
     },
   ]);
+
+  const handleAutoGenerateGTM = async () => {
+    if (!project) return;
+    setIsGeneratingGTM(true);
+    try {
+      const generated = await generateGTMStrategy(project);
+      if (generated.targetUser) setTargetUser(generated.targetUser);
+      if (generated.need) setNeed(generated.need);
+      if (generated.productName) setProductName(generated.productName);
+      if (generated.category) setCategory(generated.category);
+      if (generated.benefit) setBenefit(generated.benefit);
+      if (generated.competitor) setCompetitor(generated.competitor);
+      if (generated.differentiator) setDifferentiator(generated.differentiator);
+      if (generated.channels && generated.channels.length > 0) {
+        setChannels(generated.channels);
+      }
+    } catch (err) {
+      console.error('Failed to auto-generate GTM:', err);
+    } finally {
+      setIsGeneratingGTM(false);
+    }
+  };
 
   const [checklist, setChecklist] = useState<{ [key: string]: boolean }>({
     icp_defined: false,
@@ -199,17 +225,28 @@ export const GTMPage: React.FC<GTMPageProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={() =>
-            onOpenAICofounderWithPrompt(
-              'Audit our go-to-market channels and positioning. What is the cheapest, most repeatable wedge to acquire our first 10 paying customers?'
-            )
-          }
-          className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs self-start"
-        >
-          <Sparkles className="w-4 h-4 text-amber-400" />
-          <span>Audit Wedge Strategy</span>
-        </button>
+        <div className="flex items-center space-x-2 self-start">
+          <AIAutoFillButton
+            onClick={handleAutoGenerateGTM}
+            isLoading={isGeneratingGTM}
+            label="⚡ AI Auto-Generate GTM & Channels"
+            loadingLabel="Formulating GTM plan..."
+            size="sm"
+            variant="subtle"
+          />
+
+          <button
+            onClick={() =>
+              onOpenAICofounderWithPrompt(
+                'Audit our go-to-market channels and positioning. What is the cheapest, most repeatable wedge to acquire our first 10 paying customers?'
+              )
+            }
+            className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs"
+          >
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span>Audit Wedge Strategy</span>
+          </button>
+        </div>
       </div>
 
       {/* Positioning Statement Generator */}

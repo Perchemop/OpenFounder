@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import type { FeatureItem, MoscowPriority } from '../types';
 import { db } from '../db';
+import { generateMVPBacklog, suggestProjectField } from '../ai/autoCompleteService';
+import { AIAutoFillButton } from '../components/ai/AIAutoFillButton';
 
 interface MVPPlannerPageProps {
   projectId: string;
@@ -50,6 +52,8 @@ export const MVPPlannerPage: React.FC<MVPPlannerPageProps> = ({
   onOpenAICofounderWithPrompt,
 }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isGeneratingBacklog, setIsGeneratingBacklog] = useState(false);
+  const [isSuggestingRationale, setIsSuggestingRationale] = useState(false);
 
   // Form state
   const [title, setTitle] = useState('');
@@ -60,6 +64,53 @@ export const MVPPlannerPage: React.FC<MVPPlannerPageProps> = ({
 
   const mustFeatures = features.filter((f) => f.priority === 'must');
   const isBloated = mustFeatures.length > 3;
+
+  const handleAutoGenerateBacklog = async () => {
+    setIsGeneratingBacklog(true);
+    try {
+      const project = await db.projects.get(projectId);
+      if (!project) return;
+      const generated = await generateMVPBacklog(project);
+      const now = Date.now();
+      for (let i = 0; i < generated.length; i++) {
+        const item = generated[i];
+        await db.features.put({
+          id: `feat-${now}-${i}-${Math.random().toString(36).substring(2, 6)}`,
+          projectId,
+          title: item.title,
+          description: item.description,
+          priority: item.priority as MoscowPriority,
+          solvesProblem: item.solvesProblem,
+          technicalComplexity: item.technicalComplexity,
+          status: 'planned',
+          createdAt: now + i,
+        });
+      }
+      onFeaturesUpdated();
+    } catch (err) {
+      console.error('Failed to generate MVP backlog:', err);
+    } finally {
+      setIsGeneratingBacklog(false);
+    }
+  };
+
+  const handleSuggestRationale = async () => {
+    setIsSuggestingRationale(true);
+    try {
+      const project = await db.projects.get(projectId);
+      const res = await suggestProjectField('oneSentenceIdea', {
+        name: project?.name,
+        problemStatement: project?.problemStatement,
+      });
+      if (res) {
+        setSolvesProblem(`Directly validates: ${res}`);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSuggestingRationale(false);
+    }
+  };
 
   const handleAddFeature = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,13 +163,23 @@ export const MVPPlannerPage: React.FC<MVPPlannerPageProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs self-start"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Feature / Task</span>
-        </button>
+        <div className="flex items-center space-x-2 self-start">
+          <AIAutoFillButton
+            onClick={handleAutoGenerateBacklog}
+            isLoading={isGeneratingBacklog}
+            label="⚡ AI Auto-Generate MVP Backlog"
+            loadingLabel="Synthesizing backlog..."
+            size="sm"
+            variant="subtle"
+          />
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Feature / Task</span>
+          </button>
+        </div>
       </div>
 
       {/* Scope Bloat Alert */}
@@ -302,9 +363,17 @@ export const MVPPlannerPage: React.FC<MVPPlannerPageProps> = ({
               </div>
 
               <div>
-                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                  Value Rationale / Solves What Problem?
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-medium text-zinc-700 dark:text-zinc-300">
+                    Value Rationale / Solves What Problem?
+                  </label>
+                  <AIAutoFillButton
+                    onClick={handleSuggestRationale}
+                    isLoading={isSuggestingRationale}
+                    label="AI Suggest Rationale"
+                    size="xs"
+                  />
+                </div>
                 <textarea
                   rows={2}
                   placeholder="Directly enables contractor to confirm a booking in under 10 seconds without logging into a web app."

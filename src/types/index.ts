@@ -240,6 +240,27 @@ export interface CanvasNode {
   width?: number;
   height?: number;
   color?: string;
+  entityType?: 'problem' | 'customer' | 'solution' | 'evidence' | 'experiment' | 'competitor' | 'feature' | 'decision';
+  entityId?: string;
+}
+
+export interface ProjectWorkspace {
+  project: Project;
+  evidence: EvidenceItem[];
+  research: ResearchSource[];
+  communityInsights: CommunityInsight[];
+  competitors: Competitor[];
+  experiments: Experiment[];
+  interviews: CustomerInterview[];
+  features: FeatureItem[];
+  roadmap: RoadmapItem[];
+  canvasNodes: CanvasNode[];
+  canvasEdges: CanvasEdge[];
+  businessModel?: BusinessModelData;
+  gtmPlan?: GTMPlan;
+  landingPage?: LandingPageSpec;
+  decisions: ProjectDecision[];
+  risks: RiskItem[];
 }
 
 export interface CanvasEdge {

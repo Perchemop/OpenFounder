@@ -9,9 +9,12 @@ import {
   Edit2,
   ExternalLink,
   Filter,
+  Sparkles,
 } from 'lucide-react';
 import type { EvidenceItem, EvidenceStatus, ClaimType } from '../types';
 import { db } from '../db';
+import { generateEvidenceMatrix, suggestProjectField } from '../ai/autoCompleteService';
+import { AIAutoFillButton } from '../components/ai/AIAutoFillButton';
 
 interface EvidencePageProps {
   projectId: string;
@@ -64,6 +67,9 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
 }) => {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isGeneratingMatrix, setIsGeneratingMatrix] = useState(false);
+  const [isSuggestingClaim, setIsSuggestingClaim] = useState(false);
+  const [isSuggestingTest, setIsSuggestingTest] = useState(false);
 
   // New claim form state
   const [claim, setClaim] = useState('');
@@ -74,6 +80,74 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
   const [sourceUrl, setSourceUrl] = useState('');
   const [confidence, setConfidence] = useState<'low' | 'medium' | 'high'>('medium');
   const [nextTest, setNextTest] = useState('');
+
+  const handleGenerateMatrix = async () => {
+    setIsGeneratingMatrix(true);
+    try {
+      const project = await db.projects.get(projectId);
+      if (!project) return;
+      const matrix = await generateEvidenceMatrix(project);
+      const now = Date.now();
+      for (let i = 0; i < matrix.length; i++) {
+        const item = matrix[i];
+        await db.evidence.put({
+          id: `ev-${now}-${i}-${Math.random().toString(36).substring(2, 6)}`,
+          projectId,
+          claim: item.claim,
+          type: (item.type as ClaimType) || 'problem',
+          status: (item.status as EvidenceStatus) || 'assumption',
+          evidenceNotes: item.evidenceNotes || 'Generated from AI foundational risk synthesis',
+          confidence: (item.confidence as 'low' | 'medium' | 'high') || 'medium',
+          nextTest: item.nextTest || 'Conduct targeted customer discovery',
+          createdAt: now + i,
+          updatedAt: now + i,
+        });
+      }
+      onEvidenceUpdated();
+    } catch (err) {
+      console.error('Failed to generate evidence matrix:', err);
+    } finally {
+      setIsGeneratingMatrix(false);
+    }
+  };
+
+  const handleSuggestClaim = async () => {
+    setIsSuggestingClaim(true);
+    try {
+      const project = await db.projects.get(projectId);
+      const suggestion = await suggestProjectField('problemStatement', {
+        name: project?.name,
+        oneSentenceIdea: project?.oneSentenceIdea,
+        category: project?.category,
+      });
+      if (suggestion) {
+        setClaim(`Target users struggle with: ${suggestion}`);
+      }
+    } catch (err) {
+      console.error('Failed to suggest claim:', err);
+    } finally {
+      setIsSuggestingClaim(false);
+    }
+  };
+
+  const handleSuggestFalsification = async () => {
+    setIsSuggestingTest(true);
+    try {
+      const project = await db.projects.get(projectId);
+      const suggestion = await suggestProjectField('willingnessToPayTrigger', {
+        name: project?.name,
+        oneSentenceIdea: project?.oneSentenceIdea,
+        problemStatement: claim,
+      });
+      if (suggestion) {
+        setNextTest(`Falsify with smoke-test: ask 5 prospective buyers if they would commit deposit based on: ${suggestion}`);
+      }
+    } catch (err) {
+      console.error('Failed to suggest falsification test:', err);
+    } finally {
+      setIsSuggestingTest(false);
+    }
+  };
 
   const filteredEvidence = evidence.filter((item) => {
     if (filterStatus === 'all') return true;
@@ -143,13 +217,23 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs self-start"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Claim / Assumption</span>
-        </button>
+        <div className="flex items-center space-x-2 self-start">
+          <AIAutoFillButton
+            onClick={handleGenerateMatrix}
+            isLoading={isGeneratingMatrix}
+            label="⚡ AI Auto-Generate Evidence Matrix"
+            loadingLabel="Synthesizing risk matrix..."
+            size="sm"
+            variant="subtle"
+          />
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add Claim / Assumption</span>
+          </button>
+        </div>
       </div>
 
       {/* Assumption Health Warning Banner if unverified count > 0 */}
@@ -319,9 +403,17 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
 
             <form onSubmit={handleCreateClaim} className="space-y-3 text-xs">
               <div>
-                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                  Claim / Hypothesis Statement <span className="text-rose-500">*</span>
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-medium text-zinc-700 dark:text-zinc-300">
+                    Claim / Hypothesis Statement <span className="text-rose-500">*</span>
+                  </label>
+                  <AIAutoFillButton
+                    onClick={handleSuggestClaim}
+                    isLoading={isSuggestingClaim}
+                    label="AI Suggest Hypothesis"
+                    size="xs"
+                  />
+                </div>
                 <textarea
                   rows={2}
                   required
@@ -413,9 +505,17 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
               </div>
 
               <div>
-                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                  Next Falsification Test
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-medium text-zinc-700 dark:text-zinc-300">
+                    Next Falsification Test
+                  </label>
+                  <AIAutoFillButton
+                    onClick={handleSuggestFalsification}
+                    isLoading={isSuggestingTest}
+                    label="AI Suggest Test"
+                    size="xs"
+                  />
+                </div>
                 <input
                   type="text"
                   placeholder="What specific test or question would prove this assumption false?"

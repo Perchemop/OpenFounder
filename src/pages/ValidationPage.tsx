@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import type { Experiment, ExperimentStatus, ValidationDimension } from '../types';
 import { db } from '../db';
+import { generateExperimentSuite, suggestProjectField } from '../ai/autoCompleteService';
+import { AIAutoFillButton } from '../components/ai/AIAutoFillButton';
 
 interface ValidationPageProps {
   projectId: string;
@@ -36,6 +38,9 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
 }) => {
   const [selectedDimension, setSelectedDimension] = useState<string>('all');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isGeneratingSuite, setIsGeneratingSuite] = useState(false);
+  const [isSuggestingHypo, setIsSuggestingHypo] = useState(false);
+  const [isSuggestingCriteria, setIsSuggestingCriteria] = useState(false);
 
   // Form state
   const [hypothesis, setHypothesis] = useState('');
@@ -46,6 +51,78 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
   const [successCriteria, setSuccessCriteria] = useState('');
   const [failureCriteria, setFailureCriteria] = useState('');
   const [results, setResults] = useState('');
+
+  const handleGenerateSuite = async () => {
+    setIsGeneratingSuite(true);
+    try {
+      const project = await db.projects.get(projectId);
+      if (!project) return;
+      const suite = await generateExperimentSuite(project);
+      const now = Date.now();
+      for (let i = 0; i < suite.length; i++) {
+        const item = suite[i];
+        await db.experiments.put({
+          id: `exp-${now}-${i}-${Math.random().toString(36).substring(2, 6)}`,
+          projectId,
+          hypothesis: item.hypothesis,
+          dimension: (item.dimension as ValidationDimension) || 'problem',
+          method: (item.method as any) || 'landing_page',
+          targetSampleSize: Number(item.targetSampleSize) || 25,
+          currentSampleSize: 0,
+          successCriteria: item.successCriteria,
+          failureCriteria: item.failureCriteria,
+          status: 'planned',
+          results: '',
+          createdAt: now + i,
+          updatedAt: now + i,
+        });
+      }
+      onExperimentsUpdated();
+    } catch (err) {
+      console.error('Failed to generate experiment suite:', err);
+    } finally {
+      setIsGeneratingSuite(false);
+    }
+  };
+
+  const handleSuggestHypothesis = async () => {
+    setIsSuggestingHypo(true);
+    try {
+      const project = await db.projects.get(projectId);
+      const suggestion = await suggestProjectField('oneSentenceIdea', {
+        name: project?.name,
+        category: project?.category,
+        problemStatement: project?.problemStatement,
+        targetMarket: project?.targetMarket,
+      });
+      if (suggestion) {
+        setHypothesis(`We believe ${project?.targetMarket || 'target customers'} will adopt our solution if it provides: ${suggestion}`);
+      }
+    } catch (err) {
+      console.error('Failed to suggest hypothesis:', err);
+    } finally {
+      setIsSuggestingHypo(false);
+    }
+  };
+
+  const handleSuggestCriteria = async () => {
+    setIsSuggestingCriteria(true);
+    try {
+      const project = await db.projects.get(projectId);
+      const suggestion = await suggestProjectField('successDefinition', {
+        name: project?.name,
+        problemStatement: hypothesis || project?.problemStatement,
+      });
+      if (suggestion) {
+        setSuccessCriteria(`>= 20% commitment rate on: ${suggestion}`);
+        setFailureCriteria(`< 5% conversion or complete unwillingness to schedule next step.`);
+      }
+    } catch (err) {
+      console.error('Failed to suggest criteria:', err);
+    } finally {
+      setIsSuggestingCriteria(false);
+    }
+  };
 
   const filtered = experiments.filter((ex) => {
     if (selectedDimension === 'all') return true;
@@ -111,13 +188,23 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs self-start"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Experiment</span>
-        </button>
+        <div className="flex items-center space-x-2 self-start">
+          <AIAutoFillButton
+            onClick={handleGenerateSuite}
+            isLoading={isGeneratingSuite}
+            label="⚡ AI Auto-Generate Experiment Suite"
+            loadingLabel="Synthesizing tests..."
+            size="sm"
+            variant="subtle"
+          />
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Experiment</span>
+          </button>
+        </div>
       </div>
 
       {/* 5 Validation Dimensions Overview */}
@@ -284,9 +371,17 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
 
             <form onSubmit={handleAddExperiment} className="space-y-3 text-xs">
               <div>
-                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                  Hypothesis Under Test <span className="text-rose-500">*</span>
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-medium text-zinc-700 dark:text-zinc-300">
+                    Hypothesis Under Test <span className="text-rose-500">*</span>
+                  </label>
+                  <AIAutoFillButton
+                    onClick={handleSuggestHypothesis}
+                    isLoading={isSuggestingHypo}
+                    label="AI Suggest Hypothesis"
+                    size="xs"
+                  />
+                </div>
                 <textarea
                   rows={2}
                   required
@@ -362,9 +457,17 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
               </div>
 
               <div>
-                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                  Success Criteria (Falsifiable threshold)
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-medium text-zinc-700 dark:text-zinc-300">
+                    Success Criteria (Falsifiable threshold)
+                  </label>
+                  <AIAutoFillButton
+                    onClick={handleSuggestCriteria}
+                    isLoading={isSuggestingCriteria}
+                    label="AI Suggest Pass/Fail"
+                    size="xs"
+                  />
+                </div>
                 <input
                   type="text"
                   placeholder="e.g. >= 15% email signup conversion from 100 targeted visitor clicks."

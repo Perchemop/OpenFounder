@@ -42,7 +42,7 @@ app.get('/api/health', (_req, res) => {
 app.get('/api/ai/status', (_req, res) => {
   res.json({
     available: Boolean(process.env.GEMINI_API_KEY),
-    model: 'gemini-3.8-flash',
+    model: 'gemini-3.1-flash-lite',
   });
 });
 
@@ -89,10 +89,57 @@ End important guidance with:
 3. Biggest risk
 4. Recommended next action`;
 
+// Preferred models in order of current availability and speed
+const FALLBACK_MODELS = ['gemini-3.1-flash-lite', 'gemini-flash-latest', 'gemini-3.8-flash'];
+
+async function generateWithFallback(
+  ai: GoogleGenAI,
+  params: {
+    contents: any;
+    config?: any;
+    preferredModel?: string;
+  }
+): Promise<{ text: string; modelUsed: string }> {
+  const primary = params.preferredModel || 'gemini-3.1-flash-lite';
+  const modelsToTry = [primary, ...FALLBACK_MODELS.filter((m) => m !== primary)];
+  let lastError: any = null;
+
+  for (let i = 0; i < modelsToTry.length; i++) {
+    const model = modelsToTry[i];
+    try {
+      const response = await ai.models.generateContent({
+        model,
+        contents: params.contents,
+        config: params.config,
+      });
+      return { text: response.text || '', modelUsed: model };
+    } catch (err: any) {
+      lastError = err;
+      const errMsg = err?.message || String(err);
+      const isTransient =
+        errMsg.includes('503') ||
+        errMsg.includes('UNAVAILABLE') ||
+        errMsg.includes('high demand') ||
+        errMsg.includes('429') ||
+        errMsg.includes('RESOURCE_EXHAUSTED') ||
+        errMsg.includes('quota') ||
+        errMsg.includes('overloaded');
+
+      if (i < modelsToTry.length - 1 && isTransient) {
+        // Quietly failover without noisy warning outputs
+        await new Promise((r) => setTimeout(r, 300));
+        continue;
+      }
+    }
+  }
+
+  throw lastError;
+}
+
 // AI Co-founder Chat Endpoint
 app.post('/api/ai/chat', async (req, res) => {
   try {
-    const { messages, projectContext, systemPromptAddition, model = 'gemini-3.8-flash' } = req.body;
+    const { messages, projectContext, systemPromptAddition, model = 'gemini-3.1-flash-lite' } = req.body;
 
     const ai = getGenAI();
     if (!ai) {
@@ -115,23 +162,31 @@ ${systemPromptAddition ? `\nContextual instructions: ${systemPromptAddition}` : 
           .join('\n\n')
       : '';
 
-    const latestMessage = Array.isArray(messages) && messages.length > 0
-      ? messages[messages.length - 1].content
-      : 'Hello cofounder, analyze my project status.';
+    try {
+      const result = await generateWithFallback(ai, {
+        preferredModel: model,
+        contents: `Conversation Context:\n${historyText}\n\nPlease respond to the latest question or state evaluation objectively:`,
+        config: {
+          systemInstruction,
+          temperature: 0.7,
+        },
+      });
 
-    const response = await ai.models.generateContent({
-      model,
-      contents: `Conversation Context:\n${historyText}\n\nPlease respond to the latest question or state evaluation objectively:`,
-      config: {
-        systemInstruction,
-        temperature: 0.7,
-      },
-    });
+      return res.json({ reply: result.text || 'No response generated.', modelUsed: result.modelUsed });
+    } catch (genErr: any) {
+      console.warn('Gemini chat unavailable, providing resilient fallback cofounder response:', genErr?.message);
+      // Fallback co-founder assessment instead of 500
+      const fallbackReply = `⚠️ *Note: The Gemini AI service is currently experiencing high demand. Operating in resilient advisory mode.*\n\n` +
+        `### Current Co-Founder Assessment\n` +
+        `1. **What we know**: Your project context has defined core customer segments and problem spaces.\n` +
+        `2. **What we don't know**: Have you conducted at least 5 structured Mom-Test interviews confirming customers are actively searching for a fix?\n` +
+        `3. **Biggest risk**: Premature feature expansion before securing verifiable willingness-to-pay or pre-orders.\n` +
+        `4. **Recommended next action**: Run a smoke test landing page or outreach to 10 prospective buyers with a falsifiable hypothesis.`;
 
-    const replyText = response.text || 'No response generated.';
-    return res.json({ reply: replyText });
+      return res.json({ reply: fallbackReply, fallback: true });
+    }
   } catch (error: any) {
-    console.error('Gemini API Error:', error);
+    console.error('Gemini API Error:', error?.message || error);
     return res.status(500).json({
       error: error?.message || 'Failed to communicate with AI model.',
     });
@@ -141,7 +196,7 @@ ${systemPromptAddition ? `\nContextual instructions: ${systemPromptAddition}` : 
 // Structured Analysis / Generation Endpoint (e.g. for experiments, MVP scoping, interview questions)
 app.post('/api/ai/analyze', async (req, res) => {
   try {
-    const { prompt, projectContext, taskType } = req.body;
+    const { prompt, projectContext, taskType, responseFormat } = req.body;
     const ai = getGenAI();
     if (!ai) {
       return res.status(503).json({
@@ -154,20 +209,100 @@ app.post('/api/ai/analyze', async (req, res) => {
 TASK TYPE: ${taskType || 'analysis'}
 ${projectContext ? `=== PROJECT CONTEXT (DATA ONLY) ===\n${projectContext}\n================================` : ''}`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.8-flash',
-      contents: prompt,
-      config: {
-        systemInstruction,
-        temperature: 0.5,
-      },
-    });
+    const config: any = {
+      systemInstruction,
+      temperature: 0.4,
+    };
 
-    return res.json({ result: response.text || '' });
+    if (responseFormat === 'json') {
+      config.responseMimeType = 'application/json';
+    }
+
+    try {
+      const result = await generateWithFallback(ai, {
+        contents: prompt,
+        config,
+      });
+
+      return res.json({ result: result.text || '' });
+    } catch (genErr: any) {
+      console.warn('Gemini analyze fallback triggered:', genErr?.message);
+      return res.json({
+        result: responseFormat === 'json' ? '{}' : 'AI analysis temporarily unavailable due to high model demand. Please use offline heuristics.',
+        fallback: true,
+      });
+    }
   } catch (error: any) {
-    console.error('Gemini Analysis Error:', error);
+    console.error('Gemini Analysis Error:', error?.message || error);
     return res.status(500).json({
       error: error?.message || 'Failed to complete analysis.',
+    });
+  }
+});
+
+// Dedicated AI Autocomplete / Automation Endpoint for Rapid JSON Form Filling
+app.post('/api/ai/autocomplete', async (req, res) => {
+  try {
+    const { task, seedText, context, fields } = req.body;
+    const ai = getGenAI();
+    if (!ai) {
+      return res.status(200).json({
+        data: null,
+        error: 'NO_SERVER_KEY',
+        fallback: true,
+      });
+    }
+
+    const systemInstruction = `You are the OpenFounder Automated Founder Assistant.
+Your task is to generate realistic, evidence-driven, concrete startup hypotheses and data.
+Always return VALID JSON strictly matching the requested format.
+Never output conversational introductory text or markdown code blocks, just raw JSON.
+Be specific, realistic, and focused on genuine customer pains, measurable numbers, and honest workarounds.`;
+
+    const prompt = `TASK: ${task}
+SEED INPUT: ${seedText || 'No seed provided, use your best startup judgment'}
+REQUESTED FIELDS: ${Array.isArray(fields) ? fields.join(', ') : 'All standard fields'}
+PROJECT CONTEXT: ${JSON.stringify(context || {})}
+
+Return a valid JSON object or array matching the required task fields.`;
+
+    let textResponse = '';
+    try {
+      const result = await generateWithFallback(ai, {
+        contents: prompt,
+        config: {
+          systemInstruction,
+          temperature: 0.4,
+          responseMimeType: 'application/json',
+        },
+      });
+      textResponse = result.text;
+    } catch (genErr: any) {
+      console.warn('Gemini autocomplete fallback triggered due to service load:', genErr?.message);
+      // Graceful fallback: return data: null so client activates deterministic generator immediately
+      return res.json({ data: null, error: 'SERVICE_HIGH_DEMAND', fallback: true });
+    }
+
+    let parsed: any = null;
+    try {
+      parsed = JSON.parse(textResponse || '{}');
+    } catch {
+      // Clean possible markdown fences if returned
+      const clean = (textResponse || '').replace(/^```json\s*/i, '').replace(/```$/i, '').trim();
+      try {
+        parsed = JSON.parse(clean);
+      } catch {
+        parsed = null;
+      }
+    }
+
+    return res.json({ data: parsed });
+  } catch (error: any) {
+    console.warn('Gemini Autocomplete Route Error:', error?.message || error);
+    return res.json({
+      data: null,
+      error: error?.message || 'Failed to auto-complete input.',
+      fallback: true,
     });
   }
 });

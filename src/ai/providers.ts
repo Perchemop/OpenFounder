@@ -76,7 +76,7 @@ export class ServerGeminiProvider implements AIProvider {
           messages: messages.map((m) => ({ role: m.role, content: m.content })),
           projectContext,
           systemPromptAddition,
-          model: 'gemini-3.8-flash',
+          model: 'gemini-3.1-flash-lite',
         }),
       });
 
@@ -96,7 +96,7 @@ export class ServerGeminiProvider implements AIProvider {
 
       return {
         reply: data.reply || 'No response returned.',
-        providerUsed: 'Server-Side Gemini (gemini-3.8-flash)',
+        providerUsed: `Server-Side Gemini (${data.modelUsed || 'gemini-3.1-flash-lite'})`,
       };
     } catch (err: any) {
       return {
@@ -155,19 +155,35 @@ ${systemPromptAddition ? `\nContextual instructions: ${systemPromptAddition}` : 
         .map((m) => `${m.role === 'user' ? 'Founder' : 'AI Co-Founder'}: ${m.content}`)
         .join('\n\n');
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: `Conversation Context:\n${historyText}\n\nPlease respond to the latest inquiry constructively:`,
-        config: {
-          systemInstruction,
-          temperature: config.temperature ?? 0.7,
-        },
-      });
+      const candidateModels = ['gemini-3.1-flash-lite', 'gemini-flash-latest', 'gemini-3.8-flash'];
+      let lastErr: any = null;
 
-      return {
-        reply: response.text || 'No response generated.',
-        providerUsed: 'Direct Gemini (gemini-3.8-flash)',
-      };
+      for (const model of candidateModels) {
+        try {
+          const response = await ai.models.generateContent({
+            model,
+            contents: `Conversation Context:\n${historyText}\n\nPlease respond to the latest inquiry constructively:`,
+            config: {
+              systemInstruction,
+              temperature: config.temperature ?? 0.7,
+            },
+          });
+
+          return {
+            reply: response.text || 'No response generated.',
+            providerUsed: `Direct Gemini (${model})`,
+          };
+        } catch (mErr: any) {
+          lastErr = mErr;
+          const msg = mErr?.message || String(mErr);
+          if (msg.includes('503') || msg.includes('UNAVAILABLE') || msg.includes('high demand') || msg.includes('429')) {
+            continue;
+          }
+          throw mErr;
+        }
+      }
+
+      throw lastErr;
     } catch (err: any) {
       return {
         reply: '',
@@ -180,14 +196,23 @@ ${systemPromptAddition ? `\nContextual instructions: ${systemPromptAddition}` : 
   async testConnection(config: AIProviderConfig): Promise<{ success: boolean; message: string }> {
     const key = config.directGeminiKey;
     if (!key) return { success: false, message: 'Please enter a Gemini API key.' };
+    const candidateModels = ['gemini-3.8-flash', 'gemini-3.1-flash-lite', 'gemini-flash-latest'];
     try {
       const ai = new GoogleGenAI({ apiKey: key });
-      const res = await ai.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: 'Ping',
-      });
-      if (res.text) {
-        return { success: true, message: 'Gemini API key verified successfully!' };
+      for (const model of candidateModels) {
+        try {
+          const res = await ai.models.generateContent({
+            model,
+            contents: 'Ping',
+          });
+          if (res.text) {
+            return { success: true, message: `Gemini API key verified successfully (${model})!` };
+          }
+        } catch (mErr: any) {
+          const msg = mErr?.message || String(mErr);
+          if (msg.includes('503') || msg.includes('high demand')) continue;
+          throw mErr;
+        }
       }
       return { success: false, message: 'Gemini responded with empty text.' };
     } catch (e: any) {
