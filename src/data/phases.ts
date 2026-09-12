@@ -10,11 +10,12 @@ export const FOUNDER_PHASES: PhaseDefinition[] = [
     requiredInputs: ['Project Name', 'One-sentence idea', 'Target user definition', 'Baseline assumptions'],
     aiGuidancePrompt: 'Help me review my project premise. Challenge vague generalities, identify ambiguous user personas, and specify where my premise relies on unverified leaps of faith.',
     completionCriteria: 'Project profile complete, initial assumptions logged in Evidence Ledger, target audience defined with specificity.',
+    requiredTaskIds: ['def-1', 'def-2', 'def-4'],
     tasks: [
-      { id: 'def-1', title: 'Write a concise 1-sentence value hypothesis', description: 'Avoid buzzwords. Specify: who gets what specific outcome.', completed: false },
-      { id: 'def-2', title: 'Define the initial narrow target customer profile', description: 'Focus on early adopters with an acute need rather than "everyone".', completed: false },
-      { id: 'def-3', title: 'Document founder resources and constraints', description: 'Available weekly hours, technical capabilities, budget runway, and distribution advantages.', completed: false },
-      { id: 'def-4', title: 'Log top 3 foundational assumptions into Evidence Ledger', description: 'Claims about user behavior or willingness to pay that are currently unverified.', completed: false },
+      { id: 'def-1', title: 'Write a concise 1-sentence value hypothesis', description: 'Avoid buzzwords. Specify: who gets what specific outcome.', required: true },
+      { id: 'def-2', title: 'Define the initial narrow target customer profile', description: 'Focus on early adopters with an acute need rather than "everyone".', required: true },
+      { id: 'def-3', title: 'Document founder resources and constraints', description: 'Available weekly hours, technical capabilities, budget runway, and distribution advantages.', required: false },
+      { id: 'def-4', title: 'Log top 3 foundational assumptions into Evidence Ledger', description: 'Claims about user behavior or willingness to pay that are currently unverified.', required: true },
     ],
   },
   {
@@ -26,10 +27,11 @@ export const FOUNDER_PHASES: PhaseDefinition[] = [
     requiredInputs: ['Problem severity rating', 'Frequency of pain occurrence', 'Current alternative solutions and workarounds'],
     aiGuidancePrompt: 'Critique my problem definition. Is this an "aspirational nice-to-have" (vitamin) or an "acute operational migraine" (painkiller)? What alternative workarounds already exist?',
     completionCriteria: 'Documented at least 2 existing imperfect workarounds used by target users, and rated problem severity and frequency with evidence.',
+    requiredTaskIds: ['prob-1', 'prob-2'],
     tasks: [
-      { id: 'prob-1', title: 'Quantify frequency & severity of the problem', description: 'Does this happen daily, weekly, or annually? What is the monetary or emotional cost when it occurs?', completed: false },
-      { id: 'prob-2', title: 'Catalog existing workarounds and alternatives', description: 'Spreadsheets, manual emails, legacy software, or simply doing nothing.', completed: false },
-      { id: 'prob-3', title: 'Draft customer discovery interview script', description: 'Formulate open-ended discovery questions focused on past behavior (The Mom Test).', completed: false },
+      { id: 'prob-1', title: 'Quantify frequency & severity of the problem', description: 'Does this happen daily, weekly, or annually? What is the monetary or emotional cost when it occurs?', required: true },
+      { id: 'prob-2', title: 'Catalog existing workarounds and alternatives', description: 'Spreadsheets, manual emails, legacy software, or simply doing nothing.', required: true },
+      { id: 'prob-3', title: 'Draft customer discovery interview script', description: 'Formulate open-ended discovery questions focused on past behavior (The Mom Test).', required: false },
     ],
   },
   {
@@ -41,10 +43,11 @@ export const FOUNDER_PHASES: PhaseDefinition[] = [
     requiredInputs: ['Competitor list (at least 2)', 'Verified source references', 'Pricing models observation'],
     aiGuidancePrompt: 'Analyze our competitor landscape. Where are incumbents over-serving or under-serving customers? What are users complaining about in reviews or community forums?',
     completionCriteria: 'At least 2 competitors analyzed in the matrix and 3 real external reference sources logged with key findings.',
+    requiredTaskIds: ['res-1', 'res-2'],
     tasks: [
-      { id: 'res-1', title: 'Add 2+ direct or indirect competitors to database', description: 'Record their positioning, pricing model, customer complaints, and perceived weaknesses.', completed: false },
-      { id: 'res-2', title: 'Add 3+ verified research sources or community insights', description: 'Document articles, forum discussions, regulatory guidelines, or market documentation.', completed: false },
-      { id: 'res-3', title: 'Identify customer complaints about current market leaders', description: 'Find common points of friction from user reviews or Reddit discussions.', completed: false },
+      { id: 'res-1', title: 'Add 2+ direct or indirect competitors to database', description: 'Record their positioning, pricing model, customer complaints, and perceived weaknesses.', required: true },
+      { id: 'res-2', title: 'Add 3+ verified research sources or community insights', description: 'Document articles, forum discussions, regulatory guidelines, or market documentation.', required: true },
+      { id: 'res-3', title: 'Identify customer complaints about current market leaders', description: 'Find common points of friction from user reviews or Reddit discussions.', required: false },
     ],
   },
   {
@@ -56,10 +59,11 @@ export const FOUNDER_PHASES: PhaseDefinition[] = [
     requiredInputs: ['Validation experiment specifications', 'Success/failure metrics threshold', 'Interview notes or transcripts'],
     aiGuidancePrompt: 'Review my validation experiments. Are my success criteria falsifiable? What is the cheapest and fastest way to invalidate our riskiest assumption this week?',
     completionCriteria: 'At least one validation experiment completed with recorded evidence and documented decision.',
+    requiredTaskIds: ['val-1', 'val-3'],
     tasks: [
-      { id: 'val-1', title: 'Design an experiment for the #1 riskiest assumption', description: 'Set measurable success and failure criteria before launching the test.', completed: false },
-      { id: 'val-2', title: 'Conduct customer interviews or launch a smoke test', description: 'Record objective notes and verbatim quotes without leading the witness.', completed: false },
-      { id: 'val-3', title: 'Update Evidence Ledger based on experiment outcome', description: 'Mark claims as customer-confirmed or refuted. Pivot or refine as dictated by evidence.', completed: false },
+      { id: 'val-1', title: 'Design an experiment for the #1 riskiest assumption', description: 'Set measurable success and failure criteria before launching the test.', required: true },
+      { id: 'val-2', title: 'Conduct customer interviews or launch a smoke test', description: 'Record objective notes and verbatim quotes without leading the witness.', required: false },
+      { id: 'val-3', title: 'Update Evidence Ledger based on experiment outcome', description: 'Mark claims as customer-confirmed or refuted. Pivot or refine as dictated by evidence.', required: true },
     ],
   },
   {
@@ -71,10 +75,11 @@ export const FOUNDER_PHASES: PhaseDefinition[] = [
     requiredInputs: ['Core value proposition', 'Differentiating mechanism', 'Solution boundaries (what it is NOT)'],
     aiGuidancePrompt: 'Help me refine my solution concept. What is our unfair wedge? Why won’t competitors easily replicate this? What should we deliberately refuse to build?',
     completionCriteria: 'Value proposition written, differentiators articulated against alternatives, boundaries defined.',
+    requiredTaskIds: ['sol-1', 'sol-3'],
     tasks: [
-      { id: 'sol-1', title: 'Write the differentiated value proposition', description: 'Clear statement of unique outcome delivered in contrast to the status quo.', completed: false },
-      { id: 'sol-2', title: 'Map the user journey on the Visual Canvas', description: 'Connect: Problem -> Customer -> Solution -> Experiment -> Outcome.', completed: false },
-      { id: 'sol-3', title: 'State explicitly what the solution will NOT do', description: 'Protect against scope creep by outlining out-of-scope capabilities early.', completed: false },
+      { id: 'sol-1', title: 'Write the differentiated value proposition', description: 'Clear statement of unique outcome delivered in contrast to the status quo.', required: true },
+      { id: 'sol-2', title: 'Map the user journey on the Visual Canvas', description: 'Connect: Problem -> Customer -> Solution -> Experiment -> Outcome.', required: false },
+      { id: 'sol-3', title: 'State explicitly what the solution will NOT do', description: 'Protect against scope creep by outlining out-of-scope capabilities early.', required: true },
     ],
   },
   {
@@ -86,10 +91,11 @@ export const FOUNDER_PHASES: PhaseDefinition[] = [
     requiredInputs: ['Must-have feature list (strictly bounded)', 'Excluded features list', 'Success measurement for MVP'],
     aiGuidancePrompt: 'Ruthlessly scrutinize my MVP feature list. Which "Must" features can be cut or handled manually (Concierge)? Ensure the MVP focuses solely on the primary problem.',
     completionCriteria: 'MoSCoW board completed with under 5 "Must" features, clear technical specification, and success metric.',
+    requiredTaskIds: ['mvp-1', 'mvp-3'],
     tasks: [
-      { id: 'mvp-1', title: 'Categorize all feature ideas via MoSCoW', description: 'Limit "Must-Have" features to only the essential mechanism that solves the problem.', completed: false },
-      { id: 'mvp-2', title: 'Identify opportunities for manual / concierge execution', description: 'Can parts of the backend or workflow be performed manually to validate demand faster?', completed: false },
-      { id: 'mvp-3', title: 'Define MVP validation metrics', description: 'What metric indicates true product engagement or proof of value (e.g. repeat usage, deposit)?', completed: false },
+      { id: 'mvp-1', title: 'Categorize all feature ideas via MoSCoW', description: 'Limit "Must-Have" features to only the essential mechanism that solves the problem.', required: true },
+      { id: 'mvp-2', title: 'Identify opportunities for manual / concierge execution', description: 'Can parts of the backend or workflow be performed manually to validate demand faster?', required: false },
+      { id: 'mvp-3', title: 'Define MVP validation metrics', description: 'What metric indicates true product engagement or proof of value (e.g. repeat usage, deposit)?', required: true },
     ],
   },
   {
@@ -101,10 +107,11 @@ export const FOUNDER_PHASES: PhaseDefinition[] = [
     requiredInputs: ['Pricing hypothesis', 'Cost structure estimate', 'Estimated unit economics'],
     aiGuidancePrompt: 'Evaluate my business model assumptions. Is the pricing high enough to sustain customer acquisition costs? Are there hidden operational expenses?',
     completionCriteria: 'Business Model Canvas populated, pricing model specified, break-even assumptions documented.',
+    requiredTaskIds: ['biz-1', 'biz-2'],
     tasks: [
-      { id: 'biz-1', title: 'Formulate pricing structure & billing model', description: 'One-time, subscription, transaction fee, or usage-based with transparent rationale.', completed: false },
-      { id: 'biz-2', title: 'Complete the Lean Business Model Canvas', description: 'Fill out the 9 operational quadrants in the Business Model tab.', completed: false },
-      { id: 'biz-3', title: 'Estimate baseline unit economics (CAC, LTV, Margin)', description: 'Ensure the customer acquisition cost does not exceed lifetime gross margin.', completed: false },
+      { id: 'biz-1', title: 'Formulate pricing structure & billing model', description: 'One-time, subscription, transaction fee, or usage-based with transparent rationale.', required: true },
+      { id: 'biz-2', title: 'Complete the Lean Business Model Canvas', description: 'Fill out the 9 operational quadrants in the Business Model tab.', required: true },
+      { id: 'biz-3', title: 'Estimate baseline unit economics (CAC, LTV, Margin)', description: 'Ensure the customer acquisition cost does not exceed lifetime gross margin.', required: false },
     ],
   },
   {
@@ -116,10 +123,11 @@ export const FOUNDER_PHASES: PhaseDefinition[] = [
     requiredInputs: ['Primary distribution channel hypothesis', 'Positioning statement', 'Outreach messaging template'],
     aiGuidancePrompt: 'Review my GTM plan. Are we relying on generic "social media marketing", or do we have a concrete, repeatable way to reach real prospective buyers directly?',
     completionCriteria: 'Positioning statement generated, at least 2 acquisition channels defined with test plans, messaging finalized.',
+    requiredTaskIds: ['gtm-1', 'gtm-2'],
     tasks: [
-      { id: 'gtm-1', title: 'Formulate positioning statement & core messaging', description: 'For [Target] who [Need], [Product] is a [Category] that [Core Benefit] unlike [Alternative].', completed: false },
-      { id: 'gtm-2', title: 'Identify top 2 acquisition channel hypotheses', description: 'Direct cold outreach, SEO niche keywords, community partnerships, or directory placements.', completed: false },
-      { id: 'gtm-3', title: 'Generate high-converting Landing Page specification', description: 'Build and preview the static landing page in the Landing Page Studio.', completed: false },
+      { id: 'gtm-1', title: 'Formulate positioning statement & core messaging', description: 'For [Target] who [Need], [Product] is a [Category] that [Core Benefit] unlike [Alternative].', required: true },
+      { id: 'gtm-2', title: 'Identify top 2 acquisition channel hypotheses', description: 'Direct cold outreach, SEO niche keywords, community partnerships, or directory placements.', required: true },
+      { id: 'gtm-3', title: 'Generate high-converting Landing Page specification', description: 'Build and preview the static landing page in the Landing Page Studio.', required: false },
     ],
   },
   {
@@ -131,10 +139,11 @@ export const FOUNDER_PHASES: PhaseDefinition[] = [
     requiredInputs: ['Launch checklist', 'Pioneer customer outreach list', 'Feedback collection mechanism'],
     aiGuidancePrompt: 'Help me prepare for launch. What could go wrong on day 1? How can we set expectations and maximize direct founder-to-customer conversations?',
     completionCriteria: 'Launch checklist items verified, live MVP or landing page accessible, initial cohort contacted.',
+    requiredTaskIds: ['lnc-1', 'lnc-2'],
     tasks: [
-      { id: 'lnc-1', title: 'Complete technical & operational pre-flight checklist', description: 'Verify analytics, error logging, privacy notices, and support channels.', completed: false },
-      { id: 'lnc-2', title: 'Deploy static landing page or application', description: 'Publish to GitHub Pages or static host and verify responsiveness.', completed: false },
-      { id: 'lnc-3', title: 'Direct personal outreach to 20+ qualified prospects', description: 'Send personalized invitations to individuals interviewed in Phase 4.', completed: false },
+      { id: 'lnc-1', title: 'Complete technical & operational pre-flight checklist', description: 'Verify analytics, error logging, privacy notices, and support channels.', required: true },
+      { id: 'lnc-2', title: 'Deploy static landing page or application', description: 'Publish to GitHub Pages or static host and verify responsiveness.', required: true },
+      { id: 'lnc-3', title: 'Direct personal outreach to 20+ qualified prospects', description: 'Send personalized invitations to individuals interviewed in Phase 4.', required: false },
     ],
   },
   {
@@ -146,10 +155,11 @@ export const FOUNDER_PHASES: PhaseDefinition[] = [
     requiredInputs: ['User feedback log', 'Retention/Usage observations', 'Strategic decision declaration'],
     aiGuidancePrompt: 'Help me synthesize post-launch feedback. Are customers using the core feature? Where is the drop-off? Should we iterate the value proposition or double down on distribution?',
     completionCriteria: 'Post-launch feedback documented, at least one formal strategic pivot/perseverance decision recorded in the ledger.',
+    requiredTaskIds: ['lrn-1', 'lrn-3'],
     tasks: [
-      { id: 'lrn-1', title: 'Conduct post-usage customer debriefs', description: 'Ask active and inactive users why they did or did not continue using the product.', completed: false },
-      { id: 'lrn-2', title: 'Update Evidence Ledger with post-launch findings', description: 'Validate or invalidate long-standing commercial hypotheses.', completed: false },
-      { id: 'lrn-3', title: 'Record formal Strategic Decision in Decision Ledger', description: 'Document the rationale for either pivoting, expanding, or stopping.', completed: false },
+      { id: 'lrn-1', title: 'Conduct post-usage customer debriefs', description: 'Ask active and inactive users why they did or did not continue using the product.', required: true },
+      { id: 'lrn-2', title: 'Update Evidence Ledger with post-launch findings', description: 'Validate or invalidate long-standing commercial hypotheses.', required: false },
+      { id: 'lrn-3', title: 'Record formal Strategic Decision in Decision Ledger', description: 'Document the rationale for either pivoting, expanding, or stopping.', required: true },
     ],
   },
 ];

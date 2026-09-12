@@ -28,6 +28,7 @@ interface DocumentsPageProps {
 
 type DocTemplate =
   | 'executive_summary'
+  | 'comprehensive_dossier'
   | 'validation_report'
   | 'product_prd'
   | 'competitor_brief'
@@ -48,15 +49,104 @@ export const DocumentsPage: React.FC<DocumentsPageProps> = ({
 
   const generateMarkdown = (template: DocTemplate): string => {
     const unverifiedCount = evidence.filter(
-      (e) => e.status === 'unverified' || e.status === 'assumption'
+      (e) => e.status === 'unverified' || e.status === 'assumption' || e.status === 'anecdotal'
     ).length;
     const confirmedCount = evidence.filter(
       (e) => e.status === 'customer_confirmed' || e.status === 'experiment_confirmed'
     ).length;
+    const passedExperiments = experiments.filter((e) => e.status === 'passed');
+    const failedExperiments = experiments.filter((e) => e.status === 'failed');
+    const runningExperiments = experiments.filter((e) => e.status === 'running');
     const mustFeatures = features.filter((f) => f.priority === 'must');
 
+    const syntheticNotice = project.isSynthetic
+      ? `> ⚠️ **DEMO MODE NOTICE**: This document was generated from a synthetic demo project. All research, customer interviews, statistics, and validation claims are illustrative examples for demonstration and do not represent empirical market evidence.\n\n`
+      : '';
+
+    if (template === 'comprehensive_dossier') {
+      return `${syntheticNotice}# ${project.name} — Comprehensive Project Dossier
+**Metadata:**
+- Generated: ${new Date().toISOString()}
+- Workspace Engine: OpenFounder v1.0.0 (Local-First FOSS)
+- Current Stage: ${project.stage} (Phase ${project.currentPhaseIndex + 1} of 10)
+- Category: ${project.category}
+- Synthetic Demo Project: ${project.isSynthetic ? 'Yes' : 'No'}
+
+---
+
+## 1. Executive Summary
+${project.oneSentenceIdea || 'Not specified'}
+
+- **Target Market:** ${project.targetMarket || 'General market'}
+- **Target User Group:** ${project.targetUserGroup || 'Unspecified'}
+- **Location:** ${project.location || 'Remote'}
+- **Website:** ${project.website || 'N/A'}
+
+## 2. Problem Statement & Severity
+${project.problemStatement || 'Not defined yet.'}
+
+- **Severity Level:** ${project.problemSeverity}
+- **Frequency:** ${project.problemFrequency}
+- **Existing Workarounds / Substitutes:** ${project.currentAlternatives || 'Manual workarounds'}
+- **Behavioral Change Required:** ${project.behavioralChange || 'N/A'}
+
+## 3. Core Value Proposition & Pricing Trigger
+- **Success Definition:** ${project.successDefinition || 'Solve the acute bottleneck'}
+- **Willingness-to-Pay Trigger:** ${project.willingnessToPayTrigger || 'Demonstrable efficiency improvement'}
+
+## 4. Evidence Ledger & Assumption Audit
+**Overall Validation Ratio:** ${evidence.length > 0 ? Math.round((confirmedCount / evidence.length) * 100) : 0}% (${confirmedCount} confirmed out of ${evidence.length} total claims)
+- **Customer / Experiment Confirmed:** ${confirmedCount} claims
+- **Untested Leaps of Faith:** ${unverifiedCount} claims
+
+### Detailed Claims Inventory:
+${evidence.map((e) => `- **[${e.status.toUpperCase()}]** (${e.type} | Confidence: ${e.confidence}) "${e.claim}"
+  *Notes:* ${e.evidenceNotes || 'None'}
+  *Next Test:* ${e.nextTest || 'None'}`).join('\n\n') || 'No claims recorded in ledger.'}
+
+## 5. Validation Experiments & Outcomes
+- **Total Tests:** ${experiments.length}
+- **Validated / Passed:** ${passedExperiments.length}
+- **Falsified / Failed:** ${failedExperiments.length}
+- **In Progress:** ${runningExperiments.length}
+
+${experiments.map((exp) => `### [${exp.status.toUpperCase()}] Hypothesis: ${exp.hypothesis}
+- **Dimension:** ${exp.dimension} | **Method:** ${exp.method}
+- **Sample Progress:** ${exp.currentSampleSize || 0} / ${exp.targetSampleSize || 20} respondents
+- **Success Threshold:** ${exp.successCriteria}
+- **Failure Threshold:** ${exp.failureCriteria}
+- **Recorded Results:** ${exp.results || 'Pending testing'}
+- **Decision Taken:** ${exp.decisionTaken || 'Under evaluation'}`).join('\n\n') || 'No experiments configured.'}
+
+## 6. Competitive Intelligence & Incumbent Gaps
+Audited Incumbents: ${competitors.length}
+
+${competitors.map((c) => `### ${c.name}
+- **Pricing:** ${c.pricingModel || 'Not listed'}
+- **Target Audience:** ${c.targetAudience || 'General'}
+- **Key Differentiator:** ${c.keyDifferentiators || 'N/A'}
+- **Strengths:** ${c.strengths?.join(', ') || 'None listed'}
+- **Weaknesses:** ${c.weaknesses?.join(', ') || 'None listed'}`).join('\n\n') || 'No competitors cataloged.'}
+
+## 7. MVP Scope & Backlog
+- **Must-Have Features (${mustFeatures.length}):**
+${mustFeatures.map((f) => `  - **${f.title}**: ${f.description}`).join('\n') || '  None defined'}
+- **Deferred / Should Have:**
+${features.filter((f) => f.priority === 'should').map((f) => `  - ${f.title}`).join('\n') || '  None'}
+
+## 8. Founder Context & Resource Constraints
+- **Founder Skills & Domain:** ${project.founderSkills || 'N/A'}
+- **Validation Budget:** ${project.budget || 'N/A'}
+- **Timeline:** ${project.timeline || 'N/A'}
+- **Available Weekly Hours:** ${project.availableResources || 'N/A'}
+
+---
+*Exported locally from OpenFounder browser database. Zero third-party cloud data transmission.*
+`;
+    }
+
     if (template === 'executive_summary') {
-      return `# ${project.name} — Executive Summary
+      return `${syntheticNotice}# ${project.name} — Executive Summary
 **Date:** ${new Date().toLocaleDateString()}
 **Status:** Phase ${project.currentPhaseIndex + 1} of 10
 
@@ -76,12 +166,12 @@ ${project.problemStatement || 'Not defined yet.'}
 ## 3. Evidence & Validation Health
 - **Verified Empirical Evidence:** ${confirmedCount} confirmed claims
 - **Open Unverified Assumptions:** ${unverifiedCount} open assumptions
-- **Validation Experiments:** ${experiments.length} logged (${experiments.filter((e) => e.status === 'passed').length} passed)
+- **Validation Experiments:** ${experiments.length} logged (${passedExperiments.length} passed, ${failedExperiments.length} failed)
 
 ## 4. MVP Solution Scope
 - **Core Value Proposition:** ${project.successDefinition || 'Solve the acute bottleneck'}
 - **Must-Have Features (${mustFeatures.length}):**
-${mustFeatures.map((f) => `  - **${f.title}** (Effort: ${f.effort})`).join('\n') || '  - None defined yet'}
+${mustFeatures.map((f) => `  - **${f.title}** (Effort: ${f.effort || 'Moderate'})`).join('\n') || '  - None defined yet'}
 
 ## 5. Founder Context & Unfair Advantage
 - **Founder Background:** ${project.founderSkills || 'N/A'}
@@ -240,6 +330,7 @@ ${features.filter((f) => f.priority === 'wont').map((f) => `- **${f.title}** (De
       <div className="flex overflow-x-auto space-x-2 pb-1 text-xs">
         {[
           { id: 'executive_summary' as DocTemplate, label: 'Executive Summary' },
+          { id: 'comprehensive_dossier' as DocTemplate, label: 'Complete Project Dossier' },
           { id: 'validation_report' as DocTemplate, label: 'Evidence & Falsification Report' },
           { id: 'product_prd' as DocTemplate, label: 'Product PRD & Scope' },
           { id: 'competitor_brief' as DocTemplate, label: 'Competitor Intelligence Brief' },

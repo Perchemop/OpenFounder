@@ -65,9 +65,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   );
 
   const runningExperiments = experiments.filter((e) => e.status === 'running');
-  const completedExperiments = experiments.filter(
-    (e) => e.status === 'completed' || e.status === 'passed'
-  );
+  const passedExperiments = experiments.filter((e) => e.status === 'passed');
+  const failedExperiments = experiments.filter((e) => e.status === 'failed');
   const mustFeatures = features.filter((f) => f.priority === 'must');
 
   // Next Recommended Action calculation
@@ -110,6 +109,21 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
+      {/* Synthetic Demo Project Warning Banner */}
+      {project.isSynthetic && (
+        <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/80 rounded-xl p-3.5 flex items-start space-x-3 text-xs text-amber-900 dark:text-amber-200">
+          <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div className="space-y-0.5">
+            <span className="font-bold tracking-wide uppercase text-[10px] bg-amber-200/80 dark:bg-amber-900/60 px-1.5 py-0.5 rounded mr-1.5 text-amber-900 dark:text-amber-100">
+              Synthetic Demo Workspace
+            </span>
+            <span>
+              All data, customer interviews, competitor reviews, and experiment statistics in this project are simulated examples for educational and demonstration purposes. They do not represent real-world empirical findings.
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Project Overview Header */}
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -299,10 +313,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           </div>
           <div className="space-y-1.5">
             <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-              {runningExperiments.length} Active / {completedExperiments.length} Completed
+              {passedExperiments.length} Passed · {runningExperiments.length} Active
             </div>
             <p className="text-[11px] text-zinc-500">
-              Structured falsification tests
+              {failedExperiments.length > 0 ? `${failedExperiments.length} failed · ` : ''}Falsifiable hypothesis tests
             </p>
           </div>
           <div className="space-y-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800 text-xs">

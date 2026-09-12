@@ -11,6 +11,8 @@ import {
   AlertCircle,
   RefreshCw,
   Sliders,
+  Activity,
+  AlertTriangle,
 } from 'lucide-react';
 import type { AIProviderConfig, Project } from '../../types';
 import {
@@ -20,6 +22,7 @@ import {
   importProjectPackage,
   deleteProject,
   wipeAllLocalData,
+  runWorkspaceDiagnostics,
   db,
 } from '../../db';
 import { getAIProvider } from '../../ai/providers';
@@ -48,11 +51,34 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   });
   const [dbStats, setDbStats] = useState<{ [key: string]: number }>({});
   const [importStatus, setImportStatus] = useState<string | null>(null);
+  const [diagnosticsResult, setDiagnosticsResult] = useState<{
+    integrityOk: boolean;
+    issues: string[];
+    stats: Record<string, number>;
+  } | null>(null);
+  const [runningDiagnostics, setRunningDiagnostics] = useState(false);
 
   useEffect(() => {
     setLocalConfig(config);
     loadDbStats();
   }, [isOpen, config]);
+
+  const handleRunDiagnostics = async () => {
+    if (!currentProject) return;
+    setRunningDiagnostics(true);
+    try {
+      const res = await runWorkspaceDiagnostics(currentProject.id);
+      setDiagnosticsResult(res);
+    } catch (err: any) {
+      setDiagnosticsResult({
+        integrityOk: false,
+        issues: [err.message || 'Diagnostics check failed'],
+        stats: {},
+      });
+    } finally {
+      setRunningDiagnostics(false);
+    }
+  };
 
   const loadDbStats = async () => {
     try {
@@ -200,6 +226,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           >
             <HardDrive className="w-3.5 h-3.5" />
             <span>Data & Backup</span>
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('diagnostics');
+              if (!diagnosticsResult) {
+                handleRunDiagnostics();
+              }
+            }}
+            className={`py-2.5 border-b-2 transition-colors flex items-center space-x-1.5 ${
+              activeTab === 'diagnostics'
+                ? 'border-zinc-900 dark:border-zinc-100 text-zinc-900 dark:text-zinc-100 font-semibold'
+                : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5" />
+            <span>Integrity Audit</span>
           </button>
         </div>
 
@@ -482,6 +524,92 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </button>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* TAB: INTEGRITY & DIAGNOSTICS */}
+          {activeTab === 'diagnostics' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="font-semibold text-zinc-800 dark:text-zinc-200">
+                    Workspace Structural Health & Diagnostics
+                  </h4>
+                  <p className="text-[11px] text-zinc-500">
+                    Automated audit for broken evidence references, orphaned canvas nodes/edges, and database integrity.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRunDiagnostics}
+                  disabled={runningDiagnostics || !currentProject}
+                  className="flex items-center space-x-1.5 px-3 py-1.5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-medium hover:opacity-90 disabled:opacity-40 transition-opacity"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${runningDiagnostics ? 'animate-spin' : ''}`} />
+                  <span>{runningDiagnostics ? 'Auditing...' : 'Run Diagnostics'}</span>
+                </button>
+              </div>
+
+              {diagnosticsResult ? (
+                <div className="space-y-3">
+                  <div
+                    className={`p-3.5 rounded-xl border flex items-start space-x-3 ${
+                      diagnosticsResult.integrityOk
+                        ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200'
+                        : 'bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-200'
+                    }`}
+                  >
+                    {diagnosticsResult.integrityOk ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertTriangle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+                    )}
+                    <div className="space-y-1">
+                      <div className="font-semibold text-xs">
+                        {diagnosticsResult.integrityOk
+                          ? 'Workspace Integrity: Healthy (0 Issues Found)'
+                          : `Integrity Warnings: ${diagnosticsResult.issues.length} Issues Detected`}
+                      </div>
+                      <p className="text-[11px] opacity-90">
+                        {diagnosticsResult.integrityOk
+                          ? 'All canvas graph connections, experiment links, and evidence relationships are valid.'
+                          : 'The following relational discrepancies were found:'}
+                      </p>
+                      {diagnosticsResult.issues.length > 0 && (
+                        <ul className="list-disc pl-4 space-y-0.5 text-[11px] mt-1.5">
+                          {diagnosticsResult.issues.map((issue, idx) => (
+                            <li key={idx}>{issue}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Stats table */}
+                  <div className="border border-zinc-200 dark:border-zinc-800 rounded-xl overflow-hidden">
+                    <div className="p-2.5 bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 font-semibold text-[11px] text-zinc-700 dark:text-zinc-300">
+                      Project Database Record Counts
+                    </div>
+                    <div className="p-3 grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px]">
+                      {Object.entries(diagnosticsResult.stats).map(([k, v]) => (
+                        <div key={k} className="p-2 bg-zinc-50 dark:bg-zinc-800/60 rounded-lg">
+                          <span className="text-zinc-500 font-mono capitalize">
+                            {k.replace('Count', '')}:{' '}
+                          </span>
+                          <span className="font-bold text-zinc-800 dark:text-zinc-200">{v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-6 text-center border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl space-y-2">
+                  <Activity className="w-6 h-6 text-zinc-400 mx-auto" />
+                  <p className="text-zinc-500 text-xs">
+                    Click "Run Diagnostics" to verify workspace relational consistency.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

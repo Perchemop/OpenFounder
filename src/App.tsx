@@ -34,7 +34,7 @@ import {
   setActiveProjectId,
   getStoredSettings,
 } from './db';
-import { seedDemoProjectIfNeeded } from './data/sampleProject';
+import { seedDemoProjectIfNeeded, createSyntheticDemoProject } from './data/sampleProject';
 import { buildProjectContext } from './ai/contextBuilder';
 import type {
   Project,
@@ -385,12 +385,24 @@ export default function App() {
               <p className="text-xs text-zinc-500 max-w-sm">
                 Create a new idea workspace to begin recording evidence and testing your riskiest assumptions.
               </p>
-              <button
-                onClick={() => setIsNewProjectModalOpen(true)}
-                className="px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity"
-              >
-                Create New Project
-              </button>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => setIsNewProjectModalOpen(true)}
+                  className="px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity"
+                >
+                  Create New Project
+                </button>
+                <button
+                  onClick={async () => {
+                    const id = await createSyntheticDemoProject();
+                    setActiveProjectId(id);
+                    await handleRefreshProjects();
+                  }}
+                  className="px-4 py-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs font-semibold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                >
+                  Load Demo Workspace (TradePulse)
+                </button>
+              </div>
             </div>
           )}
         </main>

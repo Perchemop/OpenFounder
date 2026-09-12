@@ -124,9 +124,8 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
         {DIMENSIONS.map((dim) => {
           const count = experiments.filter((e) => e.dimension === dim.id).length;
-          const passed = experiments.filter(
-            (e) => e.dimension === dim.id && (e.status === 'passed' || e.status === 'completed')
-          ).length;
+          const passed = experiments.filter((e) => e.dimension === dim.id && e.status === 'passed').length;
+          const running = experiments.filter((e) => e.dimension === dim.id && e.status === 'running').length;
 
           return (
             <button
@@ -142,8 +141,9 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
                 {dim.id}
               </div>
               <div className="font-semibold text-xs mt-0.5 truncate">{dim.label}</div>
-              <div className="text-[11px] mt-2 opacity-80">
-                {count > 0 ? `${passed}/${count} validated` : '0 tests'}
+              <div className="text-[11px] mt-2 opacity-80 flex items-center justify-between">
+                <span>{count > 0 ? `${passed}/${count} passed` : '0 tests'}</span>
+                {running > 0 && <span className="text-amber-500 font-medium">({running} active)</span>}
               </div>
             </button>
           );
@@ -171,6 +171,11 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
                   <span className="capitalize text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
                     Method: {exp.method.replace('_', ' ')}
                   </span>
+                  {exp.isSynthetic && (
+                    <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 font-semibold border border-amber-300/60 dark:border-amber-800">
+                      Synthetic Demo
+                    </span>
+                  )}
                 </div>
 
                 {/* Status Switcher */}

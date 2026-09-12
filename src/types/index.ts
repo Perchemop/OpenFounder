@@ -36,6 +36,13 @@ export interface Project {
 
   currentPhaseIndex: number;
   completedTaskIds?: string[];
+  phaseHistory?: {
+    phaseIndex: number;
+    manualOverride?: boolean;
+    overrideReason?: string;
+    completedAt: number;
+  }[];
+  isSynthetic?: boolean;
   createdAt: number;
   updatedAt: number;
 }
@@ -61,6 +68,7 @@ export interface EvidenceItem {
   sourceTitle?: string;
   confidence: 'low' | 'medium' | 'high';
   nextTest: string;
+  isSynthetic?: boolean;
   createdAt: number;
   updatedAt: number;
 }
@@ -81,13 +89,17 @@ export interface ResearchSource {
   projectId: string;
   title: string;
   url?: string;
+  publisherOrDomain?: string;
+  sourceType?: 'academic' | 'industry_report' | 'user_forum' | 'sec_filing' | 'news' | 'pricing_page' | 'interview_transcript' | 'other';
   category: ResearchCategory;
   dateAccessed: string;
   summary: string;
   keyFindings: string[];
   relevance: 'high' | 'medium' | 'low';
   confidence: 'high' | 'medium' | 'low';
+  claimLinkedIds?: string[];
   notes?: string;
+  isSynthetic?: boolean;
   createdAt: number;
 }
 
@@ -118,6 +130,7 @@ export interface Competitor {
   customerComplaints: string[];
   keyDifferentiators: string;
   evidenceNotes: string;
+  isSynthetic?: boolean;
   createdAt: number;
   updatedAt: number;
 }
@@ -158,6 +171,7 @@ export interface Experiment {
   decisionTaken?: string;
   startDate?: string;
   endDate?: string;
+  isSynthetic?: boolean;
   createdAt: number;
   updatedAt: number;
 }
@@ -176,6 +190,7 @@ export interface CustomerInterview {
   willingnessToPayNotes: string;
   verbatimQuotes: string[];
   surprisesOrObjections: string;
+  isSynthetic?: boolean;
   createdAt: number;
 }
 
@@ -191,6 +206,7 @@ export interface FeatureItem {
   technicalComplexity: 'low' | 'medium' | 'high';
   estimatedDays?: number;
   status: 'idea' | 'planned' | 'in_progress' | 'built';
+  isSynthetic?: boolean;
   createdAt: number;
 }
 
@@ -208,6 +224,7 @@ export interface RoadmapItem {
   estimatedEffort: string; // e.g. "1 week"
   orderIndex: number;
   dependencies?: string[];
+  isSynthetic?: boolean;
   createdAt: number;
   updatedAt: number;
 }
@@ -233,11 +250,18 @@ export interface CanvasEdge {
   label?: string;
 }
 
+export interface PhaseTaskDefinition {
+  id: string;
+  title: string;
+  description: string;
+  required?: boolean;
+}
+
 export interface PhaseTask {
   id: string;
   title: string;
   description: string;
-  completed: boolean;
+  completed?: boolean;
   userEvidenceNotes?: string;
 }
 
@@ -249,8 +273,9 @@ export interface PhaseDefinition {
   objective: string;
   requiredInputs: string[];
   aiGuidancePrompt: string;
-  tasks: PhaseTask[];
+  tasks: PhaseTaskDefinition[];
   completionCriteria: string;
+  requiredTaskIds?: string[];
 }
 
 export interface BusinessModelData {
@@ -317,11 +342,47 @@ export interface ProjectDecision {
   id: string;
   projectId: string;
   title: string;
+  context?: string;
   rationale: string;
   rejectedAlternatives: string;
+  evidenceConsideredIds?: string[];
+  options?: string[];
+  chosenOption?: string;
+  confidence?: 'low' | 'medium' | 'high';
+  revisitDate?: string;
+  status?: 'active' | 'revisited' | 'superseded';
   date: string;
   phaseKey: string;
+  isSynthetic?: boolean;
   createdAt: number;
+  updatedAt?: number;
+}
+
+export type RiskCategory =
+  | 'desirability'
+  | 'market'
+  | 'customer'
+  | 'pricing'
+  | 'distribution'
+  | 'technical'
+  | 'operational'
+  | 'legal'
+  | 'financial';
+
+export interface RiskItem {
+  id: string;
+  projectId: string;
+  title: string;
+  category: RiskCategory;
+  probability: 'low' | 'medium' | 'high';
+  impact: 'low' | 'medium' | 'high';
+  evidenceNotes?: string;
+  mitigation: string;
+  status: 'open' | 'testing' | 'mitigated' | 'accepted';
+  nextTest?: string;
+  isSynthetic?: boolean;
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface AIChatMessage {
@@ -373,5 +434,6 @@ export interface ExportPackage {
   gtmPlan?: GTMPlan;
   landingPage?: LandingPageSpec;
   decisions: ProjectDecision[];
+  risks?: RiskItem[];
   chatMessages?: AIChatMessage[];
 }
