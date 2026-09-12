@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Megaphone,
   CheckCircle2,
@@ -8,8 +8,11 @@ import {
   Send,
   Users,
   Target,
+  Clock,
+  HelpCircle,
 } from 'lucide-react';
-import type { Project } from '../types';
+import type { Project, GTMPlan } from '../types';
+import { db } from '../db';
 
 interface GTMPageProps {
   project: Project | null;
@@ -28,49 +31,139 @@ export const GTMPage: React.FC<GTMPageProps> = ({
   onOpenAICofounderWithPrompt,
 }) => {
   // Positioning statement template: For [target], who [need], our [product] is a [category] that [benefit], unlike [competitor], our product [differentiator].
-  const [targetUser, setTargetUser] = useState(project?.targetMarket || 'solo trade contractors (plumbers & HVAC)');
-  const [need, setNeed] = useState(project?.problemStatement || 'waste hundreds of dollars on shared, stale leads');
-  const [productName, setProductName] = useState(project?.name || 'OpenFounder');
-  const [category, setCategory] = useState(project?.category || 'direct SMS job alert marketplace');
-  const [benefit, setBenefit] = useState('guarantees exclusive, pre-booked appointments with no bidding fee');
-  const [competitor, setCompetitor] = useState('Angi and Thumbtack');
-  const [differentiator, setDifferentiator] = useState('charges only upon job completion with 100% customer ownership');
+  const [targetUser, setTargetUser] = useState(project?.targetMarket || 'ideal customer profile');
+  const [need, setNeed] = useState(project?.problemStatement || 'suffer from an acute unaddressed pain');
+  const [productName, setProductName] = useState(project?.name || 'My Product');
+  const [category, setCategory] = useState(project?.category || 'workflow software');
+  const [benefit, setBenefit] = useState('delivers measurable time/money savings');
+  const [competitor, setCompetitor] = useState('existing manual workarounds');
+  const [differentiator, setDifferentiator] = useState('charges only for verified value');
 
   // Distribution Channels
   const [channels, setChannels] = useState<ChannelItem[]>([
     {
-      name: 'Direct Cold SMS / Phone Outreach',
+      name: 'Direct Cold Email / LinkedIn / Phone Outreach',
       type: 'Outbound',
       status: 'testing',
-      notes: 'Calling local trade license public registry holders to offer 2 free job bookings.',
+      notes: 'Reaching out directly to 25 target prospective users for feedback.',
     },
     {
-      name: 'Trade Supply Store Flyer & Counter Partnerships',
-      type: 'Partnerships',
-      status: 'assumed',
-      notes: 'Placing physical QR cards at local plumbing wholesale distributor trade counters.',
-    },
-    {
-      name: 'Trade Subreddits & Facebook Groups',
+      name: 'Target Community & Forum Discussions',
       type: 'Community',
       status: 'assumed',
-      notes: 'Answering pricing questions and sharing benchmark data without spamming.',
+      notes: 'Answering high-intent questions and sharing actionable frameworks.',
     },
     {
-      name: 'Contractor Referral Bounties',
-      type: 'Referral',
+      name: 'Strategic Niche Partnerships',
+      type: 'Partnerships',
       status: 'assumed',
-      notes: '$50 credit for introducing another licensed subcontractor.',
+      notes: 'Partnering with existing service providers who already serve this customer.',
     },
   ]);
 
   const [checklist, setChecklist] = useState<{ [key: string]: boolean }>({
-    icp_defined: true,
-    five_interviews: true,
+    icp_defined: false,
+    five_interviews: false,
     smoke_test: false,
     onboarding_script: false,
     first_paid_user: false,
   });
+
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle');
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const isLoadedRef = useRef(false);
+  const saveTimeoutRef = useRef<any>(null);
+
+  // Load from IndexedDB
+  useEffect(() => {
+    if (!project?.id) return;
+    isLoadedRef.current = false;
+
+    async function loadData() {
+      try {
+        const stored = await db.gtmPlan.where('projectId').equals(project!.id).first();
+        if (stored) {
+          if (stored.targetUser) setTargetUser(stored.targetUser);
+          if (stored.need) setNeed(stored.need);
+          if (stored.productName) setProductName(stored.productName);
+          if (stored.category) setCategory(stored.category);
+          if (stored.benefit) setBenefit(stored.benefit);
+          if (stored.competitor) setCompetitor(stored.competitor);
+          if (stored.differentiator) setDifferentiator(stored.differentiator);
+          if (stored.channels?.length) setChannels(stored.channels);
+          if (stored.checklist?.length) {
+            const map: { [key: string]: boolean } = {};
+            stored.checklist.forEach(item => { map[item.id] = item.done; });
+            setChecklist(prev => ({ ...prev, ...map }));
+          }
+          setLastSaved(new Date(stored.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        }
+      } catch (err) {
+        console.error('Failed to load GTM plan from database:', err);
+      } finally {
+        isLoadedRef.current = true;
+      }
+    }
+
+    loadData();
+  }, [project?.id]);
+
+  // Debounced autosave
+  useEffect(() => {
+    if (!project?.id || !isLoadedRef.current) return;
+
+    setSaveStatus('saving');
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+
+    saveTimeoutRef.current = setTimeout(async () => {
+      try {
+        const now = Date.now();
+        const checklistArray = Object.entries(checklist).map(([id, done]) => ({
+          id,
+          title: id,
+          desc: '',
+          done: Boolean(done),
+        }));
+
+        const dataToSave: GTMPlan = {
+          id: `gtm_${project.id}`,
+          projectId: project.id,
+          targetUser,
+          need,
+          productName,
+          category,
+          benefit,
+          competitor,
+          differentiator,
+          channels,
+          checklist: checklistArray,
+          updatedAt: now,
+        };
+
+        await db.gtmPlan.put(dataToSave);
+        setSaveStatus('saved');
+        setLastSaved(new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      } catch (err) {
+        console.error('Failed to autosave GTM plan:', err);
+        setSaveStatus('idle');
+      }
+    }, 600);
+
+    return () => {
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    };
+  }, [
+    project?.id,
+    targetUser,
+    need,
+    productName,
+    category,
+    benefit,
+    competitor,
+    differentiator,
+    channels,
+    checklist,
+  ]);
 
   const toggleChecklist = (key: string) => {
     setChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -83,10 +176,24 @@ export const GTMPage: React.FC<GTMPageProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-            <Megaphone className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            <span>Go-To-Market & Channel Strategy</span>
-          </h1>
+          <div className="flex items-center space-x-2">
+            <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
+              <Megaphone className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <span>Go-To-Market & Channel Strategy</span>
+            </h1>
+            {saveStatus === 'saving' && (
+              <span className="flex items-center space-x-1 text-[11px] text-amber-500 font-medium px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+                <Clock className="w-3 h-3 animate-spin" />
+                <span>Saving...</span>
+              </span>
+            )}
+            {saveStatus === 'saved' && (
+              <span className="flex items-center space-x-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
+                <CheckCircle2 className="w-3 h-3" />
+                <span>Autosaved {lastSaved ? `at ${lastSaved}` : 'locally'}</span>
+              </span>
+            )}
+          </div>
           <p className="text-xs text-zinc-500 mt-0.5">
             Identify how you will win your first 10 and 100 customers. Distinguish between assumed and validated channels.
           </p>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Receipt,
   Calculator,
@@ -8,8 +8,11 @@ import {
   Layers,
   Sparkles,
   HelpCircle,
+  CheckCircle2,
+  Clock,
 } from 'lucide-react';
-import type { Project } from '../types';
+import type { Project, BusinessModelData } from '../types';
+import { db } from '../db';
 
 interface BusinessModelPageProps {
   project: Project | null;
@@ -38,28 +41,136 @@ export const BusinessModelPage: React.FC<BusinessModelPageProps> = ({
 
   // Lean Canvas quadrants
   const [leanCanvas, setLeanCanvas] = useState({
-    problem: project?.problemStatement || 'Contractors waste $800/mo on shared leads that rarely convert.',
-    customerSegments: project?.targetMarket || 'Solo plumbing and electrical contractors (1-3 crew).',
-    uniqueValue: project?.oneSentenceIdea || 'Exclusive pay-per-booked-job alerts with zero upfront bidding costs.',
-    solution: 'Direct SMS booking alerts with 1-click calendar reservation and verified client card on file.',
-    channels: 'Direct cold SMS, local trade supply store partnerships, contractor subreddits.',
-    revenueStreams: `$${monthlyPrice}/mo platform access + $25 fee per successfully completed appointment.`,
-    costStructure: 'Hosting ($30/mo), Twilio SMS API ($0.0079/msg), Stripe transaction fees (2.9% + 30c).',
-    keyMetrics: 'Monthly booked jobs per active contractor, 30-day retention, contractor weekly active rate.',
-    unfairAdvantage: project?.founderSkills || 'Direct family relationships with 15 local Austin trade business owners.',
+    problem: project?.problemStatement || 'Target customers lack an efficient, transparent solution for their core workflow.',
+    customerSegments: project?.targetMarket || 'Primary targeted customer profile and early adopter segment.',
+    uniqueValue: project?.oneSentenceIdea || 'High-leverage value proposition delivering measurable ROI.',
+    solution: 'Key feature workflow solving the primary bottleneck directly.',
+    channels: 'Direct outreach, specialized communities, partnerships.',
+    revenueStreams: `$49/month subscription with tiered usage.`,
+    costStructure: 'Hosting, communication APIs, payment processing.',
+    keyMetrics: 'Monthly active users, 30-day retention, customer referral rate.',
+    unfairAdvantage: project?.founderSkills || 'Domain expertise and direct relationships with initial prospects.',
   });
+
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle');
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const isLoadedRef = useRef(false);
+  const saveTimeoutRef = useRef<any>(null);
+
+  // Load from IndexedDB on mount / project change
+  useEffect(() => {
+    if (!project?.id) return;
+    isLoadedRef.current = false;
+
+    async function loadData() {
+      try {
+        const stored = await db.businessModel.where('projectId').equals(project!.id).first();
+        if (stored) {
+          if (stored.monthlyPrice !== undefined) setMonthlyPrice(stored.monthlyPrice);
+          if (stored.grossMarginPct !== undefined) setGrossMarginPct(stored.grossMarginPct);
+          if (stored.monthlyChurnPct !== undefined) setMonthlyChurnPct(stored.monthlyChurnPct);
+          if (stored.cac !== undefined) setCac(stored.cac);
+          if (stored.fixedMonthlyCost !== undefined) setFixedMonthlyCost(stored.fixedMonthlyCost);
+
+          setLeanCanvas({
+            problem: stored.problem || project?.problemStatement || '',
+            customerSegments: stored.customerSegments || project?.targetMarket || '',
+            uniqueValue: stored.uniqueValue || project?.oneSentenceIdea || '',
+            solution: stored.solution || '',
+            channels: stored.channels || '',
+            revenueStreams: stored.revenueStreams || '',
+            costStructure: stored.costStructure || '',
+            keyMetrics: stored.keyMetrics || '',
+            unfairAdvantage: stored.unfairAdvantage || project?.founderSkills || '',
+          });
+          setLastSaved(new Date(stored.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        }
+      } catch (err) {
+        console.error('Failed to load business model from database:', err);
+      } finally {
+        isLoadedRef.current = true;
+      }
+    }
+
+    loadData();
+  }, [project?.id]);
+
+  // Debounced autosave
+  useEffect(() => {
+    if (!project?.id || !isLoadedRef.current) return;
+
+    setSaveStatus('saving');
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+
+    saveTimeoutRef.current = setTimeout(async () => {
+      try {
+        const now = Date.now();
+        const dataToSave: BusinessModelData = {
+          id: `bm_${project.id}`,
+          projectId: project.id,
+          monthlyPrice,
+          grossMarginPct,
+          monthlyChurnPct,
+          cac,
+          fixedMonthlyCost,
+          problem: leanCanvas.problem,
+          customerSegments: leanCanvas.customerSegments,
+          uniqueValue: leanCanvas.uniqueValue,
+          solution: leanCanvas.solution,
+          channels: leanCanvas.channels,
+          revenueStreams: leanCanvas.revenueStreams,
+          costStructure: leanCanvas.costStructure,
+          keyMetrics: leanCanvas.keyMetrics,
+          unfairAdvantage: leanCanvas.unfairAdvantage,
+          updatedAt: now,
+        };
+        await db.businessModel.put(dataToSave);
+        setSaveStatus('saved');
+        setLastSaved(new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      } catch (err) {
+        console.error('Failed to autosave business model:', err);
+        setSaveStatus('idle');
+      }
+    }, 600);
+
+    return () => {
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    };
+  }, [
+    project?.id,
+    monthlyPrice,
+    grossMarginPct,
+    monthlyChurnPct,
+    cac,
+    fixedMonthlyCost,
+    leanCanvas,
+  ]);
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-            <Receipt className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            <span>Business Model & Unit Economics</span>
-          </h1>
+          <div className="flex items-center space-x-2">
+            <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
+              <Receipt className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <span>Business Model & Unit Economics</span>
+            </h1>
+            {saveStatus === 'saving' && (
+              <span className="flex items-center space-x-1 text-[11px] text-amber-500 font-medium px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+                <Clock className="w-3 h-3 animate-spin" />
+                <span>Saving...</span>
+              </span>
+            )}
+            {saveStatus === 'saved' && (
+              <span className="flex items-center space-x-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
+                <CheckCircle2 className="w-3 h-3" />
+                <span>Autosaved {lastSaved ? `at ${lastSaved}` : 'locally'}</span>
+              </span>
+            )}
+          </div>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Model cash flow sustainability, unit margins, and Lean Canvas assumptions.
+            Model cash flow sustainability, unit margins, and Lean Canvas assumptions. Persisted locally in IndexedDB.
           </p>
         </div>
 
@@ -74,6 +185,15 @@ export const BusinessModelPage: React.FC<BusinessModelPageProps> = ({
           <Sparkles className="w-4 h-4 text-amber-400" />
           <span>Audit Economics with AI</span>
         </button>
+      </div>
+
+      {/* Audit Disclaimer / Transparency */}
+      <div className="p-3 bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700/70 rounded-xl text-xs text-zinc-600 dark:text-zinc-400 flex items-start space-x-2">
+        <HelpCircle className="w-4 h-4 text-zinc-400 shrink-0 mt-0.5" />
+        <div>
+          <span className="font-semibold text-zinc-800 dark:text-zinc-200">Financial Modeling Transparency: </span>
+          Values below are mathematical simulations based on assumptions you specify. They are not confirmed proof of profitability until validated by actual paid customer transactions recorded in the Evidence Ledger.
+        </div>
       </div>
 
       {/* Unit Economics Interactive Calculator */}

@@ -35,6 +35,7 @@ export interface Project {
   startingPoint: FounderStartingPoint;
 
   currentPhaseIndex: number;
+  completedTaskIds?: string[];
   createdAt: number;
   updatedAt: number;
 }
@@ -135,12 +136,7 @@ export type ExperimentMethod =
   | 'pre_order'
   | 'cold_outreach'
   | 'concierge_mvp'
-  | 'competitor_teardown'
-  | 'interview'
-  | 'landing_page'
-  | 'concierge'
-  | 'prototype'
-  | 'pre_sale';
+  | 'competitor_teardown';
 
 export interface Experiment {
   id: string;
@@ -260,35 +256,42 @@ export interface PhaseDefinition {
 export interface BusinessModelData {
   id: string;
   projectId: string;
-  customerSegments: string;
-  valueProposition: string;
-  channels: string;
-  customerRelationships: string;
-  revenueStreams: string;
-  keyResources: string;
-  keyActivities: string;
-  keyPartners: string;
-  costStructure: string;
-  pricingHypothesis: string;
-  estimatedCAC?: string;
-  estimatedLTV?: string;
-  breakEvenMonthlyUsers?: string;
+  // Unit Economics
+  monthlyPrice?: number;
+  grossMarginPct?: number;
+  monthlyChurnPct?: number;
+  cac?: number;
+  fixedMonthlyCost?: number;
+  // Lean Canvas
+  problem?: string;
+  customerSegments?: string;
+  uniqueValue?: string;
+  solution?: string;
+  channels?: string;
+  revenueStreams?: string;
+  costStructure?: string;
+  keyMetrics?: string;
+  unfairAdvantage?: string;
   updatedAt: number;
 }
 
 export interface GTMPlan {
   id: string;
   projectId: string;
-  targetSegment: string;
-  positioningStatement: string;
-  coreMessaging: string;
-  assumedChannels: string[];
-  validatedChannels: string[];
-  launchStrategy: string;
-  contentPlan: string;
-  outreachStrategy: string;
-  launchChecklist: { task: string; done: boolean }[];
-  keySuccessMetrics: string;
+  targetUser?: string;
+  need?: string;
+  productName?: string;
+  category?: string;
+  benefit?: string;
+  competitor?: string;
+  differentiator?: string;
+  channels?: {
+    name: string;
+    type: string;
+    status: 'assumed' | 'testing' | 'validated' | 'abandoned';
+    notes: string;
+  }[];
+  checklist?: { id: string; title: string; desc: string; done: boolean }[];
   updatedAt: number;
 }
 
@@ -297,14 +300,16 @@ export interface LandingPageSpec {
   projectId: string;
   headline: string;
   subheadline: string;
-  problemStatement: string;
-  solutionSummary: string;
-  keyBenefits: { title: string; desc: string }[];
-  socialProofOrSignals: string;
-  features: { title: string; desc: string }[];
-  faqs: { question: string; answer: string }[];
-  callToAction: string;
-  secondaryCTA?: string;
+  ctaText: string;
+  problemHeadline: string;
+  problemBody: string;
+  step1: string;
+  step2: string;
+  step3: string;
+  faq1Q: string;
+  faq1A: string;
+  faq2Q: string;
+  faq2A: string;
   updatedAt: number;
 }
 
@@ -321,6 +326,7 @@ export interface ProjectDecision {
 
 export interface AIChatMessage {
   id: string;
+  projectId?: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: number;
@@ -367,4 +373,5 @@ export interface ExportPackage {
   gtmPlan?: GTMPlan;
   landingPage?: LandingPageSpec;
   decisions: ProjectDecision[];
+  chatMessages?: AIChatMessage[];
 }

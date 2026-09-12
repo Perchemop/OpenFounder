@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import type { AIChatMessage, Project, AIProviderConfig } from '../../types';
 import { getAIProvider } from '../../ai/providers';
+import { db } from '../../db';
 
 interface AICofounderPanelProps {
   isOpen: boolean;
@@ -43,22 +44,47 @@ export const AICofounderPanel: React.FC<AICofounderPanelProps> = ({
   queuedPrompt,
   onClearQueuedPrompt,
 }) => {
-  const [messages, setMessages] = useState<AIChatMessage[]>([
-    {
-      id: 'init-1',
-      role: 'assistant',
-      content: `Hello! I am your evidence-driven AI co-founder.
-
-My purpose is not to validate your ego or rubber-stamp untested ideas—my job is to help you determine if your customer problem is genuine, whether demand exists, and how to rigorously test assumptions before writing code.
-
-What aspect of **${project?.name || 'your project'}** shall we scrutinize first?`,
-      timestamp: Date.now(),
-    },
-  ]);
+  const [messages, setMessages] = useState<AIChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorNotice, setErrorNotice] = useState<string | null>(null);
   const chatBottomRef = useRef<HTMLDivElement>(null);
+
+  // Load chat messages for the active project
+  useEffect(() => {
+    if (!project?.id) return;
+
+    async function loadProjectChat() {
+      try {
+        const stored = await db.chatMessages
+          .where('projectId')
+          .equals(project!.id)
+          .sortBy('timestamp');
+
+        if (stored.length > 0) {
+          setMessages(stored);
+        } else {
+          const initialGreeting: AIChatMessage = {
+            id: `init-${project!.id}`,
+            projectId: project!.id,
+            role: 'assistant',
+            content: `Hello! I am your evidence-driven AI co-founder for **${project!.name}**.
+
+My purpose is not to rubber-stamp untested assumptions—my job is to help you determine if your customer problem is genuine, whether demand exists, and how to design the cheapest experiments before building features.
+
+What aspect of **${project!.name}** shall we scrutinize first?`,
+            timestamp: Date.now(),
+          };
+          await db.chatMessages.put(initialGreeting);
+          setMessages([initialGreeting]);
+        }
+      } catch (err) {
+        console.error('Failed to load project chat:', err);
+      }
+    }
+
+    loadProjectChat();
+  }, [project?.id]);
 
   useEffect(() => {
     if (queuedPrompt && isOpen) {
@@ -77,11 +103,12 @@ What aspect of **${project?.name || 'your project'}** shall we scrutinize first?
 
   const handleSendMessage = async (textToSend?: string) => {
     const query = (textToSend || input).trim();
-    if (!query || loading) return;
+    if (!query || loading || !project?.id) return;
 
     setErrorNotice(null);
     const userMsg: AIChatMessage = {
       id: `msg-${Date.now()}`,
+      projectId: project.id,
       role: 'user',
       content: query,
       timestamp: Date.now(),
@@ -93,6 +120,7 @@ What aspect of **${project?.name || 'your project'}** shall we scrutinize first?
     setLoading(true);
 
     try {
+      await db.chatMessages.put(userMsg);
       const provider = getAIProvider(config.activeProvider);
       const result = await provider.sendMessage(newHistory, projectContext, config);
 
@@ -100,6 +128,7 @@ What aspect of **${project?.name || 'your project'}** shall we scrutinize first?
         setErrorNotice(result.error);
         const errReply: AIChatMessage = {
           id: `msg-${Date.now() + 1}`,
+          projectId: project.id,
           role: 'assistant',
           content: `⚠️ **Notice from Co-Founder Engine (${result.providerUsed})**:
 
@@ -108,14 +137,17 @@ ${result.error}
 *You can configure an active AI key or switch to Offline Co-Founder in Settings.*`,
           timestamp: Date.now(),
         };
+        await db.chatMessages.put(errReply);
         setMessages((prev) => [...prev, errReply]);
       } else {
         const assistantMsg: AIChatMessage = {
           id: `msg-${Date.now() + 1}`,
+          projectId: project.id,
           role: 'assistant',
           content: result.reply,
           timestamp: Date.now(),
         };
+        await db.chatMessages.put(assistantMsg);
         setMessages((prev) => [...prev, assistantMsg]);
       }
     } catch (err: any) {
@@ -125,15 +157,22 @@ ${result.error}
     }
   };
 
-  const handleClearHistory = () => {
-    setMessages([
-      {
+  const handleClearHistory = async () => {
+    if (!project?.id) return;
+    try {
+      await db.chatMessages.where('projectId').equals(project.id).delete();
+      const freshGreeting: AIChatMessage = {
         id: `init-${Date.now()}`,
+        projectId: project.id,
         role: 'assistant',
-        content: `Conversation reset. Project context for **${project?.name || 'your project'}** is active. Ask a strategic question or choose a prompt below.`,
+        content: `Conversation reset. Project context for **${project.name}** is active. Ask a strategic question or choose a prompt below.`,
         timestamp: Date.now(),
-      },
-    ]);
+      };
+      await db.chatMessages.put(freshGreeting);
+      setMessages([freshGreeting]);
+    } catch (err) {
+      console.error('Failed to clear chat history:', err);
+    }
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Globe,
   Download,
@@ -8,8 +8,10 @@ import {
   CheckCircle2,
   Copy,
   Check,
+  Clock,
 } from 'lucide-react';
-import type { Project } from '../types';
+import type { Project, LandingPageSpec } from '../types';
+import { db } from '../db';
 
 interface LandingPageStudioProps {
   project: Project | null;
@@ -25,27 +27,124 @@ export const LandingPageStudio: React.FC<LandingPageStudioProps> = ({
 
   // Landing page copy state
   const [headline, setHeadline] = useState(
-    project ? `Stop Paying for Stale Leads. Get Booked Jobs Directly.` : 'Stop Wasting Time on Stale Leads.'
+    project ? `Stop Wasting Time on Inefficient Workflows.` : 'The Modern Solution for Modern Teams.'
   );
   const [subheadline, setSubheadline] = useState(
     project?.oneSentenceIdea ||
-      'Exclusive SMS job alerts sent directly to solo trade contractors with verified client cards on file.'
+      'Deliver high-leverage outcomes with verified speed and complete transparency.'
   );
-  const [ctaText, setCtaText] = useState('Claim Free Pilot Booking');
+  const [ctaText, setCtaText] = useState('Claim Free Pilot Access');
   const [problemHeadline, setProblemHeadline] = useState(
-    'The traditional lead generation industry is broken for tradespeople.'
+    'Existing alternatives leave founders and teams frustrated and slowed down.'
   );
   const [problemBody, setProblemBody] = useState(
     project?.problemStatement ||
-      'Platforms like Angi and Thumbtack sell the exact same unvetted lead to 4-5 different contractors simultaneously. You waste hours chasing voicemail and pay high monthly fees regardless of whether you win the job.'
+      'Legacy tools are expensive, fragmented, and force manual busywork. You waste hours coordinating rather than making progress.'
   );
-  const [step1, setStep1] = useState('Receive instant SMS when a local homeowner requests emergency service');
-  const [step2, setStep2] = useState('1-Click accept locks the appointment exclusively to your calendar');
-  const [step3, setStep3] = useState('Complete the repair and get paid directly with zero speculative lead fees');
+  const [step1, setStep1] = useState('Sign up in 30 seconds with zero credit card required');
+  const [step2, setStep2] = useState('Connect your workflow and automate your primary bottleneck');
+  const [step3, setStep3] = useState('Track verified outcomes and scale with confidence');
   const [faq1Q, setFaq1Q] = useState('How much does it cost?');
-  const [faq1A, setFaq1A] = useState('Zero upfront fees. You only pay a flat 8% fee when a job is successfully completed.');
-  const [faq2Q, setFaq2Q] = useState('Do you sell the same lead to other contractors?');
-  const [faq2A, setFaq2A] = useState('Never. Every booking is 100% exclusive to the first contractor who accepts the dispatch.');
+  const [faq1A, setFaq1A] = useState('We offer a generous free tier during early access. Paid tiers start at straightforward transparent rates.');
+  const [faq2Q, setFaq2Q] = useState('How does this protect my data?');
+  const [faq2A, setFaq2A] = useState('Zero third-party trackers, local-first storage options, and strict privacy boundaries.');
+
+  const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle');
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const isLoadedRef = useRef(false);
+  const saveTimeoutRef = useRef<any>(null);
+
+  // Load from IndexedDB
+  useEffect(() => {
+    if (!project?.id) return;
+    isLoadedRef.current = false;
+
+    async function loadData() {
+      try {
+        const stored = await db.landingPage.where('projectId').equals(project!.id).first();
+        if (stored) {
+          if (stored.headline) setHeadline(stored.headline);
+          if (stored.subheadline) setSubheadline(stored.subheadline);
+          if (stored.ctaText) setCtaText(stored.ctaText);
+          if (stored.problemHeadline) setProblemHeadline(stored.problemHeadline);
+          if (stored.problemBody) setProblemBody(stored.problemBody);
+          if (stored.step1) setStep1(stored.step1);
+          if (stored.step2) setStep2(stored.step2);
+          if (stored.step3) setStep3(stored.step3);
+          if (stored.faq1Q) setFaq1Q(stored.faq1Q);
+          if (stored.faq1A) setFaq1A(stored.faq1A);
+          if (stored.faq2Q) setFaq2Q(stored.faq2Q);
+          if (stored.faq2A) setFaq2A(stored.faq2A);
+          setLastSaved(new Date(stored.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        } else if (project) {
+          if (project.oneSentenceIdea) setSubheadline(project.oneSentenceIdea);
+          if (project.problemStatement) setProblemBody(project.problemStatement);
+        }
+      } catch (err) {
+        console.error('Failed to load landing page from database:', err);
+      } finally {
+        isLoadedRef.current = true;
+      }
+    }
+
+    loadData();
+  }, [project?.id]);
+
+  // Debounced autosave
+  useEffect(() => {
+    if (!project?.id || !isLoadedRef.current) return;
+
+    setSaveStatus('saving');
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+
+    saveTimeoutRef.current = setTimeout(async () => {
+      try {
+        const now = Date.now();
+        const dataToSave: LandingPageSpec = {
+          id: `lp_${project.id}`,
+          projectId: project.id,
+          headline,
+          subheadline,
+          ctaText,
+          problemHeadline,
+          problemBody,
+          step1,
+          step2,
+          step3,
+          faq1Q,
+          faq1A,
+          faq2Q,
+          faq2A,
+          updatedAt: now,
+        };
+
+        await db.landingPage.put(dataToSave);
+        setSaveStatus('saved');
+        setLastSaved(new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      } catch (err) {
+        console.error('Failed to autosave landing page spec:', err);
+        setSaveStatus('idle');
+      }
+    }, 600);
+
+    return () => {
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    };
+  }, [
+    project?.id,
+    headline,
+    subheadline,
+    ctaText,
+    problemHeadline,
+    problemBody,
+    step1,
+    step2,
+    step3,
+    faq1Q,
+    faq1A,
+    faq2Q,
+    faq2A,
+  ]);
 
   // Generate pure standalone semantic HTML/CSS file
   const generateStaticHtml = () => {
@@ -213,12 +312,26 @@ export const LandingPageStudio: React.FC<LandingPageStudioProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-            <Globe className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            <span>Landing Page Studio & Exporter</span>
-          </h1>
+          <div className="flex items-center space-x-2">
+            <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
+              <Globe className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <span>Landing Page Studio & Exporter</span>
+            </h1>
+            {saveStatus === 'saving' && (
+              <span className="flex items-center space-x-1 text-[11px] text-amber-500 font-medium px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+                <Clock className="w-3 h-3 animate-spin" />
+                <span>Saving...</span>
+              </span>
+            )}
+            {saveStatus === 'saved' && (
+              <span className="flex items-center space-x-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
+                <CheckCircle2 className="w-3 h-3" />
+                <span>Autosaved {lastSaved ? `at ${lastSaved}` : 'locally'}</span>
+              </span>
+            )}
+          </div>
           <p className="text-xs text-zinc-500 mt-0.5">
-            Craft high-converting proposition copy and export a 100% tracker-free, production-ready static HTML file.
+            Craft high-converting proposition copy and export a 100% tracker-free, production-ready static HTML file. Persisted locally in IndexedDB.
           </p>
         </div>
 

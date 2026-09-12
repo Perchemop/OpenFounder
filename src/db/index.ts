@@ -58,6 +58,9 @@ export class OpenFounderDB extends Dexie {
       decisions: 'id, projectId, phaseKey, createdAt',
       chatMessages: 'id, timestamp',
     });
+    this.version(2).stores({
+      chatMessages: 'id, projectId, timestamp',
+    });
   }
 }
 
@@ -68,7 +71,7 @@ const SETTINGS_STORAGE_KEY = 'openfounder_settings_v1';
 const ACTIVE_PROJECT_KEY = 'openfounder_active_project_id';
 
 export const DEFAULT_AI_CONFIG: AIProviderConfig = {
-  activeProvider: 'server_gemini',
+  activeProvider: 'offline_rules', // Default: 100% Free, zero-network, GitHub Pages ready
   openaiEndpoint: 'https://api.openai.com/v1',
   openaiModel: 'gpt-4o-mini',
   anthropicModel: 'claude-3-5-sonnet-20241022',
@@ -77,7 +80,7 @@ export const DEFAULT_AI_CONFIG: AIProviderConfig = {
   temperature: 0.7,
   maxTokens: 2048,
   telemetryEnabled: false,
-  storeKeysLocally: true,
+  storeKeysLocally: false, // Default: Session-only for maximum privacy & security
 };
 
 export function getStoredSettings(): AIProviderConfig {
@@ -106,7 +109,7 @@ export function setActiveProjectId(id: string): void {
   localStorage.setItem(ACTIVE_PROJECT_KEY, id);
 }
 
-// Export whole project as JSON
+// Export whole project as JSON (Never exports sensitive API keys)
 export async function exportProjectPackage(projectId: string): Promise<ExportPackage> {
   const project = await db.projects.get(projectId);
   if (!project) throw new Error('Project not found');
@@ -126,6 +129,7 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     gtmPlanList,
     landingPageList,
     decisions,
+    chatMessages,
   ] = await Promise.all([
     db.evidence.where('projectId').equals(projectId).toArray(),
     db.research.where('projectId').equals(projectId).toArray(),
@@ -141,6 +145,7 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     db.gtmPlan.where('projectId').equals(projectId).toArray(),
     db.landingPage.where('projectId').equals(projectId).toArray(),
     db.decisions.where('projectId').equals(projectId).toArray(),
+    db.chatMessages.where('projectId').equals(projectId).toArray(),
   ]);
 
   return {
@@ -162,19 +167,39 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     gtmPlan: gtmPlanList[0],
     landingPage: landingPageList[0],
     decisions,
+    chatMessages,
   };
 }
 
-// Import project package
-export async function importProjectPackage(pkg: ExportPackage): Promise<string> {
-  if (!pkg.schemaVersion || pkg.schemaVersion > 1) {
-    throw new Error(`Unsupported schema version: ${pkg.schemaVersion}`);
+// Import project package with rigorous validation and duplicate collision prevention
+export async function importProjectPackage(
+  pkg: ExportPackage,
+  options: { importAsNew?: boolean } = {}
+): Promise<string> {
+  if (!pkg || typeof pkg !== 'object') {
+    throw new Error('Import file is empty or not valid JSON.');
   }
-  if (!pkg.project || !pkg.project.id || !pkg.project.name) {
-    throw new Error('Invalid project format in import package');
+  if (!pkg.schemaVersion || pkg.schemaVersion > 2) {
+    throw new Error(`Unsupported schema version: ${pkg.schemaVersion}. Please use an export from OpenFounder v1 or v2.`);
+  }
+  if (!pkg.project || typeof pkg.project !== 'object' || !pkg.project.id || !pkg.project.name) {
+    throw new Error('Invalid project structure: Missing project definition or required identifiers.');
   }
 
-  const projectId = pkg.project.id;
+  // Check if project already exists
+  const existing = await db.projects.get(pkg.project.id);
+  let targetProjectId = pkg.project.id;
+  let targetProject = { ...pkg.project };
+
+  if (existing && options.importAsNew) {
+    targetProjectId = `proj_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    targetProject = {
+      ...pkg.project,
+      id: targetProjectId,
+      name: `${pkg.project.name} (Imported Copy)`,
+      updatedAt: Date.now(),
+    };
+  }
 
   // Use a transaction to safely overwrite or import
   await db.transaction('rw', [
@@ -193,49 +218,63 @@ export async function importProjectPackage(pkg: ExportPackage): Promise<string> 
     db.gtmPlan,
     db.landingPage,
     db.decisions,
+    db.chatMessages,
   ], async () => {
-    // Delete existing records with this ID if any
+    // Delete existing records with targetProjectId if overwriting
     await Promise.all([
-      db.projects.delete(projectId),
-      db.evidence.where('projectId').equals(projectId).delete(),
-      db.research.where('projectId').equals(projectId).delete(),
-      db.communityInsights.where('projectId').equals(projectId).delete(),
-      db.competitors.where('projectId').equals(projectId).delete(),
-      db.experiments.where('projectId').equals(projectId).delete(),
-      db.interviews.where('projectId').equals(projectId).delete(),
-      db.features.where('projectId').equals(projectId).delete(),
-      db.roadmap.where('projectId').equals(projectId).delete(),
-      db.canvasNodes.where('projectId').equals(projectId).delete(),
-      db.canvasEdges.where('projectId').equals(projectId).delete(),
-      db.businessModel.where('projectId').equals(projectId).delete(),
-      db.gtmPlan.where('projectId').equals(projectId).delete(),
-      db.landingPage.where('projectId').equals(projectId).delete(),
-      db.decisions.where('projectId').equals(projectId).delete(),
+      db.projects.delete(targetProjectId),
+      db.evidence.where('projectId').equals(targetProjectId).delete(),
+      db.research.where('projectId').equals(targetProjectId).delete(),
+      db.communityInsights.where('projectId').equals(targetProjectId).delete(),
+      db.competitors.where('projectId').equals(targetProjectId).delete(),
+      db.experiments.where('projectId').equals(targetProjectId).delete(),
+      db.interviews.where('projectId').equals(targetProjectId).delete(),
+      db.features.where('projectId').equals(targetProjectId).delete(),
+      db.roadmap.where('projectId').equals(targetProjectId).delete(),
+      db.canvasNodes.where('projectId').equals(targetProjectId).delete(),
+      db.canvasEdges.where('projectId').equals(targetProjectId).delete(),
+      db.businessModel.where('projectId').equals(targetProjectId).delete(),
+      db.gtmPlan.where('projectId').equals(targetProjectId).delete(),
+      db.landingPage.where('projectId').equals(targetProjectId).delete(),
+      db.decisions.where('projectId').equals(targetProjectId).delete(),
+      db.chatMessages.where('projectId').equals(targetProjectId).delete(),
     ]);
 
+    // Remap projectId if importing as new
+    const remapId = <T extends { projectId: string; id: string }>(item: T): T => ({
+      ...item,
+      projectId: targetProjectId,
+      id: targetProjectId === pkg.project.id ? item.id : `${item.id}_${Math.random().toString(36).substring(2, 6)}`,
+    });
+
     // Insert new records
-    await db.projects.put(pkg.project);
-    if (pkg.evidence?.length) await db.evidence.bulkPut(pkg.evidence);
-    if (pkg.research?.length) await db.research.bulkPut(pkg.research);
-    if (pkg.communityInsights?.length) await db.communityInsights.bulkPut(pkg.communityInsights);
-    if (pkg.competitors?.length) await db.competitors.bulkPut(pkg.competitors);
-    if (pkg.experiments?.length) await db.experiments.bulkPut(pkg.experiments);
-    if (pkg.interviews?.length) await db.interviews.bulkPut(pkg.interviews);
-    if (pkg.features?.length) await db.features.bulkPut(pkg.features);
-    if (pkg.roadmap?.length) await db.roadmap.bulkPut(pkg.roadmap);
-    if (pkg.canvasNodes?.length) await db.canvasNodes.bulkPut(pkg.canvasNodes);
-    if (pkg.canvasEdges?.length) await db.canvasEdges.bulkPut(pkg.canvasEdges);
-    if (pkg.businessModel) await db.businessModel.put(pkg.businessModel);
-    if (pkg.gtmPlan) await db.gtmPlan.put(pkg.gtmPlan);
-    if (pkg.landingPage) await db.landingPage.put(pkg.landingPage);
-    if (pkg.decisions?.length) await db.decisions.bulkPut(pkg.decisions);
+    await db.projects.put(targetProject);
+    if (pkg.evidence?.length) await db.evidence.bulkPut(pkg.evidence.map(remapId));
+    if (pkg.research?.length) await db.research.bulkPut(pkg.research.map(remapId));
+    if (pkg.communityInsights?.length) await db.communityInsights.bulkPut(pkg.communityInsights.map(remapId));
+    if (pkg.competitors?.length) await db.competitors.bulkPut(pkg.competitors.map(remapId));
+    if (pkg.experiments?.length) await db.experiments.bulkPut(pkg.experiments.map(remapId));
+    if (pkg.interviews?.length) await db.interviews.bulkPut(pkg.interviews.map(remapId));
+    if (pkg.features?.length) await db.features.bulkPut(pkg.features.map(remapId));
+    if (pkg.roadmap?.length) await db.roadmap.bulkPut(pkg.roadmap.map(remapId));
+    if (pkg.canvasNodes?.length) await db.canvasNodes.bulkPut(pkg.canvasNodes.map(remapId));
+    if (pkg.canvasEdges?.length) await db.canvasEdges.bulkPut(pkg.canvasEdges.map(remapId));
+    if (pkg.businessModel) await db.businessModel.put({ ...pkg.businessModel, projectId: targetProjectId });
+    if (pkg.gtmPlan) await db.gtmPlan.put({ ...pkg.gtmPlan, projectId: targetProjectId });
+    if (pkg.landingPage) await db.landingPage.put({ ...pkg.landingPage, projectId: targetProjectId });
+    if (pkg.decisions?.length) await db.decisions.bulkPut(pkg.decisions.map(remapId));
+    if (pkg.chatMessages?.length) {
+      await db.chatMessages.bulkPut(
+        pkg.chatMessages.map((m) => ({ ...m, projectId: targetProjectId }))
+      );
+    }
   });
 
-  setActiveProjectId(projectId);
-  return projectId;
+  setActiveProjectId(targetProjectId);
+  return targetProjectId;
 }
 
-// Delete an entire project
+// Delete an entire project and all associated sub-records
 export async function deleteProject(projectId: string): Promise<void> {
   await db.transaction('rw', [
     db.projects,
@@ -253,6 +292,7 @@ export async function deleteProject(projectId: string): Promise<void> {
     db.gtmPlan,
     db.landingPage,
     db.decisions,
+    db.chatMessages,
   ], async () => {
     await Promise.all([
       db.projects.delete(projectId),
@@ -270,6 +310,7 @@ export async function deleteProject(projectId: string): Promise<void> {
       db.gtmPlan.where('projectId').equals(projectId).delete(),
       db.landingPage.where('projectId').equals(projectId).delete(),
       db.decisions.where('projectId').equals(projectId).delete(),
+      db.chatMessages.where('projectId').equals(projectId).delete(),
     ]);
   });
 

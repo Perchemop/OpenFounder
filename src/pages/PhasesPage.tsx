@@ -27,11 +27,10 @@ export const PhasesPage: React.FC<PhasesPageProps> = ({
   const [activePhaseIndex, setActivePhaseIndex] = useState(
     project?.currentPhaseIndex ?? 0
   );
-  const [taskNotes, setTaskNotes] = useState<{ [key: string]: string }>({});
-
   if (!project) return null;
 
   const currentPhase = FOUNDER_PHASES[activePhaseIndex] || FOUNDER_PHASES[0];
+  const completedIds = project.completedTaskIds || [];
 
   const handleAdvancePhase = async () => {
     if (project.currentPhaseIndex < 9) {
@@ -45,11 +44,17 @@ export const PhasesPage: React.FC<PhasesPageProps> = ({
     }
   };
 
-  const handleTaskCheck = (taskId: string) => {
-    setTaskNotes((prev) => ({
-      ...prev,
-      [`checked_${taskId}`]: prev[`checked_${taskId}`] ? '' : 'done',
-    }));
+  const handleTaskCheck = async (taskId: string) => {
+    const isCurrentlyCompleted = completedIds.includes(taskId);
+    const newCompleted = isCurrentlyCompleted
+      ? completedIds.filter((id) => id !== taskId)
+      : [...completedIds, taskId];
+
+    await db.projects.update(project.id, {
+      completedTaskIds: newCompleted,
+      updatedAt: Date.now(),
+    });
+    onProjectUpdated();
   };
 
   return (
@@ -168,12 +173,17 @@ export const PhasesPage: React.FC<PhasesPageProps> = ({
 
         {/* Phase Tasks Checklist */}
         <div className="space-y-3">
-          <h3 className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
-            Phase Execution Tasks
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 uppercase tracking-wider">
+              Phase Execution Tasks
+            </h3>
+            <span className="text-[11px] font-mono text-zinc-500">
+              {currentPhase.tasks.filter((t) => completedIds.includes(t.id)).length} of {currentPhase.tasks.length} completed
+            </span>
+          </div>
           <div className="space-y-2.5">
             {currentPhase.tasks.map((task) => {
-              const isChecked = Boolean(taskNotes[`checked_${task.id}`]);
+              const isChecked = completedIds.includes(task.id);
               return (
                 <div
                   key={task.id}
