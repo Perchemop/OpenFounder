@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateId } from './index';
+import { generateId } from '../utils/id';
 
 describe('generateId', () => {
   it('prefixes IDs with the provided prefix', () => {
