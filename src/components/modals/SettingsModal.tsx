@@ -418,6 +418,57 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </div>
               )}
 
+              {localConfig.activeProvider !== 'offline_rules' && (
+                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-zinc-200 dark:border-zinc-800">
+                  <div>
+                    <label className="block font-medium text-zinc-800 dark:text-zinc-200 mb-1">
+                      Temperature{' '}
+                      <span className="font-normal text-zinc-500">
+                        ({(localConfig.temperature ?? 0.7).toFixed(2)})
+                      </span>
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={1}
+                      step={0.05}
+                      value={localConfig.temperature ?? 0.7}
+                      onChange={(e) =>
+                        setLocalConfig({
+                          ...localConfig,
+                          temperature: parseFloat(e.target.value),
+                        })
+                      }
+                      className="w-full accent-zinc-800 dark:accent-zinc-200"
+                    />
+                    <div className="flex justify-between text-[10px] text-zinc-500 mt-0.5">
+                      <span>Focused</span>
+                      <span>Creative</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block font-medium text-zinc-800 dark:text-zinc-200 mb-1">
+                      Max tokens
+                    </label>
+                    <input
+                      type="number"
+                      min={256}
+                      max={8192}
+                      step={256}
+                      value={localConfig.maxTokens ?? 2048}
+                      onChange={(e) =>
+                        setLocalConfig({
+                          ...localConfig,
+                          maxTokens: Math.max(256, Math.min(8192, parseInt(e.target.value, 10) || 2048)),
+                        })
+                      }
+                      className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 font-mono text-zinc-900 dark:text-zinc-100"
+                    />
+                    <p className="text-[10px] text-zinc-500 mt-0.5">256 – 8192 (default 2048)</p>
+                  </div>
+                </div>
+              )}
+
               <div className="pt-2 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
                 <button
                   type="button"
