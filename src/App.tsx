@@ -22,6 +22,7 @@ import { BusinessModelPage } from './pages/BusinessModelPage';
 import { GTMPage } from './pages/GTMPage';
 import { LandingPageStudio } from './pages/LandingPageStudio';
 import { DocumentsPage } from './pages/DocumentsPage';
+import { RisksPage } from './pages/RisksPage';
 
 import { Sparkles, Loader2 } from 'lucide-react';
 
@@ -39,9 +40,11 @@ function AppContent() {
     roadmap,
     interviews,
     research,
+    risks,
     projectContextString,
     unverifiedEvidenceCount,
     activeExperimentsCount,
+    openRisksCount,
     theme,
     toggleTheme,
     aiConfig,
@@ -95,6 +98,7 @@ function AppContent() {
           onSelectTab={setActiveTab}
           unverifiedCount={unverifiedEvidenceCount}
           activeExperimentCount={activeExperimentsCount}
+          openRisksCount={openRisksCount}
         />
 
         <main className="flex-1 overflow-y-auto relative">
@@ -126,6 +130,15 @@ function AppContent() {
                   projectId={currentProject.id}
                   evidence={evidence}
                   onEvidenceUpdated={reloadCurrentProjectData}
+                  onOpenAICofounderWithPrompt={openAICofounderWithPrompt}
+                />
+              )}
+
+              {activeTab === 'risks' && (
+                <RisksPage
+                  projectId={currentProject.id}
+                  risks={risks}
+                  onRisksUpdated={reloadCurrentProjectData}
                   onOpenAICofounderWithPrompt={openAICofounderWithPrompt}
                 />
               )}
@@ -276,7 +289,6 @@ function AppContent() {
         onProjectCreated={async (newProj) => {
           setIsNewProjectModalOpen(false);
           await refreshProjects();
-          // Select the newly created project
           if (newProj?.id) {
             await selectProject(newProj.id);
           }
