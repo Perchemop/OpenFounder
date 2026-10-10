@@ -14,7 +14,7 @@ import {
   Megaphone,
   Globe,
   FileText,
-  ChevronRight,
+  ShieldAlert,
   Shield,
 } from 'lucide-react';
 
@@ -32,13 +32,15 @@ export type WorkspaceTab =
   | 'business'
   | 'gtm'
   | 'landing'
-  | 'documents';
+  | 'documents'
+  | 'risks';
 
 interface SidebarProps {
   activeTab: WorkspaceTab;
   onSelectTab: (tab: WorkspaceTab) => void;
   unverifiedCount?: number;
   activeExperimentCount?: number;
+  openRisksCount?: number;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -46,6 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectTab,
   unverifiedCount = 0,
   activeExperimentCount = 0,
+  openRisksCount = 0,
 }) => {
   const mainNav = [
     { id: 'dashboard' as WorkspaceTab, label: 'Dashboard', icon: LayoutDashboard },
@@ -58,6 +61,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: 'Evidence Ledger',
       icon: Scale,
       alertBadge: unverifiedCount > 0 ? `${unverifiedCount} unverified` : undefined,
+    },
+    {
+      id: 'risks' as WorkspaceTab,
+      label: 'Risk Register',
+      icon: ShieldAlert,
+      alertBadge: openRisksCount > 0 ? `${openRisksCount} open` : undefined,
     },
     { id: 'research' as WorkspaceTab, label: 'Research & Sources', icon: Search },
     { id: 'competitors' as WorkspaceTab, label: 'Competitor Matrix', icon: Users },
