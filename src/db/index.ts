@@ -277,7 +277,7 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
   return {
     schemaVersion: 3,
     exportedAt: new Date().toISOString(),
-    appVersion: '0.4.0',
+    appVersion: '1.0.0',
     project,
     evidence,
     research,
@@ -601,98 +601,13 @@ export async function deleteProject(projectId: string): Promise<void> {
     }
   );
 
-  const activeId = getActiveProjectId();
-  if (activeId === projectId) {
-    const remaining = await db.projects.toArray();
-    if (remaining.length > 0) {
-      setActiveProjectId(remaining[0].id);
-    } else {
-      localStorage.removeItem(ACTIVE_PROJECT_KEY);
-    }
+  const active = getActiveProjectId();
+  if (active === projectId) {
+    localStorage.removeItem(ACTIVE_PROJECT_KEY);
   }
 }
 
-// Wipe all local database data with optional retention of user API preferences
-export async function wipeAllLocalData(options: { preserveSettings?: boolean } = {}): Promise<void> {
-  await db.delete();
-  await db.open();
-  localStorage.removeItem(ACTIVE_PROJECT_KEY);
-  if (!options.preserveSettings) {
-    localStorage.removeItem(SETTINGS_STORAGE_KEY);
-    sessionStorage.removeItem(SESSION_KEYS_STORAGE_KEY);
-    memoryApiKeys = {};
-  }
-}
-
-// Relational integrity validator for workspace references
-export function validateWorkspaceReferences(records: {
-  nodes?: CanvasNode[];
-  edges?: CanvasEdge[];
-  evidence?: EvidenceItem[];
-  experiments?: Experiment[];
-  research?: ResearchSource[];
-  decisions?: ProjectDecision[];
-  roadmap?: RoadmapItem[];
-}): { valid: boolean; warnings: string[] } {
-  const warnings: string[] = [];
-  const nodeIds = new Set((records.nodes || []).map((n) => n.id));
-  const evidenceIds = new Set((records.evidence || []).map((e) => e.id));
-  const roadmapIds = new Set((records.roadmap || []).map((r) => r.id));
-
-  // 1. Canvas edge endpoints
-  for (const edge of records.edges || []) {
-    if (!nodeIds.has(edge.fromNodeId)) {
-      warnings.push(`Canvas edge ${edge.id} references missing source node ${edge.fromNodeId}.`);
-    }
-    if (!nodeIds.has(edge.toNodeId)) {
-      warnings.push(`Canvas edge ${edge.id} references missing target node ${edge.toNodeId}.`);
-    }
-  }
-
-  // 2. Experiment evidence links
-  for (const exp of records.experiments || []) {
-    if (exp.evidenceId && !evidenceIds.has(exp.evidenceId)) {
-      warnings.push(`Experiment "${exp.hypothesis.substring(0, 35)}..." references missing evidence ID: ${exp.evidenceId}`);
-    }
-  }
-
-  // 3. Research evidence claim links
-  for (const res of records.research || []) {
-    if (res.claimLinkedIds) {
-      for (const cid of res.claimLinkedIds) {
-        if (!evidenceIds.has(cid)) {
-          warnings.push(`Research "${res.title.substring(0, 35)}" references missing evidence claim: ${cid}`);
-        }
-      }
-    }
-  }
-
-  // 4. Decision evidence links
-  for (const dec of records.decisions || []) {
-    if (dec.evidenceConsideredIds) {
-      for (const eid of dec.evidenceConsideredIds) {
-        if (!evidenceIds.has(eid)) {
-          warnings.push(`Decision "${dec.title.substring(0, 35)}" references missing evidence ID: ${eid}`);
-        }
-      }
-    }
-  }
-
-  // 5. Roadmap item dependencies
-  for (const rm of records.roadmap || []) {
-    if (rm.dependencies) {
-      for (const depId of rm.dependencies) {
-        if (!roadmapIds.has(depId)) {
-          warnings.push(`Roadmap milestone "${rm.title.substring(0, 35)}" references missing dependency: ${depId}`);
-        }
-      }
-    }
-  }
-
-  return { valid: warnings.length === 0, warnings };
-}
-
-// Complete Project Workspace query service
+// Get full project workspace
 export async function getProjectWorkspace(projectId: string): Promise<ProjectWorkspace | null> {
   const project = await db.projects.get(projectId);
   if (!project) return null;
@@ -794,4 +709,69 @@ export async function runWorkspaceDiagnostics(projectId: string): Promise<{
       risksCount: workspace.risks.length,
     },
   };
+}
+
+// Referential integrity helper used by import and diagnostics
+export function validateWorkspaceReferences(params: {
+  nodes?: CanvasNode[];
+  edges?: CanvasEdge[];
+  evidence?: EvidenceItem[];
+  experiments?: Experiment[];
+  research?: ResearchSource[];
+  decisions?: ProjectDecision[];
+  roadmap?: RoadmapItem[];
+}): { valid: boolean; warnings: string[] } {
+  const warnings: string[] = [];
+  const nodes = params.nodes || [];
+  const edges = params.edges || [];
+  const evidence = params.evidence || [];
+  const experiments = params.experiments || [];
+  const research = params.research || [];
+  const decisions = params.decisions || [];
+  const roadmap = params.roadmap || [];
+
+  const nodeIds = new Set(nodes.map((n) => n.id));
+  const evidenceIds = new Set(evidence.map((e) => e.id));
+  const roadmapIds = new Set(roadmap.map((r) => r.id));
+
+  for (const edge of edges) {
+    if (!nodeIds.has(edge.fromNodeId)) {
+      warnings.push(`Canvas edge ${edge.id} references missing fromNodeId: ${edge.fromNodeId}`);
+    }
+    if (!nodeIds.has(edge.toNodeId)) {
+      warnings.push(`Canvas edge ${edge.id} references missing toNodeId: ${edge.toNodeId}`);
+    }
+  }
+
+  for (const exp of experiments) {
+    if (exp.evidenceId && !evidenceIds.has(exp.evidenceId)) {
+      warnings.push(`Experiment ${exp.id} links to missing evidenceId: ${exp.evidenceId}`);
+    }
+  }
+
+  for (const res of research) {
+    for (const cid of res.claimLinkedIds || []) {
+      if (!evidenceIds.has(cid)) {
+        warnings.push(`Research ${res.id} links to missing claim ID: ${cid}`);
+      }
+    }
+  }
+
+  for (const dec of decisions) {
+    for (const eid of dec.evidenceConsideredIds || []) {
+      if (!evidenceIds.has(eid)) {
+        warnings.push(`Decision ${dec.id} references missing evidence ID: ${eid}`);
+      }
+    }
+  }
+
+  for (const rm of roadmap) {
+    for (const dep of rm.dependencies || []) {
+      if (!roadmapIds.has(dep)) {
+        warnings.push(`Roadmap item ${rm.id} has missing dependency: ${dep}`);
+      }
+    }
+  }
+
+  return { valid: warnings.length === 0, warnings };
 }
