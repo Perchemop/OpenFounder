@@ -58,7 +58,7 @@ Keyboard shortcuts:
 - **Local Database**: Dexie (IndexedDB) with Zod schema validation
 - **State**: React Context (`ProjectContext` + `useProject` hook)
 - **Server**: Express + optional Gemini (for `/api/ai/*` routes)
-- **Testing**: Vitest
+- **Testing**: Vitest (validation, risk scoring, context builder, phases, IDs)
 - **Deploy**: Static build → GitHub Pages (server routes fall back gracefully)
 
 ---
@@ -134,6 +134,17 @@ Everything lives in the browser’s IndexedDB. Export a JSON package any time fo
 - Static GitHub Pages deploy deliberately uses `build:static` so the app remains usable without a backend.
 - An `ErrorBoundary` wraps the root to keep the UI resilient.
 
+### Tests
+```bash
+npm test
+```
+Coverage includes:
+- Zod / export validation & referential integrity
+- Risk scoring (`riskScore`, hot/open helpers, sort)
+- `buildProjectContext` (profile, evidence, risks, experiments, truncation)
+- `FOUNDER_PHASES` structure
+- `generateId` uniqueness & format
+
 ---
 
 ## Roadmap / Known Gaps
@@ -141,7 +152,7 @@ Everything lives in the browser’s IndexedDB. Export a JSON package any time fo
 - [x] Extract ProjectContext + custom hooks from App.tsx
 - [x] Error Boundary + better loading/error states
 - [x] Surface Risks more prominently in UI
-- [ ] Expand test coverage beyond validation
+- [x] Expand test coverage beyond validation
 - [ ] Accessibility audit
 - [ ] Configurable model lists
 
