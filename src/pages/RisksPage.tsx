@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import type { RiskItem, RiskCategory } from '../types';
 import { db, generateId } from '../db';
+import { riskScore, scoreLabel, isOpenRisk, isHotRisk } from '../utils/riskScoring';
 
 interface RisksPageProps {
   projectId: string;
@@ -54,19 +55,6 @@ const STATUS_CONFIG: Record<
   },
 };
 
-const LEVEL_ORDER = { low: 1, medium: 2, high: 3 } as const;
-
-function riskScore(probability: RiskItem['probability'], impact: RiskItem['impact']): number {
-  return LEVEL_ORDER[probability] * LEVEL_ORDER[impact];
-}
-
-function scoreLabel(score: number): { text: string; className: string } {
-  if (score >= 6) return { text: 'Critical', className: 'text-rose-600 dark:text-rose-400 font-bold' };
-  if (score >= 4) return { text: 'High', className: 'text-amber-600 dark:text-amber-400 font-semibold' };
-  if (score >= 2) return { text: 'Medium', className: 'text-yellow-600 dark:text-yellow-400' };
-  return { text: 'Low', className: 'text-zinc-500' };
-}
-
 export const RisksPage: React.FC<RisksPageProps> = ({
   projectId,
   risks = [],
@@ -97,11 +85,9 @@ export const RisksPage: React.FC<RisksPageProps> = ({
       .sort((a, b) => riskScore(b.probability, b.impact) - riskScore(a.probability, a.impact));
   }, [risks, filterStatus, filterCategory]);
 
-  const openCount = risks.filter((r) => r.status === 'open' || r.status === 'testing').length;
+  const openCount = risks.filter(isOpenRisk).length;
   const criticalCount = risks.filter(
-    (r) =>
-      (r.status === 'open' || r.status === 'testing') &&
-      riskScore(r.probability, r.impact) >= 6
+    (r) => isOpenRisk(r) && riskScore(r.probability, r.impact) >= 6
   ).length;
 
   const resetForm = () => {
@@ -273,7 +259,7 @@ export const RisksPage: React.FC<RisksPageProps> = ({
               {filteredRisks.map((risk) => {
                 const score = riskScore(risk.probability, risk.impact);
                 const scoreInfo = scoreLabel(score);
-                const isHot = (risk.status === 'open' || risk.status === 'testing') && score >= 4;
+                const isHot = isHotRisk(risk);
 
                 return (
                   <tr
