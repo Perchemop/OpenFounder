@@ -25,6 +25,7 @@ import type {
   RoadmapItem,
   CustomerInterview,
   ResearchSource,
+  RiskItem,
   AIProviderConfig,
 } from '../types';
 import type { WorkspaceTab } from '../components/layout/Sidebar';
@@ -49,11 +50,13 @@ export interface ProjectContextValue {
   roadmap: RoadmapItem[];
   interviews: CustomerInterview[];
   research: ResearchSource[];
+  risks: RiskItem[];
 
   // Derived
   projectContextString: string;
   unverifiedEvidenceCount: number;
   activeExperimentsCount: number;
+  openRisksCount: number;
 
   // Theme
   theme: 'light' | 'dark';
@@ -124,6 +127,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const [roadmap, setRoadmap] = useState<RoadmapItem[]>([]);
   const [interviews, setInterviews] = useState<CustomerInterview[]>([]);
   const [research, setResearch] = useState<ResearchSource[]>([]);
+  const [risks, setRisks] = useState<RiskItem[]>([]);
 
   // AI & modals
   const [aiConfig, setAiConfigState] = useState<AIProviderConfig>(getStoredSettings);
@@ -170,6 +174,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       roadList,
       intList,
       resList,
+      riskList,
     ] = await Promise.all([
       db.evidence.where('projectId').equals(projId).toArray(),
       db.competitors.where('projectId').equals(projId).toArray(),
@@ -178,6 +183,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       db.roadmap.where('projectId').equals(projId).toArray(),
       db.interviews.where('projectId').equals(projId).toArray(),
       db.research.where('projectId').equals(projId).toArray(),
+      db.risks.where('projectId').equals(projId).toArray(),
     ]);
 
     setEvidence(evList);
@@ -187,6 +193,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     setRoadmap(roadList);
     setInterviews(intList);
     setResearch(resList);
+    setRisks(riskList);
   }, []);
 
   useEffect(() => {
@@ -200,6 +207,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       setRoadmap([]);
       setInterviews([]);
       setResearch([]);
+      setRisks([]);
     }
   }, [currentProject, loadProjectData]);
 
@@ -279,8 +287,9 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         experiments,
         features,
         research,
+        risks,
       }),
-    [currentProject, evidence, competitors, experiments, features, research]
+    [currentProject, evidence, competitors, experiments, features, research, risks]
   );
 
   const unverifiedEvidenceCount = useMemo(
@@ -294,6 +303,11 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const activeExperimentsCount = useMemo(
     () => experiments.filter((e) => e.status === 'running').length,
     [experiments]
+  );
+
+  const openRisksCount = useMemo(
+    () => risks.filter((r) => r.status === 'open' || r.status === 'testing').length,
+    [risks]
   );
 
   const value = useMemo<ProjectContextValue>(
@@ -310,9 +324,11 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       roadmap,
       interviews,
       research,
+      risks,
       projectContextString,
       unverifiedEvidenceCount,
       activeExperimentsCount,
+      openRisksCount,
       theme,
       toggleTheme,
       aiConfig,
@@ -345,9 +361,11 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       roadmap,
       interviews,
       research,
+      risks,
       projectContextString,
       unverifiedEvidenceCount,
       activeExperimentsCount,
+      openRisksCount,
       theme,
       toggleTheme,
       aiConfig,
