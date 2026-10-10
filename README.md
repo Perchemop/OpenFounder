@@ -21,6 +21,7 @@ OpenFounder helps founders move from idea → validated problem → tested solut
 - **Dashboard** – Project health at a glance
 - **Phases** – Guided founder journey with required tasks
 - **Evidence Ledger** – Claims with status (unverified → experiment_confirmed)
+- **Risk Register** – Impact × probability scoring, mitigation & next tests
 - **Research** – Structured source logging
 - **Competitors** – Teardowns with strengths/weaknesses/complaints
 - **Validation / Experiments** – Hypothesis → method → success/failure criteria
@@ -105,7 +106,7 @@ Without a server key the app still works fully offline or with user-provided key
 ### State Management (`src/context/ProjectContext.tsx`)
 - Centralized project, entity, AI, theme, and modal state
 - `useProject()` hook for clean consumption anywhere in the tree
-- Derived values (evidence counts, AI context string) memoized
+- Derived values (evidence counts, open risks, AI context string) memoized
 
 ### Data Layer (`src/db/`)
 - Dexie tables for every entity
@@ -139,7 +140,7 @@ Everything lives in the browser’s IndexedDB. Export a JSON package any time fo
 
 - [x] Extract ProjectContext + custom hooks from App.tsx
 - [x] Error Boundary + better loading/error states
-- [ ] Surface Risks more prominently in UI
+- [x] Surface Risks more prominently in UI
 - [ ] Expand test coverage beyond validation
 - [ ] Accessibility audit
 - [ ] Configurable model lists
