@@ -423,6 +423,10 @@ export interface AIChatMessage {
 export interface AIProviderConfig {
   activeProvider: 'server_gemini' | 'direct_gemini' | 'openai' | 'anthropic' | 'ollama' | 'offline_rules';
   directGeminiKey?: string;
+  /** Primary Gemini model id (server + direct). */
+  geminiModel?: string;
+  /** Ordered fallback Gemini models when primary is unavailable. */
+  geminiFallbackModels?: string[];
   openaiKey?: string;
   openaiEndpoint?: string;
   openaiModel?: string;
