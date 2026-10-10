@@ -55,6 +55,7 @@ Keyboard shortcuts:
 
 - **Frontend**: React 19 + TypeScript + Vite 6 + Tailwind CSS 4
 - **Local Database**: Dexie (IndexedDB) with Zod schema validation
+- **State**: React Context (`ProjectContext` + `useProject` hook)
 - **Server**: Express + optional Gemini (for `/api/ai/*` routes)
 - **Testing**: Vitest
 - **Deploy**: Static build → GitHub Pages (server routes fall back gracefully)
@@ -101,6 +102,11 @@ Without a server key the app still works fully offline or with user-provided key
 
 ## Architecture Highlights
 
+### State Management (`src/context/ProjectContext.tsx`)
+- Centralized project, entity, AI, theme, and modal state
+- `useProject()` hook for clean consumption anywhere in the tree
+- Derived values (evidence counts, AI context string) memoized
+
 ### Data Layer (`src/db/`)
 - Dexie tables for every entity
 - Zod schemas with safe ID/URL validation
@@ -121,18 +127,20 @@ Everything lives in the browser’s IndexedDB. Export a JSON package any time fo
 
 ## Development Notes
 
-- App state currently lives in `App.tsx` (planned extraction to context/hooks).
+- Core application state lives in `ProjectContext` (see `src/context/ProjectContext.tsx`).
+- `App.tsx` is a thin layout shell that consumes the context.
 - Server AI routes are only available when running `npm run dev` or a Node host.
 - Static GitHub Pages deploy deliberately uses `build:static` so the app remains usable without a backend.
+- An `ErrorBoundary` wraps the root to keep the UI resilient.
 
 ---
 
 ## Roadmap / Known Gaps
 
-- [ ] Extract ProjectContext + custom hooks from App.tsx
+- [x] Extract ProjectContext + custom hooks from App.tsx
+- [x] Error Boundary + better loading/error states
 - [ ] Surface Risks more prominently in UI
 - [ ] Expand test coverage beyond validation
-- [ ] Error Boundary + better loading/error states
 - [ ] Accessibility audit
 - [ ] Configurable model lists
 
