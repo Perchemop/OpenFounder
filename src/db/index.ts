@@ -18,6 +18,8 @@ import type {
   RiskItem,
   Objective,
   Advisor,
+  TeamMember,
+  SkillRequirement,
   AIChatMessage,
   ExportPackage,
   AIProviderConfig,
@@ -58,6 +60,8 @@ export class OpenFounderDB extends Dexie {
   risks!: Table<RiskItem, string>;
   objectives!: Table<Objective, string>;
   advisors!: Table<Advisor, string>;
+  teamMembers!: Table<TeamMember, string>;
+  skillRequirements!: Table<SkillRequirement, string>;
   chatMessages!: Table<AIChatMessage, string>;
 
   constructor() {
@@ -92,6 +96,10 @@ export class OpenFounderDB extends Dexie {
     });
     this.version(5).stores({
       advisors: 'id, projectId, createdAt',
+    });
+    this.version(6).stores({
+      teamMembers: 'id, projectId, commitment, createdAt',
+      skillRequirements: 'id, projectId, importance',
     });
   }
 }
@@ -271,6 +279,8 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     risks,
     objectives,
     advisors,
+    teamMembers,
+    skillRequirements,
     chatMessages,
   ] = await Promise.all([
     db.evidence.where('projectId').equals(projectId).toArray(),
@@ -290,11 +300,13 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     db.risks.where('projectId').equals(projectId).toArray(),
     db.objectives.where('projectId').equals(projectId).toArray(),
     db.advisors.where('projectId').equals(projectId).toArray(),
+    db.teamMembers.where('projectId').equals(projectId).toArray(),
+    db.skillRequirements.where('projectId').equals(projectId).toArray(),
     db.chatMessages.where('projectId').equals(projectId).toArray(),
   ]);
 
   return {
-    schemaVersion: 5,
+    schemaVersion: 6,
     exportedAt: new Date().toISOString(),
     appVersion: '1.0.0',
     project,
@@ -315,6 +327,8 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     risks,
     objectives,
     advisors,
+    teamMembers,
+    skillRequirements,
     chatMessages,
   };
 }
@@ -350,7 +364,8 @@ export async function importProjectPackage(
       db.projects, db.evidence, db.research, db.communityInsights, db.competitors,
       db.experiments, db.interviews, db.features, db.roadmap, db.canvasNodes,
       db.canvasEdges, db.businessModel, db.gtmPlan, db.landingPage, db.decisions,
-      db.risks, db.objectives, db.advisors, db.chatMessages,
+      db.risks, db.objectives, db.advisors, db.teamMembers, db.skillRequirements,
+      db.chatMessages,
     ],
     async () => {
       if (!shouldRemap) {
@@ -373,6 +388,8 @@ export async function importProjectPackage(
           db.risks.where('projectId').equals(targetProjectId).delete(),
           db.objectives.where('projectId').equals(targetProjectId).delete(),
           db.advisors.where('projectId').equals(targetProjectId).delete(),
+          db.teamMembers.where('projectId').equals(targetProjectId).delete(),
+          db.skillRequirements.where('projectId').equals(targetProjectId).delete(),
           db.chatMessages.where('projectId').equals(targetProjectId).delete(),
         ]);
       }
@@ -510,6 +527,24 @@ export async function importProjectPackage(
           }))
         );
       }
+      if (pkg.teamMembers?.length) {
+        await db.teamMembers.bulkPut(
+          pkg.teamMembers.map((member) => ({
+            ...member,
+            id: remapId(member.id, 'mem'),
+            projectId: targetProjectId,
+          }))
+        );
+      }
+      if (pkg.skillRequirements?.length) {
+        await db.skillRequirements.bulkPut(
+          pkg.skillRequirements.map((entry) => ({
+            ...entry,
+            id: remapId(entry.id, 'sreq'),
+            projectId: targetProjectId,
+          }))
+        );
+      }
       if (pkg.communityInsights?.length) {
         await db.communityInsights.bulkPut(
           pkg.communityInsights.map((i) => ({
@@ -595,6 +630,11 @@ export async function runWorkspaceDiagnostics(projectId: string): Promise<{
   stats.risksCount = await db.risks.where('projectId').equals(projectId).count();
   stats.objectivesCount = await db.objectives.where('projectId').equals(projectId).count();
   stats.advisorsCount = await db.advisors.where('projectId').equals(projectId).count();
+  stats.teamMembersCount = await db.teamMembers.where('projectId').equals(projectId).count();
+  stats.skillRequirementsCount = await db.skillRequirements
+    .where('projectId')
+    .equals(projectId)
+    .count();
 
   const [nodes, edges, evidence, experiments, roadmap] = await Promise.all([
     db.canvasNodes.where('projectId').equals(projectId).toArray(),

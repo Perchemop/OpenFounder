@@ -29,6 +29,7 @@ has a known gap), **Planned**.
 | C-21 | Accessibility audit | Planned | — |
 | C-24 | Objectives and key results with derived progress | Done | `GoalsPage`, `src/utils/okr.ts` |
 | C-25 | Advisor and mentor log with commitments | Done | `AdvisorsPage`, `src/utils/advisorLog.ts` |
+| C-26 | Team skills coverage with gaps | Done | `TeamPage`, `src/utils/skillCoverage.ts` |
 | C-22 | Full-text workspace search | Done | `src/utils/workspaceSearch.ts`, `CommandPalette` |
 | C-23 | Cloud sync / multi-device | Planned (out of scope v1) | — |
 

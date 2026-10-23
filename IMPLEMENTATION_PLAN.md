@@ -63,7 +63,9 @@ is covered by tests.
 - [x] Advisor and mentor log (CoFoundersLab advice + MentorShow coaching, local only)
   - `src/utils/advisorLog.ts` (urgency, summaries, ordering) + tests
   - `AdvisorsPage` with sessions, verbatim quotes, commitments, and follow-up state
-- [ ] Team skills coverage (local only)
+- [x] Team skills coverage (local only)
+  - `src/utils/skillCoverage.ts` (coverage status, gaps, summary) + tests
+  - `TeamPage` with members, requirements, and derived coverage
 - [ ] First-hire pipeline (local only)
 
 ## Working agreement

@@ -28,6 +28,8 @@ import type {
   RiskItem,
   Objective,
   Advisor,
+  TeamMember,
+  SkillRequirement,
   AIProviderConfig,
 } from '../types';
 import type { WorkspaceTab } from '../components/layout/Sidebar';
@@ -55,6 +57,8 @@ export interface ProjectContextValue {
   risks: RiskItem[];
   objectives: Objective[];
   advisors: Advisor[];
+  teamMembers: TeamMember[];
+  skillRequirements: SkillRequirement[];
 
   // Derived
   projectContextString: string;
@@ -134,6 +138,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const [risks, setRisks] = useState<RiskItem[]>([]);
   const [objectives, setObjectives] = useState<Objective[]>([]);
   const [advisors, setAdvisors] = useState<Advisor[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [skillRequirements, setSkillRequirements] = useState<SkillRequirement[]>([]);
 
   // AI & modals
   const [aiConfig, setAiConfigState] = useState<AIProviderConfig>(getStoredSettings);
@@ -183,6 +189,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       riskList,
       objectiveList,
       advisorList,
+      teamMemberList,
+      skillRequirementList,
     ] = await Promise.all([
       db.evidence.where('projectId').equals(projId).toArray(),
       db.competitors.where('projectId').equals(projId).toArray(),
@@ -194,6 +202,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       db.risks.where('projectId').equals(projId).toArray(),
       db.objectives.where('projectId').equals(projId).toArray(),
       db.advisors.where('projectId').equals(projId).toArray(),
+      db.teamMembers.where('projectId').equals(projId).toArray(),
+      db.skillRequirements.where('projectId').equals(projId).toArray(),
     ]);
 
     setEvidence(evList);
@@ -206,6 +216,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     setRisks(riskList);
     setObjectives(objectiveList);
     setAdvisors(advisorList);
+    setTeamMembers(teamMemberList);
+    setSkillRequirements(skillRequirementList);
   }, []);
 
   useEffect(() => {
@@ -222,6 +234,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       setRisks([]);
       setObjectives([]);
       setAdvisors([]);
+      setTeamMembers([]);
+      setSkillRequirements([]);
     }
   }, [currentProject, loadProjectData]);
 
@@ -341,6 +355,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       risks,
       objectives,
       advisors,
+      teamMembers,
+      skillRequirements,
       projectContextString,
       unverifiedEvidenceCount,
       activeExperimentsCount,
@@ -380,6 +396,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       risks,
       objectives,
       advisors,
+      teamMembers,
+      skillRequirements,
       projectContextString,
       unverifiedEvidenceCount,
       activeExperimentsCount,
