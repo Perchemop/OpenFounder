@@ -9,6 +9,11 @@ import {
 } from 'lucide-react';
 import type { CanvasNode, CanvasEdge } from '../types';
 import { db } from '../db';
+import {
+  directionFromKey,
+  moveSpatialSelection,
+  sortForTabOrder,
+} from '../utils/spatialNavigation';
 
 interface CanvasPageProps {
   projectId: string;
@@ -136,6 +141,36 @@ export const CanvasPage: React.FC<CanvasPageProps> = ({ projectId }) => {
     setNodes((prev) => prev.filter((n) => n.id !== nodeId));
     setEdges((prev) => prev.filter((e) => e.fromNodeId !== nodeId && e.toNodeId !== nodeId));
     setSelectedNodeId(null);
+  };
+
+  /**
+   * Keyboard control of the canvas: arrows move the selection to the nearest
+   * node in that direction, Delete/Backspace removes it, and Enter focuses the
+   * node so the user can read it.
+   */
+  const handleNodeKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, node: CanvasNode) => {
+    if (event.key === 'Delete' || event.key === 'Backspace') {
+      event.preventDefault();
+      void db.canvasNodes.delete(node.id);
+      setNodes((current) => current.filter((item) => item.id !== node.id));
+      setEdges((current) =>
+        current.filter((edge) => edge.fromNodeId !== node.id && edge.toNodeId !== node.id)
+      );
+      setSelectedNodeId(null);
+      return;
+    }
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      setSelectedNodeId(node.id);
+      return;
+    }
+
+    const direction = directionFromKey(event.key);
+    if (!direction) return;
+    event.preventDefault();
+    const nextId = moveSpatialSelection(nodes, node.id, direction);
+    if (nextId) setSelectedNodeId(nextId);
   };
 
   const handleNodeMouseDown = (e: React.MouseEvent, node: CanvasNode) => {
@@ -337,8 +372,14 @@ export const CanvasPage: React.FC<CanvasPageProps> = ({ projectId }) => {
             return (
               <div
                 key={node.id}
+                role="button"
+                tabIndex={sortForTabOrder(nodes).findIndex((item) => item.id === node.id) + 1}
+                aria-label={`${node.type} node: ${node.title}`}
+                aria-pressed={selectedNodeId === node.id}
                 onMouseDown={(e) => handleNodeMouseDown(e, node)}
-                className={`absolute w-52 p-3 rounded-xl border shadow-sm transition-shadow pointer-events-auto cursor-pointer ${
+                onKeyDown={(event) => handleNodeKeyDown(event, node)}
+                onFocus={() => setSelectedNodeId(node.id)}
+                className={`absolute w-52 p-3 rounded-xl border shadow-sm transition-shadow pointer-events-auto cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                   colors.bg
                 } ${colors.border} ${
                   isSelected ? 'ring-2 ring-zinc-900 dark:ring-zinc-100 shadow-md' : ''

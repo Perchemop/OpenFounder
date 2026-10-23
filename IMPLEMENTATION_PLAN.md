@@ -37,7 +37,7 @@ is covered by tests.
 ## Phase 3 — Accessibility
 
 - [x] Focus trap and restore for all modals (`useFocusTrap`)
-- [ ] Keyboard navigation for the canvas
+- [x] Keyboard navigation for the canvas (spatial arrow selection, Delete, Enter)
 - [ ] Contrast pass in both themes; automated axe check in CI
 - [ ] Complete `docs/qc/manual-qc.md` keyboard section (code-review pass recorded 2026-10-24; human browser/screen-reader pass still outstanding)
 
