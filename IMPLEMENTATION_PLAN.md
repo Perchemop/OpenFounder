@@ -60,7 +60,9 @@ is covered by tests.
   - `Objective` / `KeyResult` types, schema version 4 export package
   - `src/utils/okr.ts` (progress, health, summary, measured-value updates) + tests
   - `GoalsPage` with create objective, record measured value, source tracking, status
-- [ ] Advisor and mentor log (CoFoundersLab advice + MentorShow coaching, local only)
+- [x] Advisor and mentor log (CoFoundersLab advice + MentorShow coaching, local only)
+  - `src/utils/advisorLog.ts` (urgency, summaries, ordering) + tests
+  - `AdvisorsPage` with sessions, verbatim quotes, commitments, and follow-up state
 - [ ] Team skills coverage (local only)
 - [ ] First-hire pipeline (local only)
 

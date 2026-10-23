@@ -432,6 +432,45 @@ export const AIChatMessageSchema = z.object({
   }).optional(),
 });
 
+export const AdvisorCommitmentSchema = z.object({
+  id: SafeIdSchema,
+  description: z.string().min(1).max(1000),
+  dueDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Due date must be an ISO date (yyyy-mm-dd).' })
+    .optional(),
+  status: z.enum(['open', 'done']),
+});
+
+export const AdvisorSessionSchema = z.object({
+  id: SafeIdSchema,
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, { message: 'Session date must be an ISO date (yyyy-mm-dd).' }),
+  durationMinutes: z.number().int().min(1).max(24 * 60).optional(),
+  topic: z.string().max(500).default(''),
+  adviceGiven: z.string().max(10000).default(''),
+  quotes: z.array(z.string().max(2000)).max(50).default([]),
+  commitments: z.array(AdvisorCommitmentSchema).max(50).default([]),
+  exchanged: z.string().max(200).optional(),
+  createdAt: z.number(),
+});
+
+export const AdvisorSchema = z.object({
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
+  name: z.string().min(1).max(200),
+  role: z.string().max(200).default(''),
+  organisation: z.string().max(200).optional(),
+  contact: z.string().max(200).optional(),
+  expertise: z.array(z.string().max(100)).max(20).default([]),
+  notes: z.string().max(5000).default(''),
+  isSynthetic: z.boolean().optional(),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+  sessions: z.array(AdvisorSessionSchema).max(200).default([]),
+});
+
 export const KeyResultSchema = z.object({
   id: SafeIdSchema,
   title: z.string().min(1).max(300),
@@ -460,7 +499,7 @@ export const ObjectiveSchema = z.object({
 
 // Full Export Package Zod Schema
 export const ExportPackageSchema = z.object({
-  schemaVersion: z.number().int().min(1).max(4),
+  schemaVersion: z.number().int().min(1).max(5),
   exportedAt: z.string(),
   appVersion: z.string().max(50),
   project: ProjectSchema,
@@ -480,6 +519,7 @@ export const ExportPackageSchema = z.object({
   decisions: z.array(ProjectDecisionSchema).max(1000).default([]),
   risks: z.array(RiskItemSchema).max(1000).optional().default([]),
   objectives: z.array(ObjectiveSchema).max(200).optional().default([]),
+  advisors: z.array(AdvisorSchema).max(200).optional().default([]),
   chatMessages: z.array(AIChatMessageSchema).max(5000).optional().default([]),
 });
 

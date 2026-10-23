@@ -24,6 +24,7 @@ import { LandingPageStudio } from './pages/LandingPageStudio';
 import { DocumentsPage } from './pages/DocumentsPage';
 import { RisksPage } from './pages/RisksPage';
 import { GoalsPage } from './pages/GoalsPage';
+import { AdvisorsPage } from './pages/AdvisorsPage';
 
 import { Sparkles, Loader2 } from 'lucide-react';
 
@@ -43,6 +44,7 @@ function AppContent() {
     research,
     risks,
     objectives,
+    advisors,
     projectContextString,
     unverifiedEvidenceCount,
     activeExperimentsCount,
@@ -212,6 +214,15 @@ function AppContent() {
                 />
               )}
 
+              {activeTab === 'advisors' && (
+                <AdvisorsPage
+                  projectId={currentProject.id}
+                  advisors={advisors}
+                  onAdvisorsUpdated={reloadCurrentProjectData}
+                  onOpenAICofounderWithPrompt={openAICofounderWithPrompt}
+                />
+              )}
+
               {activeTab === 'business' && (
                 <BusinessModelPage
                   project={currentProject}
@@ -334,6 +345,7 @@ function AppContent() {
         risks={risks}
         roadmap={roadmap}
         objectives={objectives}
+        advisors={advisors}
       />
     </div>
   );

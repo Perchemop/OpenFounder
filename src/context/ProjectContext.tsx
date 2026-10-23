@@ -27,6 +27,7 @@ import type {
   ResearchSource,
   RiskItem,
   Objective,
+  Advisor,
   AIProviderConfig,
 } from '../types';
 import type { WorkspaceTab } from '../components/layout/Sidebar';
@@ -53,6 +54,7 @@ export interface ProjectContextValue {
   research: ResearchSource[];
   risks: RiskItem[];
   objectives: Objective[];
+  advisors: Advisor[];
 
   // Derived
   projectContextString: string;
@@ -131,6 +133,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const [research, setResearch] = useState<ResearchSource[]>([]);
   const [risks, setRisks] = useState<RiskItem[]>([]);
   const [objectives, setObjectives] = useState<Objective[]>([]);
+  const [advisors, setAdvisors] = useState<Advisor[]>([]);
 
   // AI & modals
   const [aiConfig, setAiConfigState] = useState<AIProviderConfig>(getStoredSettings);
@@ -179,6 +182,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       resList,
       riskList,
       objectiveList,
+      advisorList,
     ] = await Promise.all([
       db.evidence.where('projectId').equals(projId).toArray(),
       db.competitors.where('projectId').equals(projId).toArray(),
@@ -189,6 +193,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       db.research.where('projectId').equals(projId).toArray(),
       db.risks.where('projectId').equals(projId).toArray(),
       db.objectives.where('projectId').equals(projId).toArray(),
+      db.advisors.where('projectId').equals(projId).toArray(),
     ]);
 
     setEvidence(evList);
@@ -200,6 +205,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     setResearch(resList);
     setRisks(riskList);
     setObjectives(objectiveList);
+    setAdvisors(advisorList);
   }, []);
 
   useEffect(() => {
@@ -215,6 +221,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       setResearch([]);
       setRisks([]);
       setObjectives([]);
+      setAdvisors([]);
     }
   }, [currentProject, loadProjectData]);
 
@@ -333,6 +340,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       research,
       risks,
       objectives,
+      advisors,
       projectContextString,
       unverifiedEvidenceCount,
       activeExperimentsCount,
@@ -371,6 +379,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       research,
       risks,
       objectives,
+      advisors,
       projectContextString,
       unverifiedEvidenceCount,
       activeExperimentsCount,

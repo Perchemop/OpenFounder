@@ -9,6 +9,7 @@ import type {
   RiskItem,
   RoadmapItem,
   Objective,
+  Advisor,
 } from '../types';
 
 /**
@@ -23,6 +24,7 @@ export type SearchTab =
   | 'risks'
   | 'roadmap'
   | 'goals'
+  | 'advisors'
   | 'competitors'
   | 'validation'
   | 'mvp';
@@ -34,6 +36,7 @@ export type WorkspaceSearchKind =
   | 'risk'
   | 'roadmap'
   | 'objective'
+  | 'advisor'
   | 'experiment'
   | 'competitor'
   | 'feature';
@@ -45,6 +48,7 @@ export interface WorkspaceSearchData {
   risks?: readonly RiskItem[];
   roadmap?: readonly RoadmapItem[];
   objectives?: readonly Objective[];
+  advisors?: readonly Advisor[];
   experiments?: readonly Experiment[];
   competitors?: readonly Competitor[];
   features?: readonly FeatureItem[];
@@ -84,6 +88,7 @@ const GROUP_ORDER: ReadonlyArray<Pick<WorkspaceSearchGroup, 'kind' | 'label' | '
   { kind: 'risk', label: 'Risks', tab: 'risks' },
   { kind: 'roadmap', label: 'Roadmap', tab: 'roadmap' },
   { kind: 'objective', label: 'Objectives', tab: 'goals' },
+  { kind: 'advisor', label: 'Advisors', tab: 'advisors' },
   { kind: 'experiment', label: 'Experiments', tab: 'validation' },
   { kind: 'competitor', label: 'Competitors', tab: 'competitors' },
   { kind: 'feature', label: 'Features', tab: 'mvp' },
@@ -182,6 +187,29 @@ function buildCandidates(data: WorkspaceSearchData): Candidate[] {
       title: item.title,
       detail: `${item.status} · ${met}/${item.keyResults.length} key results met`,
       body: joinText(item.description, item.owner, item.timeframe, item.keyResults.map((keyResult) => keyResult.title)),
+    });
+  }
+
+  for (const item of data.advisors ?? []) {
+    const sessionCount = item.sessions.length;
+    const open = item.sessions
+      .flatMap((session) => session.commitments)
+      .filter((commitment) => commitment.status === 'open').length;
+    candidates.push({
+      id: item.id,
+      kind: 'advisor',
+      tab: 'advisors',
+      title: item.name,
+      detail: [item.role, `${sessionCount} sessions`, open > 0 ? `${open} open` : undefined]
+        .filter(Boolean)
+        .join(' · '),
+      body: joinText(
+        item.organisation,
+        item.contact,
+        item.expertise,
+        item.notes,
+        item.sessions.map((session) => `${session.topic} ${session.adviceGiven}`)
+      ),
     });
   }
 
