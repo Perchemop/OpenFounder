@@ -3,18 +3,22 @@ import {
   Scale,
   Plus,
   AlertTriangle,
-  CheckCircle2,
-  HelpCircle,
+  ShieldCheck,
+  ShieldAlert,
   Trash2,
   Edit2,
-  ExternalLink,
-  Filter,
-  Sparkles,
+  X,
 } from 'lucide-react';
 import type { EvidenceItem, EvidenceStatus, ClaimType } from '../types';
 import { db } from '../db';
 import { generateEvidenceMatrix, suggestProjectField } from '../ai/autoCompleteService';
 import { AIAutoFillButton } from '../components/ai/AIAutoFillButton';
+import {
+  evaluateEvidencePromotion,
+  summarizeEvidenceIntegrity,
+  describeMissingEvidence,
+  type PromotionBlocker,
+} from '../utils/evidenceIntegrity';
 
 interface EvidencePageProps {
   projectId: string;
@@ -80,6 +84,56 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
   const [sourceUrl, setSourceUrl] = useState('');
   const [confidence, setConfidence] = useState<'low' | 'medium' | 'high'>('medium');
   const [nextTest, setNextTest] = useState('');
+  const [formError, setFormError] = useState<string[]>([]);
+
+  // Edit flow for an existing claim
+  const [editingItem, setEditingItem] = useState<EvidenceItem | null>(null);
+  const [editError, setEditError] = useState<string[]>([]);
+
+  // Blocked status promotion that needs more evidence
+  const [pendingPromotion, setPendingPromotion] = useState<{
+    item: EvidenceItem;
+    target: EvidenceStatus;
+    blockers: PromotionBlocker[];
+  } | null>(null);
+
+  const resetDraft = () => {
+    setClaim('');
+    setType('problem');
+    setStatus('assumption');
+    setEvidenceNotes('');
+    setSourceTitle('');
+    setSourceUrl('');
+    setConfidence('medium');
+    setNextTest('');
+    setFormError([]);
+  };
+
+  const openCreateModal = () => {
+    resetDraft();
+    setIsAddModalOpen(true);
+  };
+
+  const openEditModal = (item: EvidenceItem) => {
+    setEditingItem(item);
+    setEditError([]);
+    setClaim(item.claim);
+    setType(item.type);
+    setStatus(item.status);
+    setEvidenceNotes(item.evidenceNotes ?? '');
+    setSourceTitle(item.sourceTitle ?? '');
+    setSourceUrl(item.sourceUrl ?? '');
+    setConfidence(item.confidence);
+    setNextTest(item.nextTest ?? '');
+  };
+
+  const closeEditModal = () => {
+    setEditingItem(null);
+    setEditError([]);
+    resetDraft();
+  };
+
+  const integrity = summarizeEvidenceIntegrity(evidence);
 
   const handleGenerateMatrix = async () => {
     setIsGeneratingMatrix(true);
@@ -162,6 +216,22 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
     e.preventDefault();
     if (!claim.trim()) return;
 
+    const evaluation = evaluateEvidencePromotion(
+      {
+        claim: claim.trim(),
+        status: 'unverified',
+        evidenceNotes,
+        sourceTitle,
+        sourceUrl,
+      },
+      status
+    );
+
+    if (!evaluation.allowed) {
+      setFormError(evaluation.blockers.map((blocker) => blocker.message));
+      return;
+    }
+
     const now = Date.now();
     const newItem: EvidenceItem = {
       id: `ev-${now}-${Math.random().toString(36).substring(2, 6)}`,
@@ -179,21 +249,72 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
     };
 
     await db.evidence.put(newItem);
-    setClaim('');
-    setEvidenceNotes('');
-    setSourceTitle('');
-    setSourceUrl('');
-    setNextTest('');
+    resetDraft();
     setIsAddModalOpen(false);
     onEvidenceUpdated();
   };
 
-  const handleUpdateStatus = async (id: string, newStatus: EvidenceStatus) => {
-    await db.evidence.update(id, {
+  const handleUpdateStatus = async (item: EvidenceItem, newStatus: EvidenceStatus) => {
+    const evaluation = evaluateEvidencePromotion(item, newStatus);
+
+    if (!evaluation.allowed) {
+      setPendingPromotion({
+        item,
+        target: newStatus,
+        blockers: evaluation.blockers,
+      });
+      return;
+    }
+
+    await db.evidence.update(item.id, {
       status: newStatus,
       updatedAt: Date.now(),
     });
     onEvidenceUpdated();
+  };
+
+  const handleStartPromotion = () => {
+    if (!pendingPromotion) return;
+    const { item, target } = pendingPromotion;
+    openEditModal(item);
+    setStatus(target);
+    setEditError([]);
+    setPendingPromotion(null);
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingItem || !claim.trim()) return;
+
+    const evaluation = evaluateEvidencePromotion(
+      {
+        claim: claim.trim(),
+        status: editingItem.status,
+        evidenceNotes,
+        sourceTitle,
+        sourceUrl,
+      },
+      status
+    );
+
+    if (!evaluation.allowed) {
+      setEditError(evaluation.blockers.map((blocker) => blocker.message));
+      return;
+    }
+
+    await db.evidence.update(editingItem.id, {
+      claim: claim.trim(),
+      type,
+      status,
+      evidenceNotes,
+      sourceTitle,
+      sourceUrl,
+      confidence,
+      nextTest,
+      updatedAt: Date.now(),
+    });
+    onEvidenceUpdated();
+    closeEditModal();
   };
 
   const handleDeleteClaim = async (id: string) => {
@@ -227,7 +348,7 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
             variant="subtle"
           />
           <button
-            onClick={() => setIsAddModalOpen(true)}
+            onClick={openCreateModal}
             className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs"
           >
             <Plus className="w-4 h-4" />
@@ -235,6 +356,59 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Evidence integrity summary */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3">
+          <div className="text-[10px] uppercase tracking-wider font-semibold text-zinc-500">
+            Claims
+          </div>
+          <div className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+            {integrity.total}
+          </div>
+        </div>
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3">
+          <div className="text-[10px] uppercase tracking-wider font-semibold text-zinc-500 flex items-center space-x-1">
+            <ShieldCheck className="w-3 h-3 text-emerald-500" />
+            <span>Supported</span>
+          </div>
+          <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+            {integrity.supported}
+            <span className="text-[11px] font-medium text-zinc-400 ml-1">
+              ({integrity.coveragePct}%)
+            </span>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3">
+          <div className="text-[10px] uppercase tracking-wider font-semibold text-zinc-500 flex items-center space-x-1">
+            <ShieldAlert className="w-3 h-3 text-rose-500" />
+            <span>Unsupported</span>
+          </div>
+          <div className="text-lg font-bold text-rose-600 dark:text-rose-400">
+            {integrity.unsupported}
+          </div>
+        </div>
+        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3">
+          <div className="text-[10px] uppercase tracking-wider font-semibold text-zinc-500">
+            Customer / experiment verified
+          </div>
+          <div className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+            {integrity.verified}
+          </div>
+        </div>
+      </div>
+
+      {integrity.weakestType && integrity.unsupported > 0 && (
+        <p className="text-[11px] text-zinc-500 -mt-1">
+          Weakest area:{' '}
+          <span className="font-semibold capitalize text-zinc-700 dark:text-zinc-300">
+            {integrity.weakestType}
+          </span>{' '}
+          — {integrity.byType[0].unsupported} unsupported claim
+          {integrity.byType[0].unsupported === 1 ? '' : 's'}. Promotion to a stronger status
+          requires the matching evidence.
+        </p>
+      )}
 
       {/* Assumption Health Warning Banner if unverified count > 0 */}
       {unverifiedCount > 0 && (
@@ -267,6 +441,7 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
           [
             'unverified',
             'assumption',
+            'anecdotal',
             'customer_confirmed',
             'experiment_confirmed',
             'research_backed',
@@ -330,8 +505,9 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
                       <select
                         value={item.status}
                         onChange={(e) =>
-                          handleUpdateStatus(item.id, e.target.value as EvidenceStatus)
+                          handleUpdateStatus(item, e.target.value as EvidenceStatus)
                         }
+                        title="Promotions require supporting evidence; downgrades are always allowed."
                         className={`text-[11px] font-semibold px-2 py-1 rounded-md border cursor-pointer focus:outline-none ${
                           STATUS_CONFIG[item.status].badgeClass
                         }`}
@@ -361,6 +537,13 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
                     </td>
 
                     <td className="p-3.5 pr-4 text-right whitespace-nowrap">
+                      <button
+                        onClick={() => openEditModal(item)}
+                        className="p-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                        title="Edit claim and evidence"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
                       <button
                         onClick={() => handleDeleteClaim(item.id)}
                         className="p-1.5 text-zinc-400 hover:text-rose-600 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
@@ -402,6 +585,19 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
             </div>
 
             <form onSubmit={handleCreateClaim} className="space-y-3 text-xs">
+              {formError.length > 0 && (
+                <div className="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 rounded-lg text-rose-800 dark:text-rose-300 space-y-1">
+                  <div className="font-semibold flex items-center space-x-1.5">
+                    <ShieldAlert className="w-3.5 h-3.5" />
+                    <span>This status needs more evidence</span>
+                  </div>
+                  <ul className="list-disc list-inside space-y-0.5">
+                    {formError.map((message) => (
+                      <li key={message}>{message}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <label className="font-medium text-zinc-700 dark:text-zinc-300">
@@ -541,6 +737,233 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Edit Claim Modal */}
+      {editingItem && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-lg w-full p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
+              <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                Edit Claim & Evidence
+              </h3>
+              <button
+                onClick={closeEditModal}
+                className="text-zinc-400 hover:text-zinc-600"
+                aria-label="Close edit claim dialog"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEdit} className="space-y-3 text-xs">
+              {editError.length > 0 && (
+                <div className="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 rounded-lg text-rose-800 dark:text-rose-300 space-y-1">
+                  <div className="font-semibold flex items-center space-x-1.5">
+                    <ShieldAlert className="w-3.5 h-3.5" />
+                    <span>Promotion blocked — nothing was saved</span>
+                  </div>
+                  <ul className="list-disc list-inside space-y-0.5">
+                    {editError.map((message) => (
+                      <li key={message}>{message}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div>
+                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                  Claim / Hypothesis Statement <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  rows={2}
+                  required
+                  value={claim}
+                  onChange={(e) => setClaim(e.target.value)}
+                  className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 text-zinc-900 dark:text-zinc-100"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                    Claim Type
+                  </label>
+                  <select
+                    value={type}
+                    onChange={(e) => setType(e.target.value as ClaimType)}
+                    className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2"
+                  >
+                    <option value="problem">Problem Severity / Existence</option>
+                    <option value="customer">Customer Segment / Reach</option>
+                    <option value="pricing">Willingness to Pay / Price</option>
+                    <option value="market">Market Size / Demand</option>
+                    <option value="feasibility">Technical Feasibility</option>
+                    <option value="distribution">Distribution / Channel</option>
+                    <option value="retention">Retention / Habituation</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                    Status
+                  </label>
+                  <select
+                    value={status}
+                    onChange={(e) => {
+                      setStatus(e.target.value as EvidenceStatus);
+                      setEditError([]);
+                    }}
+                    className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2"
+                  >
+                    <option value="unverified">Unverified (Leap of faith)</option>
+                    <option value="assumption">Assumption (Internal belief)</option>
+                    <option value="anecdotal">Anecdotal</option>
+                    <option value="research_backed">Research-Backed</option>
+                    <option value="customer_confirmed">Customer-Confirmed</option>
+                    <option value="experiment_confirmed">Experiment-Confirmed</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                  Evidence Notes / Verbatim Quote
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder={'Research-backed: summarise the finding. Customer-confirmed: paste the quote, for example "I would cancel Angi tomorrow".'}
+                  value={evidenceNotes}
+                  onChange={(e) => setEvidenceNotes(e.target.value)}
+                  className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 text-zinc-900 dark:text-zinc-100"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                    Confidence
+                  </label>
+                  <select
+                    value={confidence}
+                    onChange={(e) =>
+                      setConfidence(e.target.value as 'low' | 'medium' | 'high')
+                    }
+                    className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2"
+                  >
+                    <option value="low">Low Confidence</option>
+                    <option value="medium">Medium Confidence</option>
+                    <option value="high">High Confidence</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                    Source Reference Title
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Plumber interview #2"
+                    value={sourceTitle}
+                    onChange={(e) => setSourceTitle(e.target.value)}
+                    className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                  Source URL
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://..."
+                  value={sourceUrl}
+                  onChange={(e) => setSourceUrl(e.target.value)}
+                  className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2"
+                />
+              </div>
+
+              <div>
+                <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                  Next Falsification Test
+                </label>
+                <input
+                  type="text"
+                  placeholder="What specific test would prove this assumption false?"
+                  value={nextTest}
+                  onChange={(e) => setNextTest(e.target.value)}
+                  className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 text-zinc-900 dark:text-zinc-100"
+                />
+              </div>
+
+              <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  className="px-3 py-1.5 text-zinc-600 hover:text-zinc-900 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Blocked promotion dialog */}
+      {pendingPromotion && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-md w-full p-5 shadow-2xl space-y-4">
+            <div className="flex items-start space-x-3">
+              <ShieldAlert className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                  Evidence required
+                </h3>
+                <p className="text-xs text-zinc-500 leading-relaxed">
+                  “{pendingPromotion.item.claim}” cannot be marked{' '}
+                  <strong className="capitalize">
+                    {STATUS_CONFIG[pendingPromotion.target].label}
+                  </strong>{' '}
+                  yet. The claim stays{' '}
+                  <strong className="capitalize">
+                    {STATUS_CONFIG[pendingPromotion.item.status].label}
+                  </strong>{' '}
+                  until the following is recorded:
+                </p>
+              </div>
+            </div>
+
+            <ul className="text-xs text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 rounded-lg p-3 space-y-1 list-disc list-inside">
+              {pendingPromotion.blockers.map((blocker) => (
+                <li key={blocker.code}>{blocker.message}</li>
+              ))}
+            </ul>
+
+            <p className="text-[11px] text-zinc-500 leading-relaxed">
+              Next step: {describeMissingEvidence(pendingPromotion.item)}
+            </p>
+
+            <div className="flex justify-end space-x-2 text-xs">
+              <button
+                onClick={() => setPendingPromotion(null)}
+                className="px-3 py-1.5 text-zinc-600 hover:text-zinc-900 rounded-lg"
+              >
+                Keep current status
+              </button>
+              <button
+                onClick={handleStartPromotion}
+                className="px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+              >
+                Add evidence & promote
+              </button>
+            </div>
           </div>
         </div>
       )}

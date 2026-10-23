@@ -1,5 +1,7 @@
 # OpenFounder
 
+[![CI](https://github.com/Perchemop/OpenFounder/actions/workflows/ci.yml/badge.svg)](https://github.com/Perchemop/OpenFounder/actions/workflows/ci.yml)
+
 **Evidence-driven AI co-founder workspace for startup validation.**
 
 OpenFounder helps founders move from idea → validated problem → tested solution by treating every claim as an assumption until proven otherwise. It combines structured workflows (phases, evidence ledger, experiments, interviews, risk register) with a multi-provider AI co-founder that refuses to invent sources or customer quotes.
@@ -20,7 +22,9 @@ OpenFounder helps founders move from idea → validated problem → tested solut
 ### Workspace Modules
 - **Dashboard** – Project health, risk snapshot (open / hot / mitigated), and highest-value next action
 - **Phases** – Guided 10-phase founder journey with required tasks
-- **Evidence Ledger** – Claims with status (unverified → experiment_confirmed)
+- **Evidence Ledger** – Claims with status (unverified → experiment_confirmed), verbatim
+  quotes, sources, and a promotion guardrail: a claim cannot be marked research-backed,
+  customer-confirmed, or experiment-confirmed without the matching evidence.
 - **Risk Register** – Impact × probability scoring, filters, mitigation & next tests
 - **Research** – Structured source logging
 - **Competitors** – Teardowns with strengths/weaknesses/complaints
@@ -71,18 +75,22 @@ Keyboard shortcuts:
 git clone https://github.com/Perchemop/OpenFounder.git
 cd OpenFounder
 
-npm install          # or bun install
+bun install          # canonical package manager (bun.lock is committed)
 
 # Full stack (Express + Vite) – recommended
-npm run dev
+bun run dev
 
 # Frontend only
-npm run dev:vite
+bun run dev:vite
 
-npm run lint         # tsc --noEmit
-npm test             # vitest run
-npm run build:static # production static assets
+bun run lint         # tsc --noEmit
+bun run test         # vitest run
+bun run build:static # production static assets
 ```
+
+CI (`.github/workflows/ci.yml`) runs the type check, the test suite on Ubuntu, macOS, and
+Windows, and the static build on every pull request. Treat CI as the authority rather than a
+local run.
 
 ### Environment
 
@@ -167,10 +175,32 @@ npm test
 Coverage includes:
 - Zod / export validation
 - Risk scoring (`riskScore`, hot/open, sort)
+- Evidence integrity promotion rules (`evaluateEvidencePromotion`, integrity summary)
 - Model defaults (`buildGeminiModelCandidates`, parse/format fallbacks)
 - `buildProjectContext`
 - `FOUNDER_PHASES` structure
 - `generateId` uniqueness & format
+
+---
+
+## Project documentation
+
+| Document | Purpose |
+| --- | --- |
+| [docs/project-brief.md](docs/project-brief.md) | Product identity, user, problem, success definition |
+| [docs/scope.md](docs/scope.md) | In-scope and out-of-scope capabilities |
+| [docs/inspiration.md](docs/inspiration.md) | Public frameworks and clean-room boundary |
+| [docs/architecture.md](docs/architecture.md) | Stack, runtime shape, data model, domain rules |
+| [docs/parity.md](docs/parity.md) | Capability matrix with honest status |
+| [docs/assumptions-and-questions.md](docs/assumptions-and-questions.md) | Assumptions and open questions |
+| [docs/development.md](docs/development.md) | Contribution flow and CI-only verification |
+| [docs/qc/manual-qc.md](docs/qc/manual-qc.md) | Manual quality checklist |
+| [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | Vertical-slice plan |
+| [REQUIREMENTS_TRACEABILITY.md](REQUIREMENTS_TRACEABILITY.md) | Requirement → code → test mapping |
+| [DECISIONS.md](DECISIONS.md) | Decision log |
+| [PROGRESS.md](PROGRESS.md) | Session log with verified results |
+| [CHANGELOG.md](CHANGELOG.md) | Release notes |
+| [ATTRIBUTION.md](ATTRIBUTION.md) | Third-party licences and asset provenance |
 
 ---
 
@@ -181,6 +211,11 @@ Coverage includes:
 - [x] Risk Register UI + Dashboard snapshot
 - [x] Expanded unit tests
 - [x] Configurable model lists, temperature, max tokens
+- [x] Evidence integrity guardrails + claim editing
+- [x] Pull-request CI on Ubuntu, macOS, and Windows
+- [x] Documentation and tracking baseline
+- [ ] Dashboard evidence-integrity score
+- [ ] Full-text search across research, interviews, risks, roadmap
 - [ ] Accessibility audit
 - [ ] Optional cloud sync (still local-first)
 
@@ -188,7 +223,7 @@ Coverage includes:
 
 ## License
 
-Private / All rights reserved (update as needed).
+MIT — see [LICENSE](LICENSE) and [ATTRIBUTION.md](ATTRIBUTION.md).
 
 ---
 

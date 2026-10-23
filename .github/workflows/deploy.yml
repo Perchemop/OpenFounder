@@ -12,7 +12,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: 'pages'
+  group: pages
   cancel-in-progress: true
 
 jobs:
@@ -22,34 +22,33 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
-          cache: 'npm'
+          bun-version: latest
 
-      - name: Install Dependencies
-        run: npm ci
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
 
-      - name: Verify Types & Lint
-        run: npm run lint
+      - name: Verify types
+        run: bun run lint
 
-      - name: Run Test Suite
-        run: npm test
+      - name: Run tests
+        run: bun run test
 
-      - name: Build Static App (Zero Server Dependency)
-        run: npm run build:static
+      - name: Build static app
+        run: bun run build:static
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v4
 
-      - name: Upload Static Artifact
+      - name: Upload static artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: ./dist
 
       - name: Deploy to GitHub Pages
         id: deployment
