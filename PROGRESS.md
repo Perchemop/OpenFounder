@@ -2,6 +2,36 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-23 — Team and skills coverage (R-039, R-040)
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- Added `TeamMember` and `SkillRequirement` types; export/import moved to schema version 6.
+- Added `src/utils/skillCoverage.ts`: proficiency mapping, coverage status, derived gap list,
+  and a summary. Explicitly no hidden per-person scoring: a listed skill counts as "working"
+  level, and advisor-only coverage is capped at "thin".
+- Added `TeamPage`: members (role, commitment, skills, focus), requirements (skill, why,
+  importance, target level), derived coverage per skill, and a named gap list.
+- Wired into the sidebar, command palette, workspace search, and `ProjectContext`.
+
+### Verification
+
+- CI run 1 **failed the type check**: `Users` was imported twice in the sidebar and the palette,
+  the coverage summary was missing its `gaps` field, and `TeamPage` read it. All three fixed.
+- CI run 2 **failed two unit tests**, both of which were the tests being wrong rather than the
+  rules: skill matching needed whitespace normalisation (fixed in the rule, tested), and the
+  advisor-only test gave a full-time member the same skill, so the rule could not have applied.
+  That test now isolates advisor-only coverage and asserts the cap.
+- CI run 3 on commit `6949064` **succeeded** on every required check: `verify (ubuntu-latest)`,
+  `verify (macos-latest)`, `verify (windows-latest)`, `build (static)`, and `summary`.
+
+### Known gaps
+
+- Import paths for the new schema versions have no round-trip tests (R-035, R-038, R-040).
+- Manual QC checklist not yet executed (R-030).
+
 ## 2026-10-23 — Advisor and mentor log (R-037, R-038)
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
