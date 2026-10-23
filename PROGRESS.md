@@ -2,6 +2,44 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-23 — Competitive benchmark and goals/key results (R-034…R-036)
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- Read the public marketing sites of five products the user named as references
+  (cofounder.co, cofounderslab.com, mentorshow.com, eightfold.ai, cascade.app) and recorded
+  what each actually does in `docs/competitive-benchmark.md`.
+- Recorded the scope decision in `DECISIONS.md` D-008: emulate capability classes that fit a
+  local-first founder workspace; do not fake marketplaces, licensed content, enterprise
+  integrations, or autonomous external actions.
+- Added `Objective` and `KeyResult` types with unit, direction, baseline, target, and current
+  value, and moved the export package to schema version 4 so objectives survive export/import.
+- Added `src/utils/okr.ts` (progress, status bands, objective health, scorecard summary, pure
+  measured-value updates) and unit tests.
+- Added `GoalsPage`: create objectives with dynamic key results, record current values with an
+  optional source, set status, delete, and see a derived summary.
+- Wired the goals page into the sidebar, the command palette, and workspace search.
+
+Two of the five named products are not founder tools: MentorShow is a French personal-development
+masterclass subscription, and Eightfold AI is enterprise talent intelligence. Their transferable
+capabilities are logged in the benchmark rather than copied.
+
+### Verification
+
+- CI run 1 **failed one unit test** in `okr.test.ts`: the `summarizeOkrs` expectation was wrong,
+  not the code — a 50 % key result is `at_risk` under the documented bands, and an earlier test
+  in the same file already asserted that. Fixed.
+- CI run 2 on commit `25c3021` **succeeded** on every required check: `verify (ubuntu-latest)`,
+  `verify (macos-latest)`, `verify (windows-latest)`, `build (static)`, and `summary`.
+
+### Known gaps
+
+- Manual QC checklist not yet executed (R-030).
+- One-page validation report export is still partial (R-032).
+- The objectives import path has no dedicated test (R-035).
+
 ## 2026-10-23 — Full-text workspace search (R-029)
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
