@@ -108,9 +108,8 @@ export function buildValidationReport(input: ValidationReportInput): string {
   lines.push('## Evidence');
   lines.push('');
   if (evidence.length === 0) {
-    lines.push(
-      '_No claims recorded yet. Nothing here should be read as validated, and there are no customer- or experiment-verified claims either._'
-    );
+    lines.push('_No claims recorded yet. Nothing here should be read as validated._');
+    lines.push('_No customer- or experiment-verified claims yet._');
   } else {
     const strongest = evidence
       .filter((claim) => claim.status === 'customer_confirmed' || claim.status === 'experiment_confirmed')
