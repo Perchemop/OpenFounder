@@ -36,7 +36,7 @@ see `PROGRESS.md` for the current result.
 | R-027 | Pull requests are verified by CI (lint, tests, build) | `.github/workflows/ci.yml` | CI itself | Done |
 | R-028 | Project is MIT licensed with attribution | `LICENSE`, `ATTRIBUTION.md` | — | Done |
 | R-029 | Command palette searches research, interviews, risks, roadmap | `src/utils/workspaceSearch.ts`, `CommandPalette` | `workspaceSearch.test.ts` | Done |
-| R-030 | Accessibility audit and keyboard pass recorded | `docs/qc/manual-qc.md`, `src/hooks/useFocusTrap.ts` | `focusTrap.test.ts`, `paletteNavigation.test.ts` | Partial (code-review pass recorded; human pass outstanding) |
+| R-030 | Accessibility audit and keyboard pass recorded | `docs/qc/manual-qc.md`, `src/hooks/useFocusTrap.ts`, `CanvasPage` | `focusTrap.test.ts`, `paletteNavigation.test.ts`, `spatialNavigation.test.ts` | Partial (code-review pass recorded; human pass outstanding) |
 | R-031 | Dashboard surfaces the evidence integrity score | `DashboardPage`, `src/utils/evidenceIntegrity.ts` | `src/utils/evidenceIntegrity.test.ts` | Done |
 | R-032 | One-page validation report export | `src/utils/validationReport.ts`, `DocumentsPage` | `validationReport.test.ts` | Done |
 
@@ -52,3 +52,5 @@ see `PROGRESS.md` for the current result.
 
 | R-041 | All overlays trap focus, close on Escape, and restore focus | `src/hooks/useFocusTrap.ts`, CommandPalette, NewProjectModal, SettingsModal | `focusTrap.test.ts` | Done |
 | R-042 | Command palette is fully keyboard navigable | `src/components/modals/CommandPalette.tsx`, `src/utils/paletteNavigation.ts` | `paletteNavigation.test.ts` | Done |
+
+| R-043 | Canvas is keyboard navigable with spatial arrow movements | `src/pages/CanvasPage.tsx`, `src/utils/spatialNavigation.ts` | `spatialNavigation.test.ts` | Done |

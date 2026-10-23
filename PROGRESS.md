@@ -2,6 +2,34 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-24 · Canvas keyboard navigation (R-043)
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- Added `src/utils/spatialNavigation.ts` + tests: arrow keys select the nearest node in the
+  requested direction; candidates are ranked by travel in that direction with lateral drift
+  penalised, so a node directly below beats one diagonally below-and-far.
+- `CanvasPage`: nodes are reachable by Tab in reading order, carry `aria-label`/`aria-pressed`,
+  respond to arrows and Enter/Space, and Delete/Backspace removes the node and its edges.
+
+### Verification
+
+- CI run 1 **failed the type check**: stored canvas nodes have optional `width`/`height`, which
+  the spatial descriptor required. The descriptor now treats size as optional with documented
+  defaults rather than forcing callers to fake values.
+- CI run 2 **failed one test** because my fixture put a node diagonally nearer in travel distance
+  than the node I expected; the rule was right and the expectation was wrong. The fixture is now
+  aligned in the same column, and two extra tests document the lateral-drift penalty explicitly.
+- CI run 3 on commit `ef53e07` **succeeded** on every required check: `verify (ubuntu-latest)`,
+  `verify (macos-latest)`, `verify (windows-latest)`, `build (static)`, and `summary`.
+
+### Known gaps
+
+- Human keyboard and screen-reader pass is still not done (R-030 remains Partial).
+- No automated accessibility (axe) check in CI.
+
 ## 2026-10-24 · Modal focus trap and palette keyboard navigation (R-041, R-042)
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

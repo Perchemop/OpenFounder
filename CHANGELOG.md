@@ -46,6 +46,10 @@ semantic versioning for its export schema and application releases.
 - Command palette keyboard navigation: arrow keys, Home/End, Enter, and a selected-row highlight
   that is not colour-alone.
 
+- Canvas keyboard navigation (`src/utils/spatialNavigation.ts`): arrow keys select the nearest
+  node in that direction, nodes are reachable by Tab in reading order, Delete removes a node, and
+  focus visibly indicates the selected node.
+
 ### Changed
 
 - Pages deploy workflow now installs with Bun instead of `npm ci`, which failed because the
