@@ -69,7 +69,7 @@ export function deriveSkillCoverage(
   requirements: readonly SkillRequirement[],
   members: readonly TeamMember[]
 ): SkillCoverage[] {
-  const lower = (value: string) => value.trim().toLowerCase();
+  const lower = (value: string) => value.trim().toLowerCase().replace(/\s+/g, ' ');
 
   return requirements.map((requirement) => {
     const targetLevel = targetLevelToNumber(requirement.targetLevel);
@@ -92,7 +92,7 @@ export function deriveSkillCoverage(
     let note: string;
     if (status === 'missing') {
       note = 'Nobody on the team claims this skill.';
-    } else if (status === 'thin' && carriedByAdvisorOnly) {
+    } else if (carriedByAdvisorOnly) {
       note = 'Only covered through an advisor; someone building it must learn it.';
     } else if (status === 'thin') {
       note = 'Close to the level needed, but not there yet.';
@@ -114,7 +114,8 @@ export function deriveSkillCoverage(
 export function proficiencyFromMember(member: TeamMember, skill: string): number {
   // Members carry skills as a plain list; a per-skill level is not stored, so
   // a listed skill means "working" until a level is recorded explicitly.
-  const listed = member.skills.some((entry) => entry.trim().toLowerCase() === skill.trim().toLowerCase());
+  const normalise = (value: string) => value.trim().toLowerCase().replace(/\s+/g, ' ');
+  const listed = member.skills.some((entry) => normalise(entry) === normalise(skill));
   return listed ? PROFICIENCY_LEVELS.indexOf('working') : 0;
 }
 
