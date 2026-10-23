@@ -2,6 +2,35 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-23 — Full-text workspace search (R-029)
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- Added `src/utils/workspaceSearch.ts`: pure, tokenised, case-insensitive search over evidence,
+  research, interviews, risks, roadmap, experiments, competitors, and features. Title matches
+  rank above body matches and results are capped per entity type.
+- Rewired the command palette to use it, grouped results by entity with the owning page as the
+  destination, added the four missing data sources from `App`, and added an explicit no-match
+  state.
+- Added `src/utils/workspaceSearch.test.ts` covering short queries, case-insensitivity, every
+  entity type, body matching, token order, tab mapping, ranking, per-kind limits, and grouping.
+
+### Verification
+
+- CI run 1 **failed on the type check**: two fixtures were incomplete (`CustomerInterview`
+  requires `surprisesOrObjections`; `commercial` is not a `RiskCategory`). Fixed.
+- CI run 2 **failed one unit test**: the grouping test forgot that the experiment hypothesis
+  also contains "late payments", so four groups are returned, not three. The test was wrong,
+  not the search. Fixed.
+- CI run 3 on commit `9ffe4c7` **succeeded** on every required check: `verify (ubuntu-latest)`,
+  `verify (macos-latest)`, `verify (windows-latest)`, `build (static)`, and `summary`.
+
+### Known gaps
+
+- Manual QC checklist not yet executed (R-030).
+
 ## 2026-10-23 — Dashboard evidence integrity (R-031)
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
@@ -20,7 +49,6 @@ Newest first. Only claim what is recorded and verified. CI result is authoritati
 
 ### Known gaps
 
-- Command palette does not search research/interviews/risks/roadmap (R-029).
 - Manual QC checklist not yet executed (R-030).
 
 ## 2026-10-23 — Foundation and evidence integrity
