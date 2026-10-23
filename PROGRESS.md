@@ -2,6 +2,27 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-23 — Dashboard evidence integrity (R-031)
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- Added an Evidence Integrity panel to the dashboard: supported-claim coverage, supported /
+  verified / unsupported counts, and the weakest claim type, each linking to the ledger.
+- Reused `summarizeEvidenceIntegrity` rather than recomputing the numbers in the component, so
+  the dashboard and the ledger cannot disagree.
+
+### Verification
+
+- CI on this slice **succeeded** on every required check: `verify (ubuntu-latest)`,
+  `verify (macos-latest)`, `verify (windows-latest)`, `build (static)`, and `summary`.
+
+### Known gaps
+
+- Command palette does not search research/interviews/risks/roadmap (R-029).
+- Manual QC checklist not yet executed (R-030).
+
 ## 2026-10-23 — Foundation and evidence integrity
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
