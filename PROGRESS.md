@@ -2,6 +2,35 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-23 — One-page validation report (R-032)
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- Added `src/utils/validationReport.ts`: a pure builder for the one-page report covering the
+  problem, riskiest unsupported assumptions, open risks, verified evidence, recorded decisions,
+  and the next action.
+- Every listed claim carries provenance (type, confidence, source, URL, recorded time); the
+  unsupported list is capped and states how many more exist.
+- Wired it into the Reports page as a template, with the demo-mode banner preserved for
+  synthetic projects.
+
+### Verification
+
+- CI run 1 **failed the type check**: an earlier bulk edit had put `objectives`/`teamMembers`
+  props on the dashboard instead of the Documents page. Reverted.
+- CI run 2 **failed one test**, then run 3 failed again on the same test: the empty-evidence
+  branch and the "no verified claims" branch used different sentences, so the report could say
+  only one of the two things it needed to say. Both now print, and the test passes.
+- CI run 4 on commit `4dc3154` **succeeded** on every required check: `verify (ubuntu-latest)`,
+  `verify (macos-latest)`, `verify (windows-latest)`, `build (static)`, and `summary`.
+
+### Known gaps
+
+- Import round trips for schema versions 4–6 still have no dedicated tests.
+- Manual QC checklist not yet executed (R-030).
+
 ## 2026-10-23 — Team and skills coverage (R-039, R-040)
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
