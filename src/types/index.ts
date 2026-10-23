@@ -262,6 +262,7 @@ export interface ProjectWorkspace {
   decisions: ProjectDecision[];
   risks: RiskItem[];
   objectives: Objective[];
+  advisors: Advisor[];
 }
 
 export interface CanvasEdge {
@@ -451,6 +452,51 @@ export interface Objective {
   updatedAt: number;
 }
 
+/** One action the founder promised an advisor they would take. */
+export interface AdvisorCommitment {
+  id: string;
+  description: string;
+  /** ISO date (yyyy-mm-dd). Optional: an open commitment may be undated. */
+  dueDate?: string;
+  status: 'open' | 'done';
+}
+
+/** A logged session with one advisor. */
+export interface AdvisorSession {
+  id: string;
+  /** ISO date (yyyy-mm-dd). */
+  date: string;
+  durationMinutes?: number;
+  topic: string;
+  adviceGiven: string;
+  /** Verbatim words, where the founder wrote them down. */
+  quotes: string[];
+  commitments: AdvisorCommitment[];
+  /** Whether the session was free, paid, barter, or something else. */
+  exchanged?: string;
+  createdAt: number;
+}
+
+/**
+ * A person the founder gets advice from. Sessions live on the advisor so the
+ * log reads as a relationship, not a pile of meetings.
+ */
+export interface Advisor {
+  id: string;
+  projectId: string;
+  name: string;
+  role: string;
+  organisation?: string;
+  /** Email, handle, or "met at X". Contact details are for the founder's use. */
+  contact?: string;
+  expertise: string[];
+  notes: string;
+  isSynthetic?: boolean;
+  createdAt: number;
+  updatedAt: number;
+  sessions: AdvisorSession[];
+}
+
 export interface AIChatMessage {
   id: string;
   projectId?: string;
@@ -506,5 +552,6 @@ export interface ExportPackage {
   decisions: ProjectDecision[];
   risks?: RiskItem[];
   objectives?: Objective[];
+  advisors?: Advisor[];
   chatMessages?: AIChatMessage[];
 }

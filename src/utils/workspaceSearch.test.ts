@@ -10,6 +10,7 @@ import type {
   RiskItem,
   RoadmapItem,
   Objective,
+  Advisor,
 } from '../types';
 
 const stamps = { createdAt: 0, updatedAt: 0 };
@@ -120,6 +121,29 @@ const objectives: Objective[] = [
   },
 ];
 
+const advisors: Advisor[] = [
+  {
+    ...stamps,
+    id: 'ad1',
+    projectId: 'p1',
+    name: 'Dana Ruiz',
+    role: 'Founder',
+    expertise: ['pricing'],
+    notes: 'Met at the local trade meetup.',
+    sessions: [
+      {
+        id: 'sess1',
+        date: '2026-10-05',
+        topic: 'Pricing',
+        adviceGiven: 'Test two price points before building the app.',
+        quotes: ['I would charge double'],
+        commitments: [],
+        createdAt: 0,
+      },
+    ],
+  },
+];
+
 const experiments: Experiment[] = [
   {
     ...stamps,
@@ -173,6 +197,7 @@ const data = {
   risks,
   roadmap,
   objectives,
+  advisors,
   experiments,
   competitors,
   features,
@@ -196,6 +221,7 @@ describe('searchWorkspace', () => {
     expect(ids('pre-order')).toEqual(expect.arrayContaining(['rk1', 'ex1']));
     expect(ids('reminder')).toEqual(expect.arrayContaining(['rm1', 'ft1']));
     expect(ids('q4')).toEqual(['ob1']);
+    expect(ids('dana')).toEqual(['ad1']);
     expect(ids('invoicenow')).toEqual(['cp1']);
   });
 
@@ -224,6 +250,7 @@ describe('searchWorkspace', () => {
     expect(tabFor('automatic')).toBe('mvp');
     expect(tabFor('plumbers lose')).toBe('evidence');
     expect(tabFor('paying customers')).toBe('goals');
+    expect(tabFor('double')).toBe('advisors');
   });
 
   it('ranks title matches above body matches', () => {

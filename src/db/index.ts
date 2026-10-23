@@ -17,6 +17,7 @@ import type {
   ProjectDecision,
   RiskItem,
   Objective,
+  Advisor,
   AIChatMessage,
   ExportPackage,
   AIProviderConfig,
@@ -56,6 +57,7 @@ export class OpenFounderDB extends Dexie {
   decisions!: Table<ProjectDecision, string>;
   risks!: Table<RiskItem, string>;
   objectives!: Table<Objective, string>;
+  advisors!: Table<Advisor, string>;
   chatMessages!: Table<AIChatMessage, string>;
 
   constructor() {
@@ -87,6 +89,9 @@ export class OpenFounderDB extends Dexie {
     });
     this.version(4).stores({
       objectives: 'id, projectId, status, createdAt',
+    });
+    this.version(5).stores({
+      advisors: 'id, projectId, createdAt',
     });
   }
 }
@@ -265,6 +270,7 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     decisions,
     risks,
     objectives,
+    advisors,
     chatMessages,
   ] = await Promise.all([
     db.evidence.where('projectId').equals(projectId).toArray(),
@@ -283,11 +289,12 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     db.decisions.where('projectId').equals(projectId).toArray(),
     db.risks.where('projectId').equals(projectId).toArray(),
     db.objectives.where('projectId').equals(projectId).toArray(),
+    db.advisors.where('projectId').equals(projectId).toArray(),
     db.chatMessages.where('projectId').equals(projectId).toArray(),
   ]);
 
   return {
-    schemaVersion: 4,
+    schemaVersion: 5,
     exportedAt: new Date().toISOString(),
     appVersion: '1.0.0',
     project,
@@ -307,6 +314,7 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     decisions,
     risks,
     objectives,
+    advisors,
     chatMessages,
   };
 }
@@ -342,7 +350,7 @@ export async function importProjectPackage(
       db.projects, db.evidence, db.research, db.communityInsights, db.competitors,
       db.experiments, db.interviews, db.features, db.roadmap, db.canvasNodes,
       db.canvasEdges, db.businessModel, db.gtmPlan, db.landingPage, db.decisions,
-      db.risks, db.objectives, db.chatMessages,
+      db.risks, db.objectives, db.advisors, db.chatMessages,
     ],
     async () => {
       if (!shouldRemap) {
@@ -364,6 +372,7 @@ export async function importProjectPackage(
           db.decisions.where('projectId').equals(targetProjectId).delete(),
           db.risks.where('projectId').equals(targetProjectId).delete(),
           db.objectives.where('projectId').equals(targetProjectId).delete(),
+          db.advisors.where('projectId').equals(targetProjectId).delete(),
           db.chatMessages.where('projectId').equals(targetProjectId).delete(),
         ]);
       }
@@ -484,6 +493,23 @@ export async function importProjectPackage(
           }))
         );
       }
+      if (pkg.advisors?.length) {
+        await db.advisors.bulkPut(
+          pkg.advisors.map((advisor) => ({
+            ...advisor,
+            id: remapId(advisor.id, 'adv'),
+            projectId: targetProjectId,
+            sessions: advisor.sessions.map((session, index) => ({
+              ...session,
+              id: remapId(session.id, `sess${index}`),
+              commitments: session.commitments.map((commitment, cIndex) => ({
+                ...commitment,
+                id: remapId(commitment.id, `com${cIndex}`),
+              })),
+            })),
+          }))
+        );
+      }
       if (pkg.communityInsights?.length) {
         await db.communityInsights.bulkPut(
           pkg.communityInsights.map((i) => ({
@@ -568,6 +594,7 @@ export async function runWorkspaceDiagnostics(projectId: string): Promise<{
   stats.decisionsCount = await db.decisions.where('projectId').equals(projectId).count();
   stats.risksCount = await db.risks.where('projectId').equals(projectId).count();
   stats.objectivesCount = await db.objectives.where('projectId').equals(projectId).count();
+  stats.advisorsCount = await db.advisors.where('projectId').equals(projectId).count();
 
   const [nodes, edges, evidence, experiments, roadmap] = await Promise.all([
     db.canvasNodes.where('projectId').equals(projectId).toArray(),

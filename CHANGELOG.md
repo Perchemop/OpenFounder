@@ -30,6 +30,10 @@ semantic versioning for its export schema and application releases.
 - `docs/competitive-benchmark.md`: a sourced capability map of Cofounder, CoFoundersLab,
   MentorShow, Eightfold AI, and Cascade, with explicit in-scope and out-of-scope decisions.
 
+- Advisor and mentor log (`Advisor`, `AdvisorSession`, `AdvisorCommitment`) with pages,
+  command-palette search, and schema version 5 export/import.
+- `src/utils/advisorLog.ts`: commitment urgency, open-commitment ordering, and log summary.
+
 ### Changed
 
 - Pages deploy workflow now installs with Bun instead of `npm ci`, which failed because the

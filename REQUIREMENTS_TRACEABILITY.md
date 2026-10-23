@@ -43,3 +43,6 @@ see `PROGRESS.md` for the current result.
 | R-034 | Objectives carry measurable key results with derived progress | `src/utils/okr.ts`, `GoalsPage` | `okr.test.ts` | Done |
 | R-035 | Export and import cover objectives with schema version 4 | `src/db/index.ts`, `src/db/validation.ts` | CI build/import path | Partial (no import test) |
 | R-036 | Competitive benchmark records what is and is not emulated | `docs/competitive-benchmark.md`, D-008 | — | Done |
+
+| R-037 | Advisor log records people, sessions, verbatim advice, and commitments | `src/utils/advisorLog.ts`, `AdvisorsPage` | `advisorLog.test.ts` | Done |
+| R-038 | Export and import cover advisors with schema version 5 | `src/db/index.ts`, `src/db/validation.ts` | CI build path | Partial (no import test) |
