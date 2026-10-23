@@ -116,17 +116,28 @@ export function applyKeyResultValue(
   };
 }
 
-/** Human-readable unit formatting used by the page and future exports. */
+/** Thousands-separated number formatting, independent of the host locale data. */
+function groupDigits(value: number, fractionDigits: number): string {
+  const fixed = value.toFixed(fractionDigits);
+  const [integer, fraction] = fixed.split('.');
+  const grouped = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return fraction ? `${grouped}.${fraction}` : grouped;
+}
+
+/**
+ * Human-readable unit formatting. Deliberately not `Intl.NumberFormat`: locale
+ * data was slow enough on one CI runner to exceed the test timeout.
+ */
 export function formatMetricValue(value: number, unit: KeyResult['unit']): string {
   if (!Number.isFinite(value)) return '—';
   switch (unit) {
     case 'currency':
-      return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(value);
+      return `£${groupDigits(Math.round(value), 0)}`;
     case 'percent':
       return `${value}%`;
     case 'ratio':
       return value.toFixed(2);
     default:
-      return new Intl.NumberFormat('en-GB', { maximumFractionDigits: 2 }).format(value);
+      return groupDigits(value, 2);
   }
 }
