@@ -9,7 +9,7 @@ has a known gap), **Planned**.
 | C-01 | Create and switch founder projects | Done | `NewProjectModal`, `Navbar`, `ProjectContext` |
 | C-02 | Guided phases with required tasks | Done | `PhasesPage`, `src/data/phases.ts` |
 | C-03 | Evidence ledger with statuses and sources | Done | `EvidencePage`, `db.evidence` |
-| C-04 | Evidence promotion guardrails | Partial | `src/utils/evidenceIntegrity.ts` (new) — wired into `EvidencePage` |
+| C-04 | Evidence promotion guardrails | Done | `src/utils/evidenceIntegrity.ts` — enforced in `EvidencePage`, scored on `DashboardPage` |
 | C-05 | Risk register with probability × impact | Done | `RisksPage`, `riskScoring.ts`, `DashboardPage` |
 | C-06 | Experiments with success/failure criteria | Done | `ValidationPage` |
 | C-07 | Customer interview log with verbatim quotes | Done | `InterviewsPage` |

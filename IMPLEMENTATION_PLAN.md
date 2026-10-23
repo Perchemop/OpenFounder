@@ -23,7 +23,7 @@ Acceptance: CI produces required checks on the pull request and they pass.
 - [x] Unit tests for allowed/blocked promotions and integrity summary
 - [x] Evidence page: guarded status changes, blocker dialog, edit flow
 - [x] Integrity summary strip (verified vs unsupported, riskiest claim type)
-- [ ] Dashboard integration of the integrity score (next slice)
+- [x] Dashboard integration of the integrity score
 
 Acceptance: promoting a claim without the required evidence is blocked in the UI and the rule
 is covered by tests.

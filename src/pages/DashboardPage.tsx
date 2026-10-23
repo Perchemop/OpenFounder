@@ -8,6 +8,7 @@ import {
   FlaskConical,
   Target,
   ShieldAlert,
+  ShieldCheck,
 } from 'lucide-react';
 import type {
   Project,
@@ -27,6 +28,7 @@ import {
   scoreLabel,
   sortRisksByScore,
 } from '../utils/riskScoring';
+import { summarizeEvidenceIntegrity } from '../utils/evidenceIntegrity';
 
 interface DashboardPageProps {
   project: Project | null;
@@ -78,6 +80,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   const openRisks = risks.filter(isOpenRisk);
   const hotRisks = sortRisksByScore(openRisks.filter(isHotRisk));
   const topOpenRisks = sortRisksByScore(openRisks).slice(0, 3);
+
+  const integrity = summarizeEvidenceIntegrity(evidence);
 
   let nextRecommendedAction = {
     title: 'Define Foundational Assumptions',
@@ -227,6 +231,89 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           <span>{nextRecommendedAction.btnLabel}</span>
           <ArrowRight className="w-3.5 h-3.5" />
         </button>
+      </div>
+
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-2 text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <span>Evidence Integrity</span>
+          </div>
+          <button
+            onClick={() => onSelectTab('evidence')}
+            className="text-[11px] text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 underline"
+          >
+            Open ledger →
+          </button>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 shrink-0">
+            {integrity.coveragePct}%
+            <span className="block text-[10px] uppercase font-mono font-medium text-zinc-400">
+              supported
+            </span>
+          </div>
+          <div className="flex-1">
+            <div
+              className="h-2 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={integrity.coveragePct}
+              aria-label="Supported claims"
+            >
+              <div
+                className={`h-full transition-all ${
+                  integrity.coveragePct >= 60
+                    ? 'bg-emerald-500'
+                    : integrity.coveragePct >= 25
+                      ? 'bg-amber-500'
+                      : 'bg-rose-500'
+                }`}
+                style={{ width: `${integrity.coveragePct}%` }}
+              />
+            </div>
+            <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-zinc-500">
+              <span>
+                <strong className="text-zinc-700 dark:text-zinc-300">{integrity.supported}</strong>{' '}
+                supported of {integrity.total}
+              </span>
+              <span>
+                <strong className="text-zinc-700 dark:text-zinc-300">{integrity.verified}</strong>{' '}
+                customer / experiment verified
+              </span>
+              <span>
+                <strong className="text-rose-600 dark:text-rose-400">
+                  {integrity.unsupported}
+                </strong>{' '}
+                unsupported
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {integrity.unsupported > 0 && integrity.weakestType ? (
+          <div className="mt-3 flex items-start space-x-2 text-[11px] text-amber-800 dark:text-amber-300 bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-lg p-2.5">
+            <ShieldAlert className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <span>
+              Weakest area:{' '}
+              <strong className="capitalize">{integrity.weakestType}</strong> (
+              {integrity.byType[0].unsupported} unsupported). Promotion to a stronger status
+              requires recorded notes and a source; customer confirmation also requires a verbatim
+              quote.
+            </span>
+          </div>
+        ) : integrity.total === 0 ? (
+          <p className="mt-3 text-[11px] text-zinc-400 italic">
+            No claims logged yet. Start by recording your riskiest assumption in the Evidence
+            Ledger.
+          </p>
+        ) : (
+          <p className="mt-3 text-[11px] text-emerald-700 dark:text-emerald-400">
+            Every logged claim is supported. Re-check them as new evidence appears.
+          </p>
+        )}
       </div>
 
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4">

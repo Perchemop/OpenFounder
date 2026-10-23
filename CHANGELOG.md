@@ -19,6 +19,8 @@ semantic versioning for its export schema and application releases.
 - Evidence integrity rules (`src/utils/evidenceIntegrity.ts`) with unit tests.
 - Evidence page: guarded status promotion, "evidence required" dialog, claim editing,
   and an integrity summary strip.
+- Dashboard evidence-integrity panel: supported-claim coverage, verified and unsupported
+  counts, and the weakest claim type, linked to the ledger.
 
 ### Changed
 

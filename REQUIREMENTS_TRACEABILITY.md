@@ -37,5 +37,5 @@ see `PROGRESS.md` for the current result.
 | R-028 | Project is MIT licensed with attribution | `LICENSE`, `ATTRIBUTION.md` | — | Done |
 | R-029 | Command palette searches research, interviews, risks, roadmap | not implemented | — | Planned |
 | R-030 | Accessibility audit and keyboard pass recorded | `docs/qc/manual-qc.md` | — | Planned |
-| R-031 | Dashboard surfaces the evidence integrity score | not implemented | — | Planned |
+| R-031 | Dashboard surfaces the evidence integrity score | `DashboardPage`, `src/utils/evidenceIntegrity.ts` | `src/utils/evidenceIntegrity.test.ts` | Done |
 | R-032 | One-page validation report export | `DocumentsPage` (partial) | — | Partial |
