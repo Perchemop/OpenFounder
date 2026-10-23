@@ -208,7 +208,9 @@ function buildCandidates(data: WorkspaceSearchData): Candidate[] {
         item.contact,
         item.expertise,
         item.notes,
-        item.sessions.map((session) => `${session.topic} ${session.adviceGiven}`)
+        item.sessions.map((session) =>
+          [session.topic, session.adviceGiven, ...session.quotes].join(' ')
+        )
       ),
     });
   }
