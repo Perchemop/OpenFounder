@@ -28,7 +28,8 @@ describe('moveSpatialSelection', () => {
     node('top-left', 0, 0),
     node('top-right', 220, 0),
     node('centre', 110, 110),
-    node('bottom-right', 300, 260),
+    // Same column as top-right, so lateral drift does not dominate the choice.
+    node('bottom-right', 240, 260),
     node('far-away', 1200, 20),
   ];
 
@@ -42,6 +43,22 @@ describe('moveSpatialSelection', () => {
   it('prefers the nearest node over a farther one in the same direction', () => {
     const nodes = [node('a', 0, 0), node('near', 0, 130), node('far', 0, 900)];
     expect(moveSpatialSelection(nodes, 'a', 'down')).toBe('near');
+  });
+
+  it('penalises lateral drift when ranking candidates', () => {
+    // `diagonal` is closer vertically but far off to one side; `aligned` is a
+    // little further down yet in the same column, so it wins.
+    const nodes = [
+      node('from', 0, 0),
+      node('diagonal', 260, 130),
+      node('aligned', 10, 200),
+    ];
+    expect(moveSpatialSelection(nodes, 'from', 'down')).toBe('aligned');
+  });
+
+  it('treats a diagonal neighbour as in-direction when nothing is directly aligned', () => {
+    const nodes = [node('from', 0, 0), node('diagonal', 260, 130)];
+    expect(moveSpatialSelection(nodes, 'from', 'down')).toBe('diagonal');
   });
 
   it('returns null when nothing lies in that direction', () => {
