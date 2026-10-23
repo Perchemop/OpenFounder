@@ -36,10 +36,10 @@ is covered by tests.
 
 ## Phase 3 — Accessibility
 
-- [ ] Focus trap and restore for all modals
+- [x] Focus trap and restore for all modals (`useFocusTrap`)
 - [ ] Keyboard navigation for the canvas
 - [ ] Contrast pass in both themes; automated axe check in CI
-- [ ] Complete `docs/qc/manual-qc.md` keyboard section
+- [ ] Complete `docs/qc/manual-qc.md` keyboard section (code-review pass recorded 2026-10-24; human browser/screen-reader pass still outstanding)
 
 ## Phase 4 — Reporting
 

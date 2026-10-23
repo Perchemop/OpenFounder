@@ -2,6 +2,37 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-24 · Modal focus trap and palette keyboard navigation (R-041, R-042)
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- Added `src/utils/focusTrap.ts` (DOM-free tabbable filtering and wraparound maths) with tests, and
+  `src/hooks/useFocusTrap.ts` wiring it: Tab cycles inside a dialog, focus moves to the first
+  tabbable element on open, Escape closes, and focus returns to the trigger on close.
+- Applied the trap to all three overlays (command palette, New Project, Settings).
+- Added `src/utils/paletteNavigation.ts` and tests: one flat entry list over action, navigation,
+  and search results, with Arrow/Home/End/Enter handling and a selected-row highlight that is not
+  colour-alone.
+- Recorded a **code-review** accessibility pass in `docs/qc/manual-qc.md`, explicitly stating that
+  a human browser and screen-reader pass is still outstanding.
+
+### Verification
+
+- CI run 1 **failed the type check on my own new code**: `collectTabbable`'s callback was typed as
+  returning a boolean while it should return the descriptor, `Element` needed casting to
+  `HTMLElement` in the hook and tests, and a redeclared `normalisedQuery` survived an earlier
+  reorder. CI caught all three; they are fixed in this push.
+- CI run 2 on commit `ddaefc1` **succeeded** on every required check: `verify (ubuntu-latest)`,
+  `verify (macos-latest)`, `verify (windows-latest)`, `build (static)`, and `summary`.
+
+### Known gaps
+
+- Human keyboard and screen-reader pass is still not done (R-030 remains Partial).
+- Canvas has no keyboard navigation.
+- No automated accessibility (axe) check in CI.
+
 ## 2026-10-23 — One-page validation report (R-032)
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

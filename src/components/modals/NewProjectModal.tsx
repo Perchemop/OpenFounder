@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { X, ArrowRight, ArrowLeft, Check, Sparkles, FolderPlus, Wand2 } from 'lucide-react';
 import type { Project, FounderStartingPoint, ProjectStage } from '../../types';
 import { db, setActiveProjectId } from '../../db';
@@ -23,6 +24,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
   onClose,
   onProjectCreated,
 }) => {
+  const dialogRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
   const [step, setStep] = useState(1);
   const [isMagicLoading, setIsMagicLoading] = useState(false);
   const [magicSeed, setMagicSeed] = useState('');
@@ -186,7 +188,11 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div
+      ref={dialogRef}
+      tabIndex={-1}
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
+    >
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50 dark:bg-zinc-950">

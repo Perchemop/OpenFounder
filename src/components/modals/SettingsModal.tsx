@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import {
   X,
   Cpu,
@@ -51,6 +52,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   config,
   onConfigUpdated,
 }) => {
+  const dialogRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
   const [activeTab, setActiveTab] = useState<'ai' | 'privacy' | 'data' | 'diagnostics'>('ai');
   const [localConfig, setLocalConfig] = useState<AIProviderConfig>(config);
   const [testStatus, setTestStatus] = useState<{ testing: boolean; result?: { success: boolean; message: string } }>({
@@ -184,7 +186,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     localConfig.activeProvider === 'server_gemini' || localConfig.activeProvider === 'direct_gemini';
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div
+      ref={dialogRef}
+      tabIndex={-1}
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
+    >
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50 dark:bg-zinc-950">
           <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
