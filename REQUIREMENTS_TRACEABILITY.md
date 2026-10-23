@@ -30,12 +30,12 @@ see `PROGRESS.md` for the current result.
 | R-021 | AI co-founder supports six providers including offline rules | `src/ai/*` | `modelDefaults.test.ts`, `contextBuilder.test.ts` | Done |
 | R-022 | AI context is a deterministic serialisation within a token budget | `src/ai/contextBuilder.ts` | `contextBuilder.test.ts` | Done |
 | R-023 | Gemini model candidates include ordered fallbacks | `src/ai/modelDefaults.ts` | `modelDefaults.test.ts` | Done |
-| R-024 | Command palette navigates pages and searches core entities | `src/components/modals/CommandPalette.tsx` | — | Partial (R-029) |
+| R-024 | Command palette navigates pages and searches core entities | `src/components/modals/CommandPalette.tsx`, `src/utils/workspaceSearch.ts` | `workspaceSearch.test.ts` | Done |
 | R-025 | No telemetry by default; keys session-only by default | `src/db/index.ts`, `src/types/index.ts`, `SettingsModal` | `validation.test.ts` (config defaults) | Done |
 | R-026 | Static build deployable to GitHub Pages | `vite.config.ts`, `.github/workflows/deploy.yml` | CI build job | Done |
 | R-027 | Pull requests are verified by CI (lint, tests, build) | `.github/workflows/ci.yml` | CI itself | Done |
 | R-028 | Project is MIT licensed with attribution | `LICENSE`, `ATTRIBUTION.md` | — | Done |
-| R-029 | Command palette searches research, interviews, risks, roadmap | not implemented | — | Planned |
+| R-029 | Command palette searches research, interviews, risks, roadmap | `src/utils/workspaceSearch.ts`, `CommandPalette` | `workspaceSearch.test.ts` | Done |
 | R-030 | Accessibility audit and keyboard pass recorded | `docs/qc/manual-qc.md` | — | Planned |
 | R-031 | Dashboard surfaces the evidence integrity score | `DashboardPage`, `src/utils/evidenceIntegrity.ts` | `src/utils/evidenceIntegrity.test.ts` | Done |
 | R-032 | One-page validation report export | `DocumentsPage` (partial) | — | Partial |

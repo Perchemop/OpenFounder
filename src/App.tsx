@@ -318,6 +318,10 @@ function AppContent() {
         competitors={competitors}
         experiments={experiments}
         features={features}
+        research={research}
+        interviews={interviews}
+        risks={risks}
+        roadmap={roadmap}
       />
     </div>
   );

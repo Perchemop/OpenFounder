@@ -27,12 +27,10 @@ has a known gap), **Planned**.
 | C-19 | Offline deterministic guidance | Done | `providersOffline.ts` |
 | C-20 | Keyboard command palette | Done | `CommandPalette` |
 | C-21 | Accessibility audit | Planned | — |
-| C-22 | Full-text workspace search | Partial | Command palette covers claims/competitors/experiments/features only |
+| C-22 | Full-text workspace search | Done | `src/utils/workspaceSearch.ts`, `CommandPalette` |
 | C-23 | Cloud sync / multi-device | Planned (out of scope v1) | — |
 
 ## Known gaps recorded honestly
 
-- Evidence status can currently be promoted without supporting notes; C-04 closes this.
-- The command palette does not search research, interviews, risks, or roadmap items.
 - No automated accessibility checks; no manual screen-reader pass recorded yet.
 - `README` previously stated "Private / All rights reserved"; replaced by MIT in this baseline.

@@ -12,9 +12,26 @@ import {
   X,
   Plus,
   ArrowRight,
+  ShieldAlert,
+  Building2,
+  MessageSquare,
 } from 'lucide-react';
 import type { WorkspaceTab } from '../layout/Sidebar';
-import type { EvidenceItem, Competitor, Experiment, FeatureItem } from '../../types';
+import type {
+  EvidenceItem,
+  Competitor,
+  Experiment,
+  FeatureItem,
+  ResearchSource,
+  CustomerInterview,
+  RiskItem,
+  RoadmapItem,
+} from '../../types';
+import {
+  groupSearchResults,
+  searchWorkspace,
+  type WorkspaceSearchKind,
+} from '../../utils/workspaceSearch';
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -25,7 +42,22 @@ interface CommandPaletteProps {
   competitors?: Competitor[];
   experiments?: Experiment[];
   features?: FeatureItem[];
+  research?: ResearchSource[];
+  interviews?: CustomerInterview[];
+  risks?: RiskItem[];
+  roadmap?: RoadmapItem[];
 }
+
+const RESULT_ICONS: Record<WorkspaceSearchKind, React.ComponentType<{ className?: string }>> = {
+  evidence: Scale,
+  research: Search,
+  interview: MessageSquare,
+  risk: ShieldAlert,
+  roadmap: Milestone,
+  experiment: FlaskConical,
+  competitor: Building2,
+  feature: ListTodo,
+};
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({
   isOpen,
@@ -36,6 +68,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   competitors = [],
   experiments = [],
   features = [],
+  research = [],
+  interviews = [],
+  risks = [],
+  roadmap = [],
 }) => {
   const [query, setQuery] = useState('');
 
@@ -63,28 +99,34 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     { id: 'research' as WorkspaceTab, label: 'Research Sources & Findings', icon: Search },
     { id: 'competitors' as WorkspaceTab, label: 'Competitor Analysis Matrix', icon: Users },
     { id: 'validation' as WorkspaceTab, label: 'Validation Experiments & Tests', icon: FlaskConical },
+    { id: 'interviews' as WorkspaceTab, label: 'Customer Interviews', icon: MessageSquare },
+    { id: 'risks' as WorkspaceTab, label: 'Risk Register', icon: ShieldAlert },
     { id: 'canvas' as WorkspaceTab, label: 'Visual Project Canvas', icon: Network },
     { id: 'mvp' as WorkspaceTab, label: 'MVP MoSCoW Scoping', icon: ListTodo },
     { id: 'roadmap' as WorkspaceTab, label: 'Visual Roadmap', icon: Milestone },
     { id: 'documents' as WorkspaceTab, label: 'Export Reports (Markdown/JSON)', icon: FileText },
   ];
 
+  const normalisedQuery = query.trim().toLowerCase();
   const filteredNav = quickNavItems.filter((item) =>
-    item.label.toLowerCase().includes(query.toLowerCase())
+    item.label.toLowerCase().includes(normalisedQuery)
   );
 
-  const matchedEvidence = evidence.filter((e) =>
-    e.claim.toLowerCase().includes(query.toLowerCase())
+  const resultGroups = groupSearchResults(
+    searchWorkspace(query, {
+      evidence,
+      research,
+      interviews,
+      risks,
+      roadmap,
+      experiments,
+      competitors,
+      features,
+    })
   );
-  const matchedCompetitors = competitors.filter((c) =>
-    c.name.toLowerCase().includes(query.toLowerCase())
-  );
-  const matchedExperiments = experiments.filter((ex) =>
-    ex.hypothesis.toLowerCase().includes(query.toLowerCase())
-  );
-  const matchedFeatures = features.filter((f) =>
-    f.title.toLowerCase().includes(query.toLowerCase())
-  );
+
+  const hasSearchQuery = normalisedQuery.length > 0;
+  const hasAnyResult = filteredNav.length > 0 || resultGroups.length > 0;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-start justify-center pt-20 p-4">
@@ -94,7 +136,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           <Search className="w-4 h-4 text-zinc-400 shrink-0" />
           <input
             type="text"
-            placeholder="Type a command, page, or search claims & competitors..."
+            placeholder="Search claims, research, interviews, risks, roadmap..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="w-full bg-transparent text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none"
@@ -149,69 +191,56 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             </div>
           )}
 
-          {/* Matches in Workspace */}
-          {query.trim().length > 1 && (
+          {/* Matches in workspace */}
+          {normalisedQuery.length > 1 && resultGroups.length > 0 && (
             <div className="space-y-2 pt-2 border-t border-zinc-200 dark:border-zinc-800">
-              {matchedEvidence.length > 0 && (
-                <div>
-                  <p className="px-2 text-[10px] uppercase font-semibold text-zinc-400 tracking-wider mb-1">
-                    Evidence Claims ({matchedEvidence.length})
-                  </p>
-                  {matchedEvidence.slice(0, 3).map((ev) => (
-                    <button
-                      key={ev.id}
-                      onClick={() => {
-                        onSelectTab('evidence');
-                        onClose();
-                      }}
-                      className="w-full text-left p-1.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 truncate text-zinc-700 dark:text-zinc-300 block"
-                    >
-                      [{ev.status}] {ev.claim}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {matchedCompetitors.length > 0 && (
-                <div>
-                  <p className="px-2 text-[10px] uppercase font-semibold text-zinc-400 tracking-wider mb-1">
-                    Competitors ({matchedCompetitors.length})
-                  </p>
-                  {matchedCompetitors.slice(0, 3).map((comp) => (
-                    <button
-                      key={comp.id}
-                      onClick={() => {
-                        onSelectTab('competitors');
-                        onClose();
-                      }}
-                      className="w-full text-left p-1.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 truncate text-zinc-700 dark:text-zinc-300 block"
-                    >
-                      {comp.name} — {comp.pricingModel}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {matchedFeatures.length > 0 && (
-                <div>
-                  <p className="px-2 text-[10px] uppercase font-semibold text-zinc-400 tracking-wider mb-1">
-                    Features ({matchedFeatures.length})
-                  </p>
-                  {matchedFeatures.slice(0, 3).map((feat) => (
-                    <button
-                      key={feat.id}
-                      onClick={() => {
-                        onSelectTab('mvp');
-                        onClose();
-                      }}
-                      className="w-full text-left p-1.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 truncate text-zinc-700 dark:text-zinc-300 block"
-                    >
-                      [{feat.priority.toUpperCase()}] {feat.title}
-                    </button>
-                  ))}
-                </div>
-              )}
+              {resultGroups.map((group) => {
+                const Icon = RESULT_ICONS[group.kind];
+                return (
+                  <div key={group.kind}>
+                    <p className="px-2 text-[10px] uppercase font-semibold text-zinc-400 tracking-wider mb-1">
+                      {group.label}
+                    </p>
+                    <div className="space-y-0.5">
+                      {group.items.map((result) => (
+                        <button
+                          key={`${group.kind}-${result.id}`}
+                          onClick={() => {
+                            onSelectTab(result.tab);
+                            onClose();
+                          }}
+                          className="w-full text-left p-1.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-start space-x-2 text-zinc-700 dark:text-zinc-300"
+                        >
+                          <Icon className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" />
+                          <span className="min-w-0">
+                            <span className="block truncate">{result.title}</span>
+                            {result.detail && (
+                              <span className="block truncate text-[10px] text-zinc-400 capitalize">
+                                {result.detail}
+                              </span>
+                            )}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
+          )}
+
+          {normalisedQuery.length > 1 && !hasAnyResult && (
+            <p className="px-2 py-4 text-center text-zinc-500 dark:text-zinc-400">
+              Nothing matches “{query.trim()}”. Try a claim, a customer, a risk, or a roadmap
+              item.
+            </p>
+          )}
+
+          {!hasSearchQuery && (
+            <p className="px-2 pb-1 text-[10px] text-zinc-400">
+              Searches evidence, research, interviews, risks, roadmap, experiments, competitors,
+              and features.
+            </p>
           )}
         </div>
       </div>

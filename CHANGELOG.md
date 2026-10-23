@@ -21,6 +21,9 @@ semantic versioning for its export schema and application releases.
   and an integrity summary strip.
 - Dashboard evidence-integrity panel: supported-claim coverage, verified and unsupported
   counts, and the weakest claim type, linked to the ledger.
+- Workspace search (`src/utils/workspaceSearch.ts`) behind the command palette, covering
+  research, interviews, risks, and roadmap in addition to existing entities, with grouped
+  results and an explicit no-match state.
 
 ### Changed
 
