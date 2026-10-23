@@ -196,7 +196,7 @@ describe('applyKeyResultValue', () => {
 
 describe('formatMetricValue', () => {
   it('formats each unit', () => {
-    expect(formatMetricValue(1234.5, 'number')).toBe('1,234.5');
+    expect(formatMetricValue(1234.5, 'number')).toBe('1,234.50');
     expect(formatMetricValue(1500, 'currency')).toBe('£1,500');
     expect(formatMetricValue(42, 'percent')).toBe('42%');
     expect(formatMetricValue(0.5, 'ratio')).toBe('0.50');
