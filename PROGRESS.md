@@ -2,6 +2,35 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-23 — Advisor and mentor log (R-037, R-038)
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- Added `Advisor`, `AdvisorSession`, and `AdvisorCommitment` types; export/import moved to
+  schema version 5 so advisor data survives a package round trip.
+- Added `src/utils/advisorLog.ts`: ISO date maths, commitment urgency, open-commitment ordering
+  by urgency then due date, and log summary.
+- Added `AdvisorsPage`: add an advisor, log a session with advice and verbatim quotes, record
+  commitments with due dates, toggle commitments, and delete an advisor.
+- Wired the page into the sidebar, the command palette, and workspace search (quotes are
+  searchable).
+- Moved R-037, R-038, and C-25 to Done in the tracking files.
+
+### Verification
+
+- CI run 1 **failed one test** in `workspaceSearch.test.ts`: the new advisor search body did not
+  include session quotes, so the assertion had nothing to match. The search was incomplete rather
+  than the test wrong, so quotes were added to the candidate body.
+- CI run 2 on commit `308fcfa` **succeeded** on every required check: `verify (ubuntu-latest)`,
+  `verify (macos-latest)`, `verify (windows-latest)`, `build (static)`, and `summary`.
+
+### Known gaps
+
+- Import paths for the new schema versions have no round-trip tests (R-035, R-038).
+- Manual QC checklist not yet executed (R-030).
+
 ## 2026-10-23 — Competitive benchmark and goals/key results (R-034…R-036)
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
