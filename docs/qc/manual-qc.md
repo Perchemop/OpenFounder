@@ -31,6 +31,8 @@ Environment: build under test, browser, date, tester.
 - [ ] Every visible button does something; disabled controls explain why.
 - [ ] Full keyboard pass: Tab order is logical, focus is visible, modals trap focus.
 - [ ] `Ctrl/Cmd+J` and `Ctrl/Cmd+K` work and Escape closes overlays.
+- [ ] Command palette: arrow keys move the selection, Enter activates it, and the selected row is
+      visibly highlighted (not colour alone — it also carries a ring).
 - [ ] Colour is never the only carrier of meaning (status text is present).
 - [ ] Light and dark themes both meet readable contrast.
 - [ ] Layout works at 1280×800 and 1920×1080 without horizontal scroll of the shell.
@@ -46,3 +48,25 @@ Environment: build under test, browser, date, tester.
 | Date | Version/commit | Tester | Result | Notes |
 | --- | --- | --- | --- | --- |
 | — | — | — | not yet run | Baseline checklist added with the docs foundation |
+
+## 2026-10-24 · Focus trap and palette keyboard pass (code review, not a human pass)
+
+**Status: partially verified. This row records a code review, not a screen-reader or
+keyboard session with a real user. Treat it as evidence that the mechanism exists, not that the
+experience is good.**
+
+Verified by reading the code and by unit tests in CI (`focusTrap.test.ts`, `paletteNavigation.test.ts`):
+
+- [x] Every overlay (command palette, New Project, Settings) uses `useFocusTrap`, which cycles
+      Tab and Shift+Tab inside the dialog, moves focus to the first tabbable element on open,
+      closes on Escape, and restores focus to the previously focused element on close.
+- [x] The command palette builds a single flat entry list (action, navigation, results) so arrow
+      keys walk the same order a pointer would, wrapping at both ends, with Enter activating the
+      highlighted row and Home/End jumping to the ends.
+- [x] The selected row is marked with a ring **and** a background, so it is not colour-alone.
+
+Still requires a human pass, and is not claimed as done above:
+
+- [ ] Actual Tab order and focus visibility in a real browser (light and dark).
+- [ ] Screen-reader labelling of the palette rows and dialogs.
+- [ ] Focus trap behaviour with the AI co-founder panel and the canvas open.

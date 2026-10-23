@@ -40,6 +40,12 @@ semantic versioning for its export schema and application releases.
 - One-page validation report built by `src/utils/validationReport.ts` and selectable in the
   Reports page; per-claim provenance and an explicit "no recorded decision" state.
 
+- Modal focus trap (`src/hooks/useFocusTrap.ts`): Tab cycles inside the dialog, focus moves to
+  the first tabbable element on open, Escape closes, and focus returns to the trigger on close.
+  Applied to the command palette, New Project, and Settings.
+- Command palette keyboard navigation: arrow keys, Home/End, Enter, and a selected-row highlight
+  that is not colour-alone.
+
 ### Changed
 
 - Pages deploy workflow now installs with Bun instead of `npm ci`, which failed because the

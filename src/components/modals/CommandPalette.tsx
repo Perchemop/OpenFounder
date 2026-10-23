@@ -38,6 +38,12 @@ import {
   searchWorkspace,
   type WorkspaceSearchKind,
 } from '../../utils/workspaceSearch';
+import {
+  activateEntry,
+  buildPaletteEntries,
+  moveSelection,
+} from '../../utils/paletteNavigation';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -92,21 +98,21 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   skillRequirements = [],
 }) => {
   const [query, setQuery] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  // Focus trap, initial focus, and Escape-to-close.
+  const dialogRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
 
   useEffect(() => {
+    if (isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        if (isOpen) onClose();
-        else setQuery('');
-      }
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
+        setQuery('');
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -147,11 +153,81 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     })
   );
 
+  const normalisedQuery = query.trim().toLowerCase();
+  const paletteEntries = buildPaletteEntries(true, filteredNav.map((item) => item.id), resultGroups.flatMap((group) => group.items));
+
+  const activateSelected = (index: number) => {
+    const activation = activateEntry(paletteEntries[index]);
+    if (activation.kind === 'project') {
+      onOpenNewProjectModal();
+      onClose();
+      return;
+    }
+    if (activation.tab) {
+      onSelectTab(activation.tab as WorkspaceTab);
+      onClose();
+    }
+  };
+
+  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      setSelectedIndex((current) => moveSelection(paletteEntries.length, current, 'forward'));
+      return;
+    }
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      setSelectedIndex((current) => moveSelection(paletteEntries.length, current, 'backward'));
+      return;
+    }
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      activateSelected(selectedIndex);
+      return;
+    }
+    if (event.key === 'Home') {
+      event.preventDefault();
+      setSelectedIndex(paletteEntries.length > 0 ? 0 : -1);
+      return;
+    }
+    if (event.key === 'End') {
+      event.preventDefault();
+      setSelectedIndex(paletteEntries.length - 1);
+    }
+  };
+
+  // Keep the selection inside the visible list when the result set changes.
+  useEffect(() => {
+    setSelectedIndex(paletteEntries.length > 0 ? 0 : -1);
+  }, [paletteEntries.length]);
+
+  const entryIdFor = (id: string) => id;
+  const isSelected = (id: string) =>
+    selectedIndex >= 0 && paletteEntries[selectedIndex]?.id === entryIdFor(id);
+
+  const navRowClass = (id: string) =>
+    `w-full flex items-center justify-between p-2 rounded-lg text-left transition-colors ${
+      isSelected(id)
+        ? 'bg-emerald-50 dark:bg-emerald-950/50 ring-1 ring-emerald-300 dark:ring-emerald-800 text-zinc-900 dark:text-zinc-100'
+        : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100'
+    }`;
+
+  const resultRowClass = (id: string) =>
+    `w-full text-left p-1.5 rounded flex items-start space-x-2 transition-colors ${
+      isSelected(id)
+        ? 'bg-emerald-50 dark:bg-emerald-950/50 ring-1 ring-emerald-300 dark:ring-emerald-800 text-zinc-900 dark:text-zinc-100'
+        : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
+    }`;
+
   const hasSearchQuery = normalisedQuery.length > 0;
   const hasAnyResult = filteredNav.length > 0 || resultGroups.length > 0;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-start justify-center pt-20 p-4">
+    <div
+      ref={dialogRef}
+      tabIndex={-1}
+      className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-start justify-center pt-20 p-4"
+    >
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col max-h-[70vh]">
         {/* Search bar */}
         <div className="p-3 border-b border-zinc-200 dark:border-zinc-800 flex items-center space-x-2 bg-zinc-50 dark:bg-zinc-950">
@@ -161,6 +237,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             placeholder="Search claims, research, interviews, risks, roadmap..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleInputKeyDown}
             className="w-full bg-transparent text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none"
             autoFocus
           />
@@ -173,11 +250,17 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         <div className="p-2 overflow-y-auto space-y-3 text-xs flex-1">
           {/* Action button */}
           <button
+            id="palette-create-project"
             onClick={() => {
               onOpenNewProjectModal();
               onClose();
             }}
-            className="w-full flex items-center space-x-2 p-2 rounded-lg text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-950/60 font-medium transition-colors text-left"
+            onMouseEnter={() => setSelectedIndex(0)}
+            className={`w-full flex items-center space-x-2 p-2 rounded-lg font-medium transition-colors text-left ${
+              isSelected('create-project')
+                ? 'bg-emerald-100 dark:bg-emerald-950/70 ring-1 ring-emerald-300 dark:ring-emerald-800 text-emerald-900 dark:text-emerald-200'
+                : 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-950/60'
+            }`}
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Create New Project</span>
@@ -195,11 +278,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   return (
                     <button
                       key={item.id}
+                      id={`palette-nav-${item.id}`}
                       onClick={() => {
                         onSelectTab(item.id);
                         onClose();
                       }}
-                      className="w-full flex items-center justify-between p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors text-left"
+                      onMouseEnter={() => setSelectedIndex(paletteEntries.findIndex((entry) => entry.id === `nav-${item.id}`))}
+                      className={navRowClass(`nav-${item.id}`)}
                     >
                       <div className="flex items-center space-x-2">
                         <Icon className="w-3.5 h-3.5 text-zinc-400" />
@@ -227,11 +312,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       {group.items.map((result) => (
                         <button
                           key={`${group.kind}-${result.id}`}
+                          id={`palette-result-${group.kind}-${result.id}`}
                           onClick={() => {
                             onSelectTab(result.tab);
                             onClose();
                           }}
-                          className="w-full text-left p-1.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 flex items-start space-x-2 text-zinc-700 dark:text-zinc-300"
+                          onMouseEnter={() => setSelectedIndex(paletteEntries.findIndex((entry) => entry.id === `result-${group.kind}-${result.id}`))}
+                          className={resultRowClass(`result-${group.kind}-${result.id}`)}
                         >
                           <Icon className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" />
                           <span className="min-w-0">
