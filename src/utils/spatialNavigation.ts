@@ -4,13 +4,20 @@
  * keys to go to the nearest node in that direction.
  */
 
+/**
+ * `width` and `height` are optional because stored canvas nodes make them
+ * optional; the canvas renders nodes at a fixed size when they are absent.
+ */
 export interface SpatialNode {
   id: string;
   x: number;
   y: number;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
 }
+
+export const DEFAULT_NODE_WIDTH = 208;
+export const DEFAULT_NODE_HEIGHT = 96;
 
 export type SpatialDirection = 'up' | 'down' | 'left' | 'right';
 
@@ -22,7 +29,9 @@ export const SPATIAL_KEYS: Record<string, SpatialDirection> = {
 };
 
 function centre(node: SpatialNode): { x: number; y: number } {
-  return { x: node.x + node.width / 2, y: node.y + node.height / 2 };
+  const width = node.width ?? DEFAULT_NODE_WIDTH;
+  const height = node.height ?? DEFAULT_NODE_HEIGHT;
+  return { x: node.x + width / 2, y: node.y + height / 2 };
 }
 
 function isInDirection(node: SpatialNode, from: SpatialNode, direction: SpatialDirection): boolean {
@@ -58,7 +67,11 @@ function directionalDistance(node: SpatialNode, from: SpatialNode, direction: Sp
   return along + across * 2;
 }
 
-/** Reading order for Tab: top-to-bottom, then left-to-right. */
+/**
+ * Reading order for Tab: top-to-bottom, then left-to-right. Nodes with no
+ * explicit size are treated as the default canvas node size so their vertical
+ * position is still meaningful.
+ */
 export function sortForTabOrder(nodes: readonly SpatialNode[]): SpatialNode[] {
   return nodes
     .slice()
