@@ -16,15 +16,17 @@ export function isFocusableTag(tag: string): boolean {
   );
 }
 
-/** True when an element is a tabbable candidate inside a modal. */
-export function isTabbable(element: {
+/** The subset of element attributes the trap needs, so it stays DOM-free. */
+export interface TabbableDescriptor {
   tag: string;
   disabled?: boolean;
   tabIndex?: number;
   type?: string;
-  /** Element attributes used to filter the palette's non-interactive rows. */
   inert?: boolean;
-}): boolean {
+}
+
+/** True when an element is a tabbable candidate inside a modal. */
+export function isTabbable(element: TabbableDescriptor): boolean {
   if (element.inert) return false;
   if (element.disabled) return false;
   if (!isFocusableTag(element.tag)) return false;
@@ -61,7 +63,7 @@ export function nextFocusIndex(
  */
 export function collectTabbable<T>(
   nodes: readonly T[],
-  descriptor: (node: T) => ReturnType<typeof isTabbable>
+  descriptor: (node: T) => TabbableDescriptor
 ): T[] {
   return nodes.filter((node) => isTabbable(descriptor(node)));
 }

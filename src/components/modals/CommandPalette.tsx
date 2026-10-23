@@ -153,7 +153,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     })
   );
 
-  const normalisedQuery = query.trim().toLowerCase();
   const paletteEntries = buildPaletteEntries(true, filteredNav.map((item) => item.id), resultGroups.flatMap((group) => group.items));
 
   const activateSelected = (index: number) => {

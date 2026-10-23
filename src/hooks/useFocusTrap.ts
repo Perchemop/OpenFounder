@@ -21,7 +21,7 @@ export function useFocusTrap<T extends HTMLElement>(isOpen: boolean, onClose: ()
 
     const tabbable = () =>
       dialog
-        ? collectTabbable(Array.from(dialog.querySelectorAll('*')), (element) => ({
+        ? collectTabbable(Array.from(dialog.querySelectorAll<HTMLElement>('*')), (element) => ({
             tag: element.tagName,
             disabled: (element as HTMLButtonElement).disabled,
             tabIndex: element.getAttribute('tabindex')
