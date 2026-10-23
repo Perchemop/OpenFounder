@@ -28,8 +28,9 @@ Newest first. Only claim what is recorded and verified. CI result is authoritati
   `react` fallback had hidden: a wrong callback prop on the Phases page, a second (conflicting)
   experiment-method vocabulary in the Validation page, and three non-existent fields in the
   Documents export templates. All five are fixed in this slice.
-- Third CI result: **pending** — updated by the follow-up run. Do not treat the slice as
-  verified until this line reports success.
+- Third CI run on commit `3f99972` **succeeded** on every required check:
+  `verify (ubuntu-latest)`, `verify (macos-latest)`, `verify (windows-latest)`,
+  `build (static)`, and `summary`. The static build artefact also uploaded successfully.
 
 ### Known gaps
 
