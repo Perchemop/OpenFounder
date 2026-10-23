@@ -18,7 +18,6 @@ import {
   Shield,
   Target,
   Users2,
-  Users,
 } from 'lucide-react';
 
 export type WorkspaceTab =

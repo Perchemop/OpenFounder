@@ -17,7 +17,6 @@ import {
   MessageSquare,
   Target,
   Users2,
-  Users,
 } from 'lucide-react';
 import type { WorkspaceTab } from '../layout/Sidebar';
 import type {

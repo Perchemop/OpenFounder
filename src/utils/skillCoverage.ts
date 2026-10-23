@@ -32,7 +32,7 @@ export interface SkillCoverageSummary {
   requirements: number;
   covered: number;
   thin: number;
-  gaps: number;
+  gap: number;
   missing: number;
   /** Skills where nobody on the team has any level, most important first. */
   criticalGaps: Array<{ requirement: SkillRequirement; bestLevel: number }>;
