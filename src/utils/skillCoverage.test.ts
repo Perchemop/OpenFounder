@@ -100,14 +100,27 @@ describe('deriveSkillCoverage', () => {
     expect(entry.note).toContain('Ana');
   });
 
-  it('caps advisor-only coverage at thin', () => {
+  it('caps advisor-only coverage at thin even at the target level', () => {
+    const advisorOnly = [member({ id: 'm3', name: 'Cleo', role: 'Advisor', skills: ['react'], commitment: 'advisor' })];
     const [entry] = deriveSkillCoverage(
-      [requirement({ skill: 'react', targetLevel: 'expert' })],
-      members
+      [requirement({ skill: 'react', targetLevel: 'working' })],
+      advisorOnly
     );
     expect(entry.bestLevel).toBe(2);
     expect(entry.status).toBe('thin');
     expect(entry.note).toContain('advisor');
+  });
+
+  it('stays covered when a builder also has the skill at the target level', () => {
+    const [entry] = deriveSkillCoverage(
+      [requirement({ skill: 'react', targetLevel: 'working' })],
+      [
+        member({ id: 'm3', name: 'Cleo', role: 'Advisor', skills: ['react'], commitment: 'advisor' }),
+        member({ id: 'm2', name: 'Ben', role: 'CTO', skills: ['react'], commitment: 'full_time' }),
+      ]
+    );
+    expect(entry.status).toBe('covered');
+    expect(entry.note).toContain('Ben');
   });
 
   it('reports missing skills', () => {
