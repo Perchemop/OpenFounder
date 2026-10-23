@@ -235,7 +235,12 @@ describe('searchWorkspace', () => {
 describe('groupSearchResults', () => {
   it('groups by kind in a stable order and drops empty groups', () => {
     const groups = groupSearchResults(searchWorkspace('late payments', data));
-    expect(groups.map((group) => group.kind)).toEqual(['interview', 'roadmap', 'feature']);
+    expect(groups.map((group) => group.kind)).toEqual([
+      'interview',
+      'roadmap',
+      'experiment',
+      'feature',
+    ]);
     expect(groups[1]).toMatchObject({ label: 'Roadmap', tab: 'roadmap' });
   });
 
