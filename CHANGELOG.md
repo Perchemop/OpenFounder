@@ -30,6 +30,10 @@ semantic versioning for its export schema and application releases.
 
 - Claims can no longer be marked research-backed, customer-confirmed, or experiment-confirmed
   without the corresponding notes and source.
+- Restored `validateWorkspaceReferences`, which the test suite imported but no longer existed;
+  it now powers `runWorkspaceDiagnostics` instead of reporting unconditional success.
+- Added the missing `@types/react` and `@types/react-dom` dev dependencies, so the type check
+  actually resolves React's class-component API (the previous `any` fallback hid real errors).
 
 ## [1.0.0] — 2026-10-10
 

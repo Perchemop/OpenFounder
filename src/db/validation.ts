@@ -1,5 +1,12 @@
 import { z } from 'zod';
-import type { ExportPackage } from '../types';
+import type {
+  CanvasEdge,
+  CanvasNode,
+  EvidenceItem,
+  Experiment,
+  ExportPackage,
+  RoadmapItem,
+} from '../types';
 
 // Safe bounds & regexes
 export const ID_REGEX = /^[a-zA-Z0-9_-]{1,128}$/;
@@ -481,4 +488,70 @@ export function validateExportPackage(rawInput: unknown): ValidationResult {
   }
 
   return { valid: true, data: result.data as unknown as ExportPackage };
+}
+
+export interface WorkspaceReferenceInput {
+  nodes?: Array<Pick<CanvasNode, 'id'>>;
+  edges?: Array<Pick<CanvasEdge, 'id' | 'fromNodeId' | 'toNodeId'>>;
+  evidence?: Array<Pick<EvidenceItem, 'id'>>;
+  experiments?: Array<Pick<Experiment, 'id' | 'evidenceId'>>;
+  roadmap?: Array<Pick<RoadmapItem, 'id' | 'dependencies'>>;
+}
+
+export interface WorkspaceReferenceResult {
+  valid: boolean;
+  warnings: string[];
+}
+
+/**
+ * Checks referential integrity inside one workspace. A relation is only
+ * checked when both sides of it are supplied, so callers can validate a
+ * partial workspace. Pure and synchronous: no database access.
+ */
+export function validateWorkspaceReferences(
+  input: WorkspaceReferenceInput
+): WorkspaceReferenceResult {
+  const warnings = new Set<string>();
+
+  if (input.nodes && input.edges) {
+    const nodeIds = new Set(input.nodes.map((node) => node.id));
+    for (const edge of input.edges) {
+      if (!nodeIds.has(edge.fromNodeId)) {
+        warnings.add(
+          `Canvas edge "${edge.id}" references missing source node "${edge.fromNodeId}".`
+        );
+      }
+      if (!nodeIds.has(edge.toNodeId)) {
+        warnings.add(
+          `Canvas edge "${edge.id}" references missing target node "${edge.toNodeId}".`
+        );
+      }
+    }
+  }
+
+  if (input.evidence && input.experiments) {
+    const evidenceIds = new Set(input.evidence.map((item) => item.id));
+    for (const experiment of input.experiments) {
+      if (experiment.evidenceId && !evidenceIds.has(experiment.evidenceId)) {
+        warnings.add(
+          `Experiment "${experiment.id}" references missing evidence claim "${experiment.evidenceId}".`
+        );
+      }
+    }
+  }
+
+  if (input.roadmap) {
+    const roadmapIds = new Set(input.roadmap.map((item) => item.id));
+    for (const item of input.roadmap) {
+      for (const dependency of item.dependencies ?? []) {
+        if (!roadmapIds.has(dependency)) {
+          warnings.add(
+            `Roadmap item "${item.id}" depends on missing roadmap item "${dependency}".`
+          );
+        }
+      }
+    }
+  }
+
+  return { valid: warnings.size === 0, warnings: [...warnings] };
 }

@@ -28,7 +28,12 @@ their own permissive licences. No proprietary assets, icons, fonts, or datasets 
 | tsx | MIT |
 | esbuild | MIT |
 | autoprefixer | MIT |
-| @types/* | MIT |
+| @types/node | MIT |
+| @types/express | MIT |
+| @types/react | MIT |
+| @types/react-dom | MIT |
+| csstype | MIT |
+| @types/* (other transitive) | MIT |
 
 ## Product frameworks (ideas, not code)
 

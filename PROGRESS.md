@@ -20,8 +20,12 @@ Newest first. Only claim what is recorded and verified. CI result is authoritati
 
 ### Verification
 
-- CI result: **pending** — the first run is triggered by this pull request. This line is updated
-  with the exact outcome after the run; do not treat the slice as verified before then.
+- First CI run (PR #2) **failed**, and proved why the gate was needed: `tsc` had never run in
+  CI, so it surfaced two pre-existing defects — `ErrorBoundary` had no React type declarations
+  (`@types/react` was absent from `devDependencies`), and `validation.test.ts` imported
+  `validateWorkspaceReferences`, which did not exist. Both are fixed in this slice.
+- Second CI result: **pending** — updated by the follow-up run. Do not treat the slice as
+  verified until this line reports success.
 
 ### Known gaps
 

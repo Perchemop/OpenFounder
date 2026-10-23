@@ -26,6 +26,7 @@ see `PROGRESS.md` for the current result.
 | R-018 | Landing-page copy studio stores a complete spec | `src/pages/LandingPageStudio.tsx` | — | Done |
 | R-019 | Workspace exports as a versioned JSON package | `src/db/index.ts` (`exportPackage`), `DocumentsPage` | `src/db/validation.test.ts` | Done |
 | R-020 | Import validates the package and remaps IDs safely | `src/db/index.ts` (`importPackage`), `src/db/validation.ts` | `validation.test.ts` | Done |
+| R-033 | Workspace diagnostics report real referential integrity issues | `validateWorkspaceReferences`, `runWorkspaceDiagnostics` | `validation.test.ts` | Done |
 | R-021 | AI co-founder supports six providers including offline rules | `src/ai/*` | `modelDefaults.test.ts`, `contextBuilder.test.ts` | Done |
 | R-022 | AI context is a deterministic serialisation within a token budget | `src/ai/contextBuilder.ts` | `contextBuilder.test.ts` | Done |
 | R-023 | Gemini model candidates include ordered fallbacks | `src/ai/modelDefaults.ts` | `modelDefaults.test.ts` | Done |

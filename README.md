@@ -174,6 +174,7 @@ npm test
 
 Coverage includes:
 - Zod / export validation
+- Workspace referential integrity (canvas edges, experiment → evidence, roadmap dependencies)
 - Risk scoring (`riskScore`, hot/open, sort)
 - Evidence integrity promotion rules (`evaluateEvidencePromotion`, integrity summary)
 - Model defaults (`buildGeminiModelCandidates`, parse/format fallbacks)
