@@ -263,6 +263,8 @@ export interface ProjectWorkspace {
   risks: RiskItem[];
   objectives: Objective[];
   advisors: Advisor[];
+  teamMembers: TeamMember[];
+  skillRequirements: SkillRequirement[];
 }
 
 export interface CanvasEdge {
@@ -497,6 +499,48 @@ export interface Advisor {
   sessions: AdvisorSession[];
 }
 
+export type TeamCommitment = 'full_time' | 'part_time' | 'advisor' | 'contractor';
+
+/** Someone on the team, including the founder(s). */
+export interface TeamMember {
+  id: string;
+  projectId: string;
+  name: string;
+  role: string;
+  commitment: TeamCommitment;
+  /** Skills this person actually brings, free text tags. */
+  skills: string[];
+  /** Where their time goes, free text. */
+  focus: string;
+  /** Optional link to an advisor this person also advises through. */
+  advisorId?: string;
+  isSynthetic?: boolean;
+  createdAt: number;
+}
+
+/**
+ * A skill the venture needs and how well it is covered. Coverage is derived
+ * from the team by `src/utils/skillCoverage.ts`, never typed in by hand.
+ */
+export interface SkillRequirement {
+  id: string;
+  projectId: string;
+  /** Skill name, e.g. "customer discovery", "React", "B2B sales". */
+  skill: string;
+  /** Why the venture needs it, in one line. */
+  why: string;
+  /** 1 = nice to have, 3 = the venture fails without it. */
+  importance: 1 | 2 | 3;
+  targetLevel: 'aware' | 'working' | 'expert';
+  isSynthetic?: boolean;
+  createdAt: number;
+}
+
+export interface SkillLevels {
+  /** Proficiency the founder/team claims per skill, 0–3. */
+  [skill: string]: number;
+}
+
 export interface AIChatMessage {
   id: string;
   projectId?: string;
@@ -553,5 +597,7 @@ export interface ExportPackage {
   risks?: RiskItem[];
   objectives?: Objective[];
   advisors?: Advisor[];
+  teamMembers?: TeamMember[];
+  skillRequirements?: SkillRequirement[];
   chatMessages?: AIChatMessage[];
 }

@@ -10,6 +10,8 @@ import type {
   RoadmapItem,
   Objective,
   Advisor,
+  TeamMember,
+  SkillRequirement,
 } from '../types';
 
 /**
@@ -25,6 +27,7 @@ export type SearchTab =
   | 'roadmap'
   | 'goals'
   | 'advisors'
+  | 'team'
   | 'competitors'
   | 'validation'
   | 'mvp';
@@ -37,6 +40,8 @@ export type WorkspaceSearchKind =
   | 'roadmap'
   | 'objective'
   | 'advisor'
+  | 'team_member'
+  | 'skill_requirement'
   | 'experiment'
   | 'competitor'
   | 'feature';
@@ -49,6 +54,8 @@ export interface WorkspaceSearchData {
   roadmap?: readonly RoadmapItem[];
   objectives?: readonly Objective[];
   advisors?: readonly Advisor[];
+  teamMembers?: readonly TeamMember[];
+  skillRequirements?: readonly SkillRequirement[];
   experiments?: readonly Experiment[];
   competitors?: readonly Competitor[];
   features?: readonly FeatureItem[];
@@ -89,6 +96,8 @@ const GROUP_ORDER: ReadonlyArray<Pick<WorkspaceSearchGroup, 'kind' | 'label' | '
   { kind: 'roadmap', label: 'Roadmap', tab: 'roadmap' },
   { kind: 'objective', label: 'Objectives', tab: 'goals' },
   { kind: 'advisor', label: 'Advisors', tab: 'advisors' },
+  { kind: 'team_member', label: 'Team', tab: 'team' },
+  { kind: 'skill_requirement', label: 'Skill requirements', tab: 'team' },
   { kind: 'experiment', label: 'Experiments', tab: 'validation' },
   { kind: 'competitor', label: 'Competitors', tab: 'competitors' },
   { kind: 'feature', label: 'Features', tab: 'mvp' },
@@ -212,6 +221,28 @@ function buildCandidates(data: WorkspaceSearchData): Candidate[] {
           [session.topic, session.adviceGiven, ...session.quotes].join(' ')
         )
       ),
+    });
+  }
+
+  for (const item of data.teamMembers ?? []) {
+    candidates.push({
+      id: item.id,
+      kind: 'team_member',
+      tab: 'team',
+      title: item.name,
+      detail: [item.role, item.commitment.replace(/_/g, ' ')].filter(Boolean).join(' · '),
+      body: joinText(item.skills, item.focus),
+    });
+  }
+
+  for (const item of data.skillRequirements ?? []) {
+    candidates.push({
+      id: item.id,
+      kind: 'skill_requirement',
+      tab: 'team',
+      title: item.skill,
+      detail: `importance ${item.importance} · target ${item.targetLevel}`,
+      body: joinText(item.why),
     });
   }
 

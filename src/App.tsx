@@ -25,6 +25,7 @@ import { DocumentsPage } from './pages/DocumentsPage';
 import { RisksPage } from './pages/RisksPage';
 import { GoalsPage } from './pages/GoalsPage';
 import { AdvisorsPage } from './pages/AdvisorsPage';
+import { TeamPage } from './pages/TeamPage';
 
 import { Sparkles, Loader2 } from 'lucide-react';
 
@@ -45,6 +46,8 @@ function AppContent() {
     risks,
     objectives,
     advisors,
+    teamMembers,
+    skillRequirements,
     projectContextString,
     unverifiedEvidenceCount,
     activeExperimentsCount,
@@ -223,6 +226,16 @@ function AppContent() {
                 />
               )}
 
+              {activeTab === 'team' && (
+                <TeamPage
+                  projectId={currentProject.id}
+                  members={teamMembers}
+                  requirements={skillRequirements}
+                  onTeamUpdated={reloadCurrentProjectData}
+                  onOpenAICofounderWithPrompt={openAICofounderWithPrompt}
+                />
+              )}
+
               {activeTab === 'business' && (
                 <BusinessModelPage
                   project={currentProject}
@@ -346,6 +359,8 @@ function AppContent() {
         roadmap={roadmap}
         objectives={objectives}
         advisors={advisors}
+        teamMembers={teamMembers}
+        skillRequirements={skillRequirements}
       />
     </div>
   );

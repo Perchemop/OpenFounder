@@ -46,3 +46,6 @@ see `PROGRESS.md` for the current result.
 
 | R-037 | Advisor log records people, sessions, verbatim advice, and commitments | `src/utils/advisorLog.ts`, `AdvisorsPage` | `advisorLog.test.ts` | Done |
 | R-038 | Export and import cover advisors with schema version 5 | `src/db/index.ts`, `src/db/validation.ts` | CI build path | Partial (no import test) |
+
+| R-039 | Team and skills coverage with derived gap analysis | `src/utils/skillCoverage.ts`, `TeamPage` | `skillCoverage.test.ts` | Done |
+| R-040 | Export and import cover team and skills with schema version 6 | `src/db/index.ts`, `src/db/validation.ts` | CI build path | Partial (no import test) |

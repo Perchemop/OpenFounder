@@ -34,6 +34,9 @@ semantic versioning for its export schema and application releases.
   command-palette search, and schema version 5 export/import.
 - `src/utils/advisorLog.ts`: commitment urgency, open-commitment ordering, and log summary.
 
+- Team and skills coverage (`TeamMember`, `SkillRequirement`) with derived coverage status
+  and a gap list; schema version 6.
+
 ### Changed
 
 - Pages deploy workflow now installs with Bun instead of `npm ci`, which failed because the

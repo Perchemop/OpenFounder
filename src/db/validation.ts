@@ -432,6 +432,30 @@ export const AIChatMessageSchema = z.object({
   }).optional(),
 });
 
+export const TeamMemberSchema = z.object({
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
+  name: z.string().min(1).max(200),
+  role: z.string().max(200).default(''),
+  commitment: z.enum(['full_time', 'part_time', 'advisor', 'contractor']),
+  skills: z.array(z.string().max(100)).max(50).default([]),
+  focus: z.string().max(2000).default(''),
+  advisorId: SafeIdSchema.optional(),
+  isSynthetic: z.boolean().optional(),
+  createdAt: z.number(),
+});
+
+export const SkillRequirementSchema = z.object({
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
+  skill: z.string().min(1).max(200),
+  why: z.string().max(2000).default(''),
+  importance: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+  targetLevel: z.enum(['aware', 'working', 'expert']),
+  isSynthetic: z.boolean().optional(),
+  createdAt: z.number(),
+});
+
 export const AdvisorCommitmentSchema = z.object({
   id: SafeIdSchema,
   description: z.string().min(1).max(1000),
@@ -499,7 +523,7 @@ export const ObjectiveSchema = z.object({
 
 // Full Export Package Zod Schema
 export const ExportPackageSchema = z.object({
-  schemaVersion: z.number().int().min(1).max(5),
+  schemaVersion: z.number().int().min(1).max(6),
   exportedAt: z.string(),
   appVersion: z.string().max(50),
   project: ProjectSchema,
@@ -520,6 +544,8 @@ export const ExportPackageSchema = z.object({
   risks: z.array(RiskItemSchema).max(1000).optional().default([]),
   objectives: z.array(ObjectiveSchema).max(200).optional().default([]),
   advisors: z.array(AdvisorSchema).max(200).optional().default([]),
+  teamMembers: z.array(TeamMemberSchema).max(200).optional().default([]),
+  skillRequirements: z.array(SkillRequirementSchema).max(500).optional().default([]),
   chatMessages: z.array(AIChatMessageSchema).max(5000).optional().default([]),
 });
 
