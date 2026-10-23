@@ -10,7 +10,12 @@ import {
   Sparkles,
   HelpCircle,
 } from 'lucide-react';
-import type { Experiment, ExperimentStatus, ValidationDimension } from '../types';
+import type {
+  Experiment,
+  ExperimentMethod,
+  ExperimentStatus,
+  ValidationDimension,
+} from '../types';
 import { db } from '../db';
 import { generateExperimentSuite, suggestProjectField } from '../ai/autoCompleteService';
 import { AIAutoFillButton } from '../components/ai/AIAutoFillButton';
@@ -45,7 +50,7 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
   // Form state
   const [hypothesis, setHypothesis] = useState('');
   const [dimension, setDimension] = useState<ValidationDimension>('problem');
-  const [method, setMethod] = useState<'interview' | 'landing_page' | 'concierge' | 'cold_outreach' | 'prototype' | 'pre_sale'>('landing_page');
+  const [method, setMethod] = useState<ExperimentMethod>('smoke_landing_page');
   const [targetSampleSize, setTargetSampleSize] = useState(25);
   const [currentSampleSize, setCurrentSampleSize] = useState(0);
   const [successCriteria, setSuccessCriteria] = useState('');
@@ -66,7 +71,7 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
           projectId,
           hypothesis: item.hypothesis,
           dimension: (item.dimension as ValidationDimension) || 'problem',
-          method: (item.method as any) || 'landing_page',
+          method: (item.method as ExperimentMethod) || 'smoke_landing_page',
           targetSampleSize: Number(item.targetSampleSize) || 25,
           currentSampleSize: 0,
           successCriteria: item.successCriteria,
@@ -416,15 +421,15 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
                   </label>
                   <select
                     value={method}
-                    onChange={(e) => setMethod(e.target.value as any)}
+                    onChange={(e) => setMethod(e.target.value as ExperimentMethod)}
                     className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2"
                   >
-                    <option value="landing_page">Landing Page Smoke Test</option>
-                    <option value="interview">Customer Discovery Interview</option>
-                    <option value="concierge">Manual Concierge MVP</option>
+                    <option value="smoke_landing_page">Landing Page Smoke Test</option>
+                    <option value="customer_interview">Customer Discovery Interview</option>
+                    <option value="concierge_mvp">Manual Concierge MVP</option>
                     <option value="cold_outreach">Targeted Cold Email / DM Campaign</option>
-                    <option value="prototype">Clickable Prototype Test</option>
-                    <option value="pre_sale">Letter of Intent / Paid Pre-Sale</option>
+                    <option value="clickable_prototype">Clickable Prototype Test</option>
+                    <option value="pre_order">Letter of Intent / Paid Pre-Sale</option>
                   </select>
                 </div>
               </div>

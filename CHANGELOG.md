@@ -34,6 +34,13 @@ semantic versioning for its export schema and application releases.
   it now powers `runWorkspaceDiagnostics` instead of reporting unconditional success.
 - Added the missing `@types/react` and `@types/react-dom` dev dependencies, so the type check
   actually resolves React's class-component API (the previous `any` fallback hid real errors).
+- Phases page now receives `onProjectUpdated`; it was passed `onPhaseUpdated`, so advancing a
+  phase or ticking a task called an undefined callback at runtime.
+- Validation page now stores the canonical `ExperimentMethod` values (`customer_interview`,
+  `smoke_landing_page`, `concierge_mvp`, `clickable_prototype`, `pre_order`) instead of a second
+  vocabulary, so generated and manually created experiments agree.
+- Documents export reads real fields (`estimatedDays`, `solvesProblem`, `productDescription`)
+  instead of non-existent `effort`, `rationale`, and `description` properties.
 
 ## [1.0.0] — 2026-10-10
 

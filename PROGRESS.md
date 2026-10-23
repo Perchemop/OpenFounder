@@ -24,7 +24,11 @@ Newest first. Only claim what is recorded and verified. CI result is authoritati
   CI, so it surfaced two pre-existing defects — `ErrorBoundary` had no React type declarations
   (`@types/react` was absent from `devDependencies`), and `validation.test.ts` imported
   `validateWorkspaceReferences`, which did not exist. Both are fixed in this slice.
-- Second CI result: **pending** — updated by the follow-up run. Do not treat the slice as
+- Second CI run **failed on the type check again**, exposing five defects that the untyped
+  `react` fallback had hidden: a wrong callback prop on the Phases page, a second (conflicting)
+  experiment-method vocabulary in the Validation page, and three non-existent fields in the
+  Documents export templates. All five are fixed in this slice.
+- Third CI result: **pending** — updated by the follow-up run. Do not treat the slice as
   verified until this line reports success.
 
 ### Known gaps
