@@ -143,7 +143,7 @@ describe('summarizeOkrs', () => {
       averageProgress: 77,
       keyResults: 4,
       met: 2,
-      atRisk: 0,
+      atRisk: 1,
       offTrack: 1,
     });
   });
