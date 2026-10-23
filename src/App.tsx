@@ -265,6 +265,8 @@ function AppContent() {
                   competitors={competitors}
                   features={features}
                   research={research}
+                  objectives={objectives}
+                  risks={risks}
                 />
               )}
             </>
