@@ -22,3 +22,6 @@ Thumbs.db
 .turbo/
 .cache/
 *.tsbuildinfo
+
+# Local process guide – never committed
+guide.md

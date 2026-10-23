@@ -21,7 +21,13 @@ import type {
   AIProviderConfig,
   ProjectWorkspace,
 } from '../types';
-import { validateExportPackage } from './validation';
+import { validateExportPackage, validateWorkspaceReferences } from './validation';
+
+export { validateWorkspaceReferences } from './validation';
+export type {
+  WorkspaceReferenceInput,
+  WorkspaceReferenceResult,
+} from './validation';
 
 // Cryptographically secure ID generator with fallback
 export function generateId(prefix = 'id'): string {
@@ -539,5 +545,23 @@ export async function runWorkspaceDiagnostics(projectId: string): Promise<{
   stats.canvasEdgesCount = await db.canvasEdges.where('projectId').equals(projectId).count();
   stats.decisionsCount = await db.decisions.where('projectId').equals(projectId).count();
   stats.risksCount = await db.risks.where('projectId').equals(projectId).count();
+
+  const [nodes, edges, evidence, experiments, roadmap] = await Promise.all([
+    db.canvasNodes.where('projectId').equals(projectId).toArray(),
+    db.canvasEdges.where('projectId').equals(projectId).toArray(),
+    db.evidence.where('projectId').equals(projectId).toArray(),
+    db.experiments.where('projectId').equals(projectId).toArray(),
+    db.roadmap.where('projectId').equals(projectId).toArray(),
+  ]);
+
+  const integrity = validateWorkspaceReferences({
+    nodes,
+    edges,
+    evidence,
+    experiments,
+    roadmap,
+  });
+  issues.push(...integrity.warnings);
+
   return { integrityOk: issues.length === 0, issues, stats };
 }

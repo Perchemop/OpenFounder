@@ -121,7 +121,7 @@ function AppContent() {
               {activeTab === 'phases' && (
                 <PhasesPage
                   project={currentProject}
-                  onPhaseUpdated={refreshProjects}
+                  onProjectUpdated={refreshProjects}
                   onOpenAICofounderWithPrompt={openAICofounderWithPrompt}
                 />
               )}

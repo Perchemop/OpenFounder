@@ -171,7 +171,7 @@ ${project.problemStatement || 'Not defined yet.'}
 ## 4. MVP Solution Scope
 - **Core Value Proposition:** ${project.successDefinition || 'Solve the acute bottleneck'}
 - **Must-Have Features (${mustFeatures.length}):**
-${mustFeatures.map((f) => `  - **${f.title}** (Effort: ${f.effort || 'Moderate'})`).join('\n') || '  - None defined yet'}
+${mustFeatures.map((f) => `  - **${f.title}** (Effort: ${f.estimatedDays ? `${f.estimatedDays} day${f.estimatedDays === 1 ? '' : 's'}` : 'Moderate'})`).join('\n') || '  - None defined yet'}
 
 ## 5. Founder Context & Unfair Advantage
 - **Founder Background:** ${project.founderSkills || 'N/A'}
@@ -231,7 +231,7 @@ ${competitors
 - **URL:** ${c.url || 'N/A'}
 - **Pricing:** ${c.pricingModel}
 - **Target Audience:** ${c.targetAudience}
-- **Description:** ${c.description}
+- **Description:** ${c.productDescription}
 - **Strengths:**
 ${c.strengths.map((s) => `  + ${s}`).join('\n') || '  None'}
 - **Weaknesses & Complaints:**
@@ -250,7 +250,7 @@ ${project.problemStatement}
 
 ## 2. MoSCoW Feature Backlog
 ### Must Have (MVP Gate)
-${mustFeatures.map((f) => `- **${f.title}**: ${f.rationale || 'Essential for initial trial.'}`).join('\n') || 'None'}
+${mustFeatures.map((f) => `- **${f.title}**: ${f.solvesProblem || 'Essential for initial trial.'}`).join('\n') || 'None'}
 
 ### Should Have
 ${features.filter((f) => f.priority === 'should').map((f) => `- **${f.title}**`).join('\n') || 'None'}
