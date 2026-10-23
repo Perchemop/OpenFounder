@@ -26,6 +26,7 @@ import type {
   CustomerInterview,
   ResearchSource,
   RiskItem,
+  Objective,
   AIProviderConfig,
 } from '../types';
 import type { WorkspaceTab } from '../components/layout/Sidebar';
@@ -51,6 +52,7 @@ export interface ProjectContextValue {
   interviews: CustomerInterview[];
   research: ResearchSource[];
   risks: RiskItem[];
+  objectives: Objective[];
 
   // Derived
   projectContextString: string;
@@ -128,6 +130,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const [interviews, setInterviews] = useState<CustomerInterview[]>([]);
   const [research, setResearch] = useState<ResearchSource[]>([]);
   const [risks, setRisks] = useState<RiskItem[]>([]);
+  const [objectives, setObjectives] = useState<Objective[]>([]);
 
   // AI & modals
   const [aiConfig, setAiConfigState] = useState<AIProviderConfig>(getStoredSettings);
@@ -175,6 +178,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       intList,
       resList,
       riskList,
+      objectiveList,
     ] = await Promise.all([
       db.evidence.where('projectId').equals(projId).toArray(),
       db.competitors.where('projectId').equals(projId).toArray(),
@@ -184,6 +188,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       db.interviews.where('projectId').equals(projId).toArray(),
       db.research.where('projectId').equals(projId).toArray(),
       db.risks.where('projectId').equals(projId).toArray(),
+      db.objectives.where('projectId').equals(projId).toArray(),
     ]);
 
     setEvidence(evList);
@@ -194,6 +199,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     setInterviews(intList);
     setResearch(resList);
     setRisks(riskList);
+    setObjectives(objectiveList);
   }, []);
 
   useEffect(() => {
@@ -208,6 +214,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       setInterviews([]);
       setResearch([]);
       setRisks([]);
+      setObjectives([]);
     }
   }, [currentProject, loadProjectData]);
 
@@ -325,6 +332,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       interviews,
       research,
       risks,
+      objectives,
       projectContextString,
       unverifiedEvidenceCount,
       activeExperimentsCount,
@@ -362,6 +370,7 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       interviews,
       research,
       risks,
+      objectives,
       projectContextString,
       unverifiedEvidenceCount,
       activeExperimentsCount,

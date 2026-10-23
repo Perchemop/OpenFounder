@@ -61,3 +61,23 @@ mask a failure.
 
 *Why:* catch platform-specific path and test issues early; make the verdict unambiguous.
 *Rejected:* Ubuntu-only verification (misses Windows path bugs); no required-check list.
+
+## D-008 · 2026-10-23 · Emulate capability classes, not whole products
+
+The request to "emulate" cofounder.co, CoFoundersLab, MentorShow, Eightfold AI, and Cascade is
+interpreted as: adopt the capabilities that fit a local-first founder workspace, and record the
+rest as out of scope. `docs/competitive-benchmark.md` maps every capability with its source.
+
+In scope (in order): goals/key results and a scorecard (Cascade); advisor and mentor log
+(CoFoundersLab); team skills coverage (CoFoundersLab/Eightfold, local only); first-hire pipeline
+(Eightfold, local only).
+
+Out of scope, permanently or until a backend exists: two-sided cofounder/investor matching,
+licensed masterclass content (MentorShow is a personal-development product, not a startup
+mentor network), an enterprise skills graph or ATS, autonomous agents that send email, move
+money, or incorporate a company, and enterprise OAuth integrations.
+
+*Why:* marketplaces need network effects and moderation; content is licensed; autonomous external
+actions need credentials, spend controls, and liability decisions. Simulating any of them would
+violate the "no fake functionality" rule.
+*Rejected:* copying product surfaces we cannot make real; claiming parity we have not verified.

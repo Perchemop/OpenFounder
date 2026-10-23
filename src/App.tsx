@@ -23,6 +23,7 @@ import { GTMPage } from './pages/GTMPage';
 import { LandingPageStudio } from './pages/LandingPageStudio';
 import { DocumentsPage } from './pages/DocumentsPage';
 import { RisksPage } from './pages/RisksPage';
+import { GoalsPage } from './pages/GoalsPage';
 
 import { Sparkles, Loader2 } from 'lucide-react';
 
@@ -41,6 +42,7 @@ function AppContent() {
     interviews,
     research,
     risks,
+    objectives,
     projectContextString,
     unverifiedEvidenceCount,
     activeExperimentsCount,
@@ -201,6 +203,15 @@ function AppContent() {
                 />
               )}
 
+              {activeTab === 'goals' && (
+                <GoalsPage
+                  projectId={currentProject.id}
+                  objectives={objectives}
+                  onGoalsUpdated={reloadCurrentProjectData}
+                  onOpenAICofounderWithPrompt={openAICofounderWithPrompt}
+                />
+              )}
+
               {activeTab === 'business' && (
                 <BusinessModelPage
                   project={currentProject}
@@ -322,6 +333,7 @@ function AppContent() {
         interviews={interviews}
         risks={risks}
         roadmap={roadmap}
+        objectives={objectives}
       />
     </div>
   );

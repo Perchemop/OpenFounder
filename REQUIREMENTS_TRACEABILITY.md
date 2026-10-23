@@ -39,3 +39,7 @@ see `PROGRESS.md` for the current result.
 | R-030 | Accessibility audit and keyboard pass recorded | `docs/qc/manual-qc.md` | — | Planned |
 | R-031 | Dashboard surfaces the evidence integrity score | `DashboardPage`, `src/utils/evidenceIntegrity.ts` | `src/utils/evidenceIntegrity.test.ts` | Done |
 | R-032 | One-page validation report export | `DocumentsPage` (partial) | — | Partial |
+
+| R-034 | Objectives carry measurable key results with derived progress | `src/utils/okr.ts`, `GoalsPage` | `okr.test.ts` | Done |
+| R-035 | Export and import cover objectives with schema version 4 | `src/db/index.ts`, `src/db/validation.ts` | CI build/import path | Partial (no import test) |
+| R-036 | Competitive benchmark records what is and is not emulated | `docs/competitive-benchmark.md`, D-008 | — | Done |

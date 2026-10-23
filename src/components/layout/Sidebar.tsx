@@ -16,6 +16,7 @@ import {
   FileText,
   ShieldAlert,
   Shield,
+  Target,
 } from 'lucide-react';
 
 export type WorkspaceTab =
@@ -29,6 +30,7 @@ export type WorkspaceTab =
   | 'canvas'
   | 'mvp'
   | 'roadmap'
+  | 'goals'
   | 'business'
   | 'gtm'
   | 'landing'
@@ -80,6 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'canvas' as WorkspaceTab, label: 'Visual Canvas', icon: Network },
     { id: 'mvp' as WorkspaceTab, label: 'MVP Scope & MoSCoW', icon: ListTodo },
     { id: 'roadmap' as WorkspaceTab, label: 'Visual Roadmap', icon: Milestone },
+    { id: 'goals' as WorkspaceTab, label: 'Goals & Scorecard', icon: Target },
     { id: 'business' as WorkspaceTab, label: 'Business Model', icon: Receipt },
     { id: 'gtm' as WorkspaceTab, label: 'Go-To-Market Plan', icon: Megaphone },
     { id: 'landing' as WorkspaceTab, label: 'Landing Page Studio', icon: Globe },

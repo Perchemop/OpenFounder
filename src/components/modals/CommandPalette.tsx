@@ -15,6 +15,7 @@ import {
   ShieldAlert,
   Building2,
   MessageSquare,
+  Target,
 } from 'lucide-react';
 import type { WorkspaceTab } from '../layout/Sidebar';
 import type {
@@ -26,6 +27,7 @@ import type {
   CustomerInterview,
   RiskItem,
   RoadmapItem,
+  Objective,
 } from '../../types';
 import {
   groupSearchResults,
@@ -46,6 +48,7 @@ interface CommandPaletteProps {
   interviews?: CustomerInterview[];
   risks?: RiskItem[];
   roadmap?: RoadmapItem[];
+  objectives?: Objective[];
 }
 
 const RESULT_ICONS: Record<WorkspaceSearchKind, React.ComponentType<{ className?: string }>> = {
@@ -54,6 +57,7 @@ const RESULT_ICONS: Record<WorkspaceSearchKind, React.ComponentType<{ className?
   interview: MessageSquare,
   risk: ShieldAlert,
   roadmap: Milestone,
+  objective: Target,
   experiment: FlaskConical,
   competitor: Building2,
   feature: ListTodo,
@@ -72,6 +76,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   interviews = [],
   risks = [],
   roadmap = [],
+  objectives = [],
 }) => {
   const [query, setQuery] = useState('');
 
@@ -119,6 +124,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       interviews,
       risks,
       roadmap,
+      objectives,
       experiments,
       competitors,
       features,
