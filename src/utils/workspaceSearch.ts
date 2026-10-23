@@ -1,3 +1,4 @@
+import { keyResultProgress } from './okr';
 import type {
   Competitor,
   CustomerInterview,
@@ -7,6 +8,7 @@ import type {
   ResearchSource,
   RiskItem,
   RoadmapItem,
+  Objective,
 } from '../types';
 
 /**
@@ -20,6 +22,7 @@ export type SearchTab =
   | 'interviews'
   | 'risks'
   | 'roadmap'
+  | 'goals'
   | 'competitors'
   | 'validation'
   | 'mvp';
@@ -30,6 +33,7 @@ export type WorkspaceSearchKind =
   | 'interview'
   | 'risk'
   | 'roadmap'
+  | 'objective'
   | 'experiment'
   | 'competitor'
   | 'feature';
@@ -40,6 +44,7 @@ export interface WorkspaceSearchData {
   interviews?: readonly CustomerInterview[];
   risks?: readonly RiskItem[];
   roadmap?: readonly RoadmapItem[];
+  objectives?: readonly Objective[];
   experiments?: readonly Experiment[];
   competitors?: readonly Competitor[];
   features?: readonly FeatureItem[];
@@ -78,6 +83,7 @@ const GROUP_ORDER: ReadonlyArray<Pick<WorkspaceSearchGroup, 'kind' | 'label' | '
   { kind: 'interview', label: 'Interviews', tab: 'interviews' },
   { kind: 'risk', label: 'Risks', tab: 'risks' },
   { kind: 'roadmap', label: 'Roadmap', tab: 'roadmap' },
+  { kind: 'objective', label: 'Objectives', tab: 'goals' },
   { kind: 'experiment', label: 'Experiments', tab: 'validation' },
   { kind: 'competitor', label: 'Competitors', tab: 'competitors' },
   { kind: 'feature', label: 'Features', tab: 'mvp' },
@@ -164,6 +170,18 @@ function buildCandidates(data: WorkspaceSearchData): Candidate[] {
       title: item.title,
       detail: `${item.status.replace(/_/g, ' ')} · ${item.priority} priority`,
       body: joinText(item.objective, item.evidenceRequired, item.owner),
+    });
+  }
+
+  for (const item of data.objectives ?? []) {
+    const met = item.keyResults.filter((keyResult) => keyResultProgress(keyResult) >= 100).length;
+    candidates.push({
+      id: item.id,
+      kind: 'objective',
+      tab: 'goals',
+      title: item.title,
+      detail: `${item.status} · ${met}/${item.keyResults.length} key results met`,
+      body: joinText(item.description, item.owner, item.timeframe, item.keyResults.map((keyResult) => keyResult.title)),
     });
   }
 

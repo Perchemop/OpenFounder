@@ -25,6 +25,11 @@ semantic versioning for its export schema and application releases.
   research, interviews, risks, and roadmap in addition to existing entities, with grouped
   results and an explicit no-match state.
 
+- Objectives with measurable key results (`Objective`, `KeyResult`), a goals page, and a
+  derived scorecard on the sidebar.
+- `docs/competitive-benchmark.md`: a sourced capability map of Cofounder, CoFoundersLab,
+  MentorShow, Eightfold AI, and Cascade, with explicit in-scope and out-of-scope decisions.
+
 ### Changed
 
 - Pages deploy workflow now installs with Bun instead of `npm ci`, which failed because the

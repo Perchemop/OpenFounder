@@ -9,6 +9,7 @@ import type {
   ResearchSource,
   RiskItem,
   RoadmapItem,
+  Objective,
 } from '../types';
 
 const stamps = { createdAt: 0, updatedAt: 0 };
@@ -94,6 +95,31 @@ const roadmap: RoadmapItem[] = [
   },
 ];
 
+const objectives: Objective[] = [
+  {
+    ...stamps,
+    id: 'ob1',
+    projectId: 'p1',
+    title: 'Prove plumbers will pay',
+    description: 'Converts validated demand into paying customers.',
+    owner: 'founder',
+    timeframe: 'Q4 2026',
+    status: 'active',
+    keyResults: [
+      {
+        id: 'kr1',
+        title: 'Reach 40 paying customers',
+        unit: 'number',
+        direction: 'increase',
+        baseline: 0,
+        target: 40,
+        current: 8,
+        updatedAt: 0,
+      },
+    ],
+  },
+];
+
 const experiments: Experiment[] = [
   {
     ...stamps,
@@ -146,6 +172,7 @@ const data = {
   interviews,
   risks,
   roadmap,
+  objectives,
   experiments,
   competitors,
   features,
@@ -168,6 +195,7 @@ describe('searchWorkspace', () => {
     expect(ids('adoption')).toEqual(['rs1']);
     expect(ids('pre-order')).toEqual(expect.arrayContaining(['rk1', 'ex1']));
     expect(ids('reminder')).toEqual(expect.arrayContaining(['rm1', 'ft1']));
+    expect(ids('q4')).toEqual(['ob1']);
     expect(ids('invoicenow')).toEqual(['cp1']);
   });
 
@@ -195,6 +223,7 @@ describe('searchWorkspace', () => {
     expect(tabFor('invoicenow')).toBe('competitors');
     expect(tabFor('automatic')).toBe('mvp');
     expect(tabFor('plumbers lose')).toBe('evidence');
+    expect(tabFor('paying customers')).toBe('goals');
   });
 
   it('ranks title matches above body matches', () => {

@@ -261,6 +261,7 @@ export interface ProjectWorkspace {
   landingPage?: LandingPageSpec;
   decisions: ProjectDecision[];
   risks: RiskItem[];
+  objectives: Objective[];
 }
 
 export interface CanvasEdge {
@@ -406,6 +407,50 @@ export interface RiskItem {
   updatedAt: number;
 }
 
+export type MetricUnit = 'number' | 'currency' | 'percent' | 'ratio';
+
+/**
+ * Direction the metric must move to reach the target. A churn-rate key result
+ * uses `decrease`; a revenue key result uses `increase`.
+ */
+export type MetricDirection = 'increase' | 'decrease';
+
+export interface KeyResult {
+  id: string;
+  title: string;
+  unit: MetricUnit;
+  direction: MetricDirection;
+  /** Value at the start of the objective period. */
+  baseline: number;
+  /** Value that would mean the key result is met. */
+  target: number;
+  /** Latest measured value, typed in by the founder with a source. */
+  current: number;
+  /** Where the current value came from (dashboard, interview round, invoice sheet). */
+  source?: string;
+  updatedAt: number;
+}
+
+/**
+ * A single objective with measurable key results. Progress is always derived
+ * from the key results by `summarizeOkrs`; it is never stored, so the page
+ * cannot drift from the numbers the founder entered.
+ */
+export interface Objective {
+  id: string;
+  projectId: string;
+  title: string;
+  description: string;
+  owner: string;
+  /** Free text such as "Q4 2026" or "first 90 days". */
+  timeframe: string;
+  status: 'active' | 'done' | 'archived';
+  keyResults: KeyResult[];
+  isSynthetic?: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
 export interface AIChatMessage {
   id: string;
   projectId?: string;
@@ -460,5 +505,6 @@ export interface ExportPackage {
   landingPage?: LandingPageSpec;
   decisions: ProjectDecision[];
   risks?: RiskItem[];
+  objectives?: Objective[];
   chatMessages?: AIChatMessage[];
 }

@@ -16,6 +16,7 @@ import type {
   LandingPageSpec,
   ProjectDecision,
   RiskItem,
+  Objective,
   AIChatMessage,
   ExportPackage,
   AIProviderConfig,
@@ -54,6 +55,7 @@ export class OpenFounderDB extends Dexie {
   landingPage!: Table<LandingPageSpec, string>;
   decisions!: Table<ProjectDecision, string>;
   risks!: Table<RiskItem, string>;
+  objectives!: Table<Objective, string>;
   chatMessages!: Table<AIChatMessage, string>;
 
   constructor() {
@@ -82,6 +84,9 @@ export class OpenFounderDB extends Dexie {
     this.version(3).stores({
       risks: 'id, projectId, category, status, impact, probability',
       decisions: 'id, projectId, phaseKey, status, createdAt',
+    });
+    this.version(4).stores({
+      objectives: 'id, projectId, status, createdAt',
     });
   }
 }
@@ -259,6 +264,7 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     landingPage,
     decisions,
     risks,
+    objectives,
     chatMessages,
   ] = await Promise.all([
     db.evidence.where('projectId').equals(projectId).toArray(),
@@ -276,11 +282,12 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     db.landingPage.where('projectId').equals(projectId).first(),
     db.decisions.where('projectId').equals(projectId).toArray(),
     db.risks.where('projectId').equals(projectId).toArray(),
+    db.objectives.where('projectId').equals(projectId).toArray(),
     db.chatMessages.where('projectId').equals(projectId).toArray(),
   ]);
 
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
     exportedAt: new Date().toISOString(),
     appVersion: '1.0.0',
     project,
@@ -299,6 +306,7 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     landingPage,
     decisions,
     risks,
+    objectives,
     chatMessages,
   };
 }
@@ -334,7 +342,7 @@ export async function importProjectPackage(
       db.projects, db.evidence, db.research, db.communityInsights, db.competitors,
       db.experiments, db.interviews, db.features, db.roadmap, db.canvasNodes,
       db.canvasEdges, db.businessModel, db.gtmPlan, db.landingPage, db.decisions,
-      db.risks, db.chatMessages,
+      db.risks, db.objectives, db.chatMessages,
     ],
     async () => {
       if (!shouldRemap) {
@@ -355,6 +363,7 @@ export async function importProjectPackage(
           db.landingPage.where('projectId').equals(targetProjectId).delete(),
           db.decisions.where('projectId').equals(targetProjectId).delete(),
           db.risks.where('projectId').equals(targetProjectId).delete(),
+          db.objectives.where('projectId').equals(targetProjectId).delete(),
           db.chatMessages.where('projectId').equals(targetProjectId).delete(),
         ]);
       }
@@ -462,6 +471,19 @@ export async function importProjectPackage(
           }))
         );
       }
+      if (pkg.objectives?.length) {
+        await db.objectives.bulkPut(
+          pkg.objectives.map((objective) => ({
+            ...objective,
+            id: remapId(objective.id, 'obj'),
+            projectId: targetProjectId,
+            keyResults: objective.keyResults.map((keyResult, index) => ({
+              ...keyResult,
+              id: remapId(keyResult.id, `kr${index}`),
+            })),
+          }))
+        );
+      }
       if (pkg.communityInsights?.length) {
         await db.communityInsights.bulkPut(
           pkg.communityInsights.map((i) => ({
@@ -545,6 +567,7 @@ export async function runWorkspaceDiagnostics(projectId: string): Promise<{
   stats.canvasEdgesCount = await db.canvasEdges.where('projectId').equals(projectId).count();
   stats.decisionsCount = await db.decisions.where('projectId').equals(projectId).count();
   stats.risksCount = await db.risks.where('projectId').equals(projectId).count();
+  stats.objectivesCount = await db.objectives.where('projectId').equals(projectId).count();
 
   const [nodes, edges, evidence, experiments, roadmap] = await Promise.all([
     db.canvasNodes.where('projectId').equals(projectId).toArray(),

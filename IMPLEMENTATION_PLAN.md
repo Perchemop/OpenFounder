@@ -53,6 +53,17 @@ is covered by tests.
 - [ ] PWA/offline install
 - [ ] Screenshots and a truthful README walkthrough
 
+## Phase 1b — Capability additions from the competitive benchmark (2026-10-23)
+
+- [x] `docs/competitive-benchmark.md` with sourced capability map and scope decision (D-008)
+- [x] Goals, key results, and scorecard (Cascade OKRs + metrics, local-first)
+  - `Objective` / `KeyResult` types, schema version 4 export package
+  - `src/utils/okr.ts` (progress, health, summary, measured-value updates) + tests
+  - `GoalsPage` with create objective, record measured value, source tracking, status
+- [ ] Advisor and mentor log (CoFoundersLab advice + MentorShow coaching, local only)
+- [ ] Team skills coverage (local only)
+- [ ] First-hire pipeline (local only)
+
 ## Working agreement
 
 - One slice per pull request; no mixed refactors.

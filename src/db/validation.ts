@@ -432,9 +432,35 @@ export const AIChatMessageSchema = z.object({
   }).optional(),
 });
 
+export const KeyResultSchema = z.object({
+  id: SafeIdSchema,
+  title: z.string().min(1).max(300),
+  unit: z.enum(['number', 'currency', 'percent', 'ratio']),
+  direction: z.enum(['increase', 'decrease']),
+  baseline: z.number().finite(),
+  target: z.number().finite(),
+  current: z.number().finite(),
+  source: z.string().max(500).optional(),
+  updatedAt: z.number(),
+});
+
+export const ObjectiveSchema = z.object({
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
+  title: z.string().min(1).max(300),
+  description: z.string().max(5000).default(''),
+  owner: z.string().max(200).default(''),
+  timeframe: z.string().max(200).default(''),
+  status: z.enum(['active', 'done', 'archived']),
+  keyResults: z.array(KeyResultSchema).max(50).default([]),
+  isSynthetic: z.boolean().optional(),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+});
+
 // Full Export Package Zod Schema
 export const ExportPackageSchema = z.object({
-  schemaVersion: z.number().int().min(1).max(3),
+  schemaVersion: z.number().int().min(1).max(4),
   exportedAt: z.string(),
   appVersion: z.string().max(50),
   project: ProjectSchema,
@@ -453,6 +479,7 @@ export const ExportPackageSchema = z.object({
   landingPage: LandingPageSpecSchema.optional(),
   decisions: z.array(ProjectDecisionSchema).max(1000).default([]),
   risks: z.array(RiskItemSchema).max(1000).optional().default([]),
+  objectives: z.array(ObjectiveSchema).max(200).optional().default([]),
   chatMessages: z.array(AIChatMessageSchema).max(5000).optional().default([]),
 });
 
