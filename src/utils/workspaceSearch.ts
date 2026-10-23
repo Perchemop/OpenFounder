@@ -139,7 +139,8 @@ function buildCandidates(data: WorkspaceSearchData): Candidate[] {
         item.recurringPainPoints,
         item.verbatimQuotes,
         item.existingWorkarounds,
-        item.willingnessToPayNotes
+        item.willingnessToPayNotes,
+        item.surprisesOrObjections
       ),
     });
   }

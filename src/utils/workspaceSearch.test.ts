@@ -59,6 +59,7 @@ const interviews: CustomerInterview[] = [
     existingWorkarounds: 'Paper notebook',
     willingnessToPayNotes: 'Would pay £10/month',
     verbatimQuotes: ['I chase invoices on Sunday evenings'],
+    surprisesOrObjections: 'Did not trust cloud storage for customer data',
   },
 ];
 
@@ -68,7 +69,7 @@ const risks: RiskItem[] = [
     id: 'rk1',
     projectId: 'p1',
     title: 'Sole traders may not pay for an invoicing tool',
-    category: 'commercial',
+    category: 'financial',
     probability: 'high',
     impact: 'high',
     mitigation: 'Run a pre-order test in two trade communities',
