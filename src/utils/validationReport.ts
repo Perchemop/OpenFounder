@@ -111,7 +111,7 @@ export function buildValidationReport(input: ValidationReportInput): string {
     lines.push('_No claims recorded yet. Nothing here should be read as validated._');
   } else {
     const strongest = evidence
-      .filter((claim) => integrity.verified > 0 && (claim.status === 'customer_confirmed' || claim.status === 'experiment_confirmed'))
+      .filter((claim) => claim.status === 'customer_confirmed' || claim.status === 'experiment_confirmed')
       .slice(0, MAX_RISKIEST_CLAIMS);
     for (const claim of strongest) {
       lines.push(`- [${claim.status.toUpperCase()}] ${claim.claim}`);
