@@ -15,7 +15,10 @@ import type {
   Competitor,
   FeatureItem,
   ResearchSource,
+  Objective,
+  RiskItem,
 } from '../types';
+import { buildValidationReport } from '../utils/validationReport';
 
 interface DocumentsPageProps {
   project: Project | null;
@@ -24,12 +27,15 @@ interface DocumentsPageProps {
   competitors?: Competitor[];
   features?: FeatureItem[];
   research?: ResearchSource[];
+  objectives?: Objective[];
+  risks?: RiskItem[];
 }
 
 type DocTemplate =
   | 'executive_summary'
   | 'comprehensive_dossier'
   | 'validation_report'
+  | 'one_page_validation'
   | 'product_prd'
   | 'competitor_brief'
   | 'pitch_deck_outline';
@@ -41,11 +47,18 @@ export const DocumentsPage: React.FC<DocumentsPageProps> = ({
   competitors = [],
   features = [],
   research = [],
+  objectives = [],
+  risks = [],
 }) => {
   const [selectedTemplate, setSelectedTemplate] = useState<DocTemplate>('executive_summary');
   const [copied, setCopied] = useState(false);
 
   if (!project) return null;
+
+  const syntheticBanner = (body: string): string =>
+    project.isSynthetic
+      ? `> ⚠️ **DEMO MODE NOTICE**: Generated from a synthetic demo project; nothing here is empirical market evidence.\n\n${body}`
+      : body;
 
   const generateMarkdown = (template: DocTemplate): string => {
     const unverifiedCount = evidence.filter(
@@ -221,6 +234,12 @@ ${experiments
 `;
     }
 
+    if (template === 'one_page_validation') {
+      return syntheticBanner(
+        buildValidationReport({ project, evidence, experiments, objectives, risks })
+      );
+    }
+
     if (template === 'competitor_brief') {
       return `# ${project.name} — Competitor Intelligence & Market Gaps
 **Audited Competitors:** ${competitors.length}
@@ -332,6 +351,7 @@ ${features.filter((f) => f.priority === 'wont').map((f) => `- **${f.title}** (De
           { id: 'executive_summary' as DocTemplate, label: 'Executive Summary' },
           { id: 'comprehensive_dossier' as DocTemplate, label: 'Complete Project Dossier' },
           { id: 'validation_report' as DocTemplate, label: 'Evidence & Falsification Report' },
+          { id: 'one_page_validation' as DocTemplate, label: 'One-Page Validation Report' },
           { id: 'product_prd' as DocTemplate, label: 'Product PRD & Scope' },
           { id: 'competitor_brief' as DocTemplate, label: 'Competitor Intelligence Brief' },
           { id: 'pitch_deck_outline' as DocTemplate, label: 'Pitch Deck 10-Slide Outline' },

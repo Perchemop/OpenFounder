@@ -43,9 +43,12 @@ is covered by tests.
 
 ## Phase 4 — Reporting
 
-- [ ] One-page validation report (problem, riskiest assumptions, evidence, decision)
-- [ ] Export as Markdown and JSON from one action
-- [ ] Report includes provenance and timestamp for every claim
+- [x] One-page validation report (problem, riskiest assumptions, evidence, decision)
+  - `src/utils/validationReport.ts` builds the report from real workspace data
+  - Every listed claim carries provenance (type, confidence, source, url, recorded time)
+  - No decision is reported unless an experiment outcome was entered
+- [x] Export as Markdown from one action (Markdown copy already existed)
+- [ ] Export as JSON from the same action
 
 ## Phase 5 — Polish and packaging
 

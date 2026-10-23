@@ -120,6 +120,8 @@ function AppContent() {
                   features={features}
                   research={research}
                   risks={risks}
+                  objectives={objectives}
+                  teamMembers={teamMembers}
                   onSelectTab={setActiveTab}
                   onOpenAICofounderWithPrompt={openAICofounderWithPrompt}
                 />
@@ -265,6 +267,8 @@ function AppContent() {
                   competitors={competitors}
                   features={features}
                   research={research}
+                  objectives={objectives}
+                  risks={risks}
                 />
               )}
             </>

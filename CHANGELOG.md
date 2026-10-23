@@ -37,6 +37,9 @@ semantic versioning for its export schema and application releases.
 - Team and skills coverage (`TeamMember`, `SkillRequirement`) with derived coverage status
   and a gap list; schema version 6.
 
+- One-page validation report built by `src/utils/validationReport.ts` and selectable in the
+  Reports page; per-claim provenance and an explicit "no recorded decision" state.
+
 ### Changed
 
 - Pages deploy workflow now installs with Bun instead of `npm ci`, which failed because the

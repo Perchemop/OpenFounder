@@ -38,7 +38,7 @@ see `PROGRESS.md` for the current result.
 | R-029 | Command palette searches research, interviews, risks, roadmap | `src/utils/workspaceSearch.ts`, `CommandPalette` | `workspaceSearch.test.ts` | Done |
 | R-030 | Accessibility audit and keyboard pass recorded | `docs/qc/manual-qc.md` | — | Planned |
 | R-031 | Dashboard surfaces the evidence integrity score | `DashboardPage`, `src/utils/evidenceIntegrity.ts` | `src/utils/evidenceIntegrity.test.ts` | Done |
-| R-032 | One-page validation report export | `DocumentsPage` (partial) | — | Partial |
+| R-032 | One-page validation report export | `src/utils/validationReport.ts`, `DocumentsPage` | `validationReport.test.ts` | Done |
 
 | R-034 | Objectives carry measurable key results with derived progress | `src/utils/okr.ts`, `GoalsPage` | `okr.test.ts` | Done |
 | R-035 | Export and import cover objectives with schema version 4 | `src/db/index.ts`, `src/db/validation.ts` | CI build/import path | Partial (no import test) |
