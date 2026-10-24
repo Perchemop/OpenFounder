@@ -64,6 +64,7 @@ This checklist maps the guide's pre-launch requirements to evidence and owner.
 | v0.1.0 tagged and released | GitHub Release v0.1.0 | Done | Maintainer |
 | CHANGELOG entry for 0.1.0 | CHANGELOG.md | Done | Maintainer |
 | Release notes honest, no hype | Release page | Done | Maintainer |
+| Example project included in release artefacts | `assets/example-project-tradepulse.json`, release.yml | Done | Maintainer |
 
 ## Human action commands
 
@@ -94,4 +95,4 @@ Enable via repository Settings → Security → Secret scanning. The REST API cu
 * Add a second admin in Settings → Manage access
 * Enforce MFA on the owner account in GitHub Settings → Password and authentication
 
-Last updated: 2026-10-24
+Last updated: 2026-10-25

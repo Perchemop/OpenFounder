@@ -17,6 +17,7 @@ import {
   Activity,
   AlertTriangle,
   Bug,
+  Sparkles,
 } from 'lucide-react';
 import type { AIProviderConfig, Project } from '../../types';
 import {
@@ -167,6 +168,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       onProjectUpdated();
     } catch (err: any) {
       setImportStatus(`Import failed: ${err.message}`);
+    }
+  };
+
+  const handleImportExampleProject = async () => {
+    try {
+      const res = await fetch('/assets/example-project-tradepulse.json');
+      if (!res.ok) throw new Error(`Failed to load example project (${res.status})`);
+      const pkg = await res.json();
+      await importProjectPackage(pkg);
+      setImportStatus(`Successfully imported example project: "${pkg.project.name}"`);
+      await loadDbStats();
+      onProjectUpdated();
+    } catch (err: any) {
+      setImportStatus(`Example import failed: ${err.message}`);
     }
   };
 
@@ -555,6 +570,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     <span>Import JSON</span>
                     <input type="file" accept=".json" className="hidden" onChange={handleImportJson} />
                   </label>
+                  <button
+                    onClick={handleImportExampleProject}
+                    className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 rounded-md font-medium"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Import Example Project</span>
+                  </button>
                 </div>
                 {importStatus && <p className="text-[11px] text-zinc-600 dark:text-zinc-400">{importStatus}</p>}
               </div>

@@ -96,6 +96,13 @@ is covered by tests.
 - [ ] Automated accessibility scan in CI
 - [ ] Human keyboard and screen-reader pass (R-030)
 
+## Example project for release testing (2026-10-25)
+
+- [x] `assets/example-project-tradepulse.json` — complete TradePulse demo workspace export covering evidence, competitors, experiments, interviews, risks, roadmap, canvas, business model, GTM plan, and landing page
+- [x] `public/assets/example-project-tradepulse.json` — same file served as a static asset for in-app fetching
+- [x] Settings → "Import Example Project" button that loads the bundled demo workspace
+- [x] Release artefacts include `example-project-tradepulse.json` alongside build, checksums, and SBOM
+
 ## Working agreement
 
 - One slice per pull request; no mixed refactors.

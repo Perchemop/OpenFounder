@@ -45,6 +45,8 @@ jobs:
           tag="${GITHUB_REF_NAME}"
           tar -C dist -czf "release/openfounder-dist-${tag}.tar.gz" .
           (cd dist && find . -type f | sort | xargs sha256sum > "../release/checksums.txt")
+      - name: Copy example project
+        run: cp public/assets/example-project-tradepulse.json release/example-project-tradepulse.json
       - name: Generate SBOM
         uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610
         with:
@@ -102,6 +104,7 @@ jobs:
             fi
             echo "- checksums.txt (SHA-256 of every packaged file)"
             echo "- sbom.spdx.json (SPDX SBOM for licence and supply-chain transparency)"
+            echo "- example-project-tradepulse.json (example workspace export to import and explore OpenFounder's features)"
           } > release/body.md
           cat release/body.md >> "$GITHUB_STEP_SUMMARY"
 
@@ -116,5 +119,6 @@ jobs:
             release/openfounder-dist-${{ github.ref_name }}.tar.gz
             release/checksums.txt
             release/sbom.spdx.json
+            release/example-project-tradepulse.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
