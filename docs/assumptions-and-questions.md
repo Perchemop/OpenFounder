@@ -24,7 +24,7 @@
 
 ## Open questions
 
-1. Should the MIT licence be replaced by dual MIT OR Apache-2.0?
+1. **Resolved 2026-10-24 (D-009):** dual licensed MIT OR Apache-2.0.
 2. Is a hosted AI proxy with a free quota ever in scope, or is BYOK permanent?
 3. Which accessibility standard is the target (WCAG 2.2 AA appears reasonable)?
 4. Is cloud sync still out of scope after v1, or should the data layer prepare for it now?

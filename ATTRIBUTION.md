@@ -1,7 +1,14 @@
 # Attribution
 
-OpenFounder source code is MIT licensed (see `LICENSE`). Third-party packages are used under
-their own permissive licences. No proprietary assets, icons, fonts, or datasets are bundled.
+OpenFounder source code is dual licensed, MIT OR Apache-2.0 (see `LICENSE`, `LICENSE-MIT`,
+`LICENSE-APACHE`). Third-party packages are used under their own permissive licences. No
+proprietary assets, icons, fonts, or datasets are bundled.
+
+## Original assets
+
+| Asset | Path | Licence |
+| --- | --- | --- |
+| OpenFounder mark (caliper and question mark) | `assets/logo.svg` | Project licence (MIT OR Apache-2.0), authored for this repository |
 
 ## Runtime dependencies
 

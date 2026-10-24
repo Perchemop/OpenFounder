@@ -81,3 +81,12 @@ money, or incorporate a company, and enterprise OAuth integrations.
 actions need credentials, spend controls, and liability decisions. Simulating any of them would
 violate the "no fake functionality" rule.
 *Rejected:* copying product surfaces we cannot make real; claiming parity we have not verified.
+
+## D-009 · 2026-10-24 · Dual licence MIT OR Apache-2.0
+
+MIT is retained and Apache-2.0 is added, so the project is dual licensed at the user's option.
+
+*Why:* the build guide prefers MIT OR Apache-2.0; Apache-2.0 adds an explicit patent grant, which
+matters for a tool founders may embed, and MIT keeps integration friction low for permissive
+stacks. This also closes open question 1 in `docs/assumptions-and-questions.md`.
+*Rejected:* MIT alone (no express patent grant); GPL (incompatible with permissive embedding).
