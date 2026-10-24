@@ -24,12 +24,12 @@ This checklist maps the guide's pre-launch requirements to evidence and owner.
 
 | Requirement | Evidence | Status | Owner |
 |---|---|---|---|
-| SAST in CI (CodeQL) | .github/workflows/codeql.yml | Pending | Maintainer |
-| Secret scanning in CI (gitleaks) | ci.yml job | Pending | Maintainer |
-| Dependency review on PRs | dependency-review-action | Pending | Maintainer |
-| SBOM generated and licence-class gate | CI job + release.yml | Pending | Maintainer |
-| Dependabot configured | .github/dependabot.yml | Pending | Maintainer |
-| Action SHAs pinned | All workflow actions pinned | Pending | Maintainer |
+| SAST in CI (CodeQL) | .github/workflows/codeql.yml | Done | Maintainer |
+| Secret scanning in CI (gitleaks) | ci.yml job | Done | Maintainer |
+| Dependency review on PRs | dependency-review-action | Done | Maintainer |
+| SBOM generated and licence-class gate | CI job + release.yml | Done | Maintainer |
+| Dependabot configured | .github/dependabot.yml | Done | Maintainer |
+| Action SHAs pinned | All workflow actions pinned | Done | Maintainer |
 | Branch protection + required checks | Repo settings | Human action required | Human |
 | Two administrators | Repo settings | Human action required | Human |
 | MFA on owner account | Account settings | Human action required | Human |
@@ -51,7 +51,7 @@ This checklist maps the guide's pre-launch requirements to evidence and owner.
 
 | Requirement | Evidence | Status | Owner |
 |---|---|---|---|
-| Licence scanning + SBOM in CI | CI job | Pending | Maintainer |
+| Licence scanning + SBOM in CI | CI job | Done | Maintainer |
 | No fake functionality | PROGRESS.md + ROADMAP | Done | Maintainer |
 | Legal checklist per release | ATTRIBUTION.md, docs | Done | Maintainer |
 | Name conflict check recorded | docs/product-name.md | Done | Maintainer |
@@ -64,5 +64,34 @@ This checklist maps the guide's pre-launch requirements to evidence and owner.
 | v0.1.0 tagged and released | GitHub Release v0.1.0 | Done | Maintainer |
 | CHANGELOG entry for 0.1.0 | CHANGELOG.md | Done | Maintainer |
 | Release notes honest, no hype | Release page | Done | Maintainer |
+
+## Human action commands
+
+The following GitHub settings require owner approval. The commands below are documented for the owner to run; attempts via the current API token failed with validation errors, so they are left as human actions.
+
+### Branch protection
+
+```bash
+gh api repos/Perchemop/OpenFounder/branches/main/protection \
+  -X PUT \
+  -F required_status_checks='{"strict":true,"contexts":["verify (ubuntu-latest)","verify (macos-latest)","verify (windows-latest)","build (static)","summary","gitleaks","sbom"]}' \
+  -F enforce_admins=true \
+  -F required_pull_request_reviews='{"required_approving_review_count":1}'
+```
+
+### Private vulnerability reporting
+
+```bash
+gh api repos/Perchemop/OpenFounder -X PATCH -f private_vulnerability_reporting='{"enabled":true}'
+```
+
+### Secret scanning & push protection
+
+Enable via repository Settings → Security → Secret scanning. The REST API currently returns 422 for `security_and_analysis` updates with the current token scope.
+
+### Two administrators / MFA
+
+* Add a second admin in Settings → Manage access
+* Enforce MFA on the owner account in GitHub Settings → Password and authentication
 
 Last updated: 2026-10-24
