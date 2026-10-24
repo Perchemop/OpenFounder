@@ -522,7 +522,10 @@ export const GoalsPage: React.FC<GoalsPageProps> = ({
               </div>
 
               {error && (
-                <p className="text-[11px] text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded p-2">
+                <p
+                  role="alert"
+                  className="text-[11px] text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded p-2"
+                >
                   {error}
                 </p>
               )}

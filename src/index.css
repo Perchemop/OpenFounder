@@ -1,1 +1,27 @@
 @import "tailwindcss";
+
+/*
+ * Accessibility (WCAG 2.2 AA): guarantee a visible focus indicator for every
+ * keyboard user. Nothing in the app removes a focus outline, and this makes
+ * the indicator explicit and consistent rather than browser-default-dependent.
+ */
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/*
+ * Respect the operating system "reduce motion" setting. All animation in the
+ * app is CSS-driven (Tailwind transitions and `animate-spin`); no JavaScript
+ * animation library is used, so this media query is sufficient.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

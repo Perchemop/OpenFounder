@@ -2,6 +2,24 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-24 · Accessibility code pass (R-047)
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `src/index.css`: guaranteed `:focus-visible` indicator; `prefers-reduced-motion: reduce` disables
+  all transitions and animation (no JS animation library is imported, so CSS covers everything).
+- Inline form errors on the goals, advisors, and team pages use `role="alert"`.
+- The three icon-only delete buttons under 24×24 CSS pixels were enlarged.
+- `ACCESSIBILITY.md` written (WCAG 2.2 AA target, priorities, honest known limitations,
+  environments, report path); accessibility acceptance criteria added to `docs/qc/manual-qc.md`.
+
+### Known gaps
+
+- No automated accessibility scan in CI; no human keyboard or screen-reader pass yet (R-030).
+- Contrast is designed for AA in both themes but not measured.
+
 ## 2026-10-24 · Guide compliance, bug reporting, update check, v0.1.0
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

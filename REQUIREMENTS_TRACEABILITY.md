@@ -59,3 +59,5 @@ see `PROGRESS.md` for the current result.
 | R-045 | In-app crash/bug reporting with a pre-send preview and no stored token | `src/bugReport.ts`, `BugReportModal`, `ErrorBoundary`, SettingsModal | `bugReport.test.ts` | Done |
 
 | R-046 | Update check against GitHub Releases, failing soft | `src/updateCheck.ts`, `UpdateCheckPanel` | `updateCheck.test.ts` | Done |
+
+| R-047 | Reduced motion, visible focus, announced form errors, 24×24 touch targets | `src/index.css`, `GoalsPage`, `AdvisorsPage`, `TeamPage`, `RoadmapPage`, `MVPPlannerPage`, `CanvasPage` | Code review in `docs/qc/manual-qc.md`; human pass outstanding | Partial |

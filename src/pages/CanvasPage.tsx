@@ -400,7 +400,7 @@ export const CanvasPage: React.FC<CanvasPageProps> = ({ projectId }) => {
                       e.stopPropagation();
                       handleDeleteNode(node.id);
                     }}
-                    className="text-zinc-400 hover:text-rose-600 p-0.5 rounded"
+                    className="text-zinc-400 hover:text-rose-600 p-1.5 rounded"
                   >
                     <Trash2 className="w-3 h-3" />
                   </button>

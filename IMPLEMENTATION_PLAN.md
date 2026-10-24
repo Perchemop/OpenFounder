@@ -88,6 +88,14 @@ is covered by tests.
 - [x] In-app update check (`src/updateCheck.ts` + `UpdateCheckPanel`, fail-soft, hour cache)
 - [ ] `v0.1.0` GitHub Release
 
+## Accessibility (Part II §21)
+
+- [x] `ACCESSIBILITY.md` (WCAG 2.2 AA target, known limitations, report path)
+- [x] Reduced motion, visible focus, `role="alert"` errors, 24×24 touch targets
+- [x] Accessibility issue template and label; PR checklist for UI changes
+- [ ] Automated accessibility scan in CI
+- [ ] Human keyboard and screen-reader pass (R-030)
+
 ## Working agreement
 
 - One slice per pull request; no mixed refactors.
