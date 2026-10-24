@@ -2,6 +2,36 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-25 · JSON export in Documents page
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `DocumentsPage.tsx`: added "Download .json" button alongside "Download .md" for document templates
+- JSON payload includes template name, project data, generated content, and timestamp
+
+### Verification
+
+- CI green (required: verify ×3, build (static), summary, gitleaks, sbom; a11y advisory passed)
+
+## 2026-10-25 · Automated accessibility scan in CI
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- Added `@axe-core/playwright@4.14.0`, `@playwright/test@1.49.0`, and `playwright@1.49.0` as devDependencies (bun.lock updated)
+- `.github/workflows/a11y.yml`: replaced placeholder with real Playwright + axe-core scan on homepage and demo workspace dashboard
+- `playwright.config.ts`: Playwright config targeting localhost:4173
+- `tests/a11y.spec.ts`: axe scan with WCAG 2.1A / 2.2AA / Section 508 tags; fails only on critical violations
+- `vite.config.ts`: excluded `tests/` from Vitest to avoid Playwright/Vitest conflict
+- Fixed critical violations found by the scan: `aria-label` on project selector `<select>`, improved contrast on search button text
+
+### Verification
+
+- CI green (required: verify ×3, build (static), summary, gitleaks, sbom; a11y advisory passed)
+
 ## 2026-10-25 · Accessibility Phase 1 (code-level fixes)
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

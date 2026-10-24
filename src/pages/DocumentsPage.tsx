@@ -314,6 +314,22 @@ ${features.filter((f) => f.priority === 'wont').map((f) => `- **${f.title}** (De
     URL.revokeObjectURL(url);
   };
 
+  const handleDownloadJson = () => {
+    const payload = {
+      template: selectedTemplate,
+      project,
+      generatedAt: new Date().toISOString(),
+      content: markdownContent,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${project.name.toLowerCase().replace(/\s+/g, '_')}_${selectedTemplate}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-6">
       {/* Header */}
@@ -342,6 +358,13 @@ ${features.filter((f) => f.priority === 'wont').map((f) => `- **${f.title}** (De
           >
             <Download className="w-4 h-4" />
             <span>Download .md</span>
+          </button>
+          <button
+            onClick={handleDownloadJson}
+            className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs font-semibold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+          >
+            <FileText className="w-4 h-4"  aria-hidden="true" />
+            <span>Download .json</span>
           </button>
         </div>
       </div>

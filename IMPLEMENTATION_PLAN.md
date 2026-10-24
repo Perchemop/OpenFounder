@@ -48,7 +48,7 @@ is covered by tests.
   - Every listed claim carries provenance (type, confidence, source, url, recorded time)
   - No decision is reported unless an experiment outcome was entered
 - [x] Export as Markdown from one action (Markdown copy already existed)
-- [ ] Export as JSON from the same action
+- [x] Export as JSON from the same action — DocumentsPage offers Download .json alongside Download .md
 
 ## Data integrity hardening
 

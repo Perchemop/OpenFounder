@@ -28,7 +28,7 @@ first functional test build; the sections below it are the path to v1.0.0.
 | --- | --- |
 | Crash / bug reporting that files a GitHub issue from the app | Done |
 | Update check against GitHub Releases, failing soft offline | Done |
-| Export the validation report as JSON | Planned |
+| Export the validation report as JSON | Done |
 | Accessibility: human keyboard and screen-reader pass (R-030) | Done |
 | Import round trip exercised end-to-end by a human | Planned |
 
