@@ -33,7 +33,7 @@ jobs:
           npx wait-on http://localhost:4173
 
       - name: Run axe tests
-        run: npx playwright test tests/a11y.spec.ts --project=chromium
+        run: npx playwright test
 
       - name: Cleanup
         if: always()
