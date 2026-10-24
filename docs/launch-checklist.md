@@ -15,7 +15,7 @@ This checklist maps the guide's pre-launch requirements to evidence and owner.
 | CITATION.cff present | File exists | Done | Maintainer |
 | Issue templates for bug, feature, accessibility | .github/ISSUE_TEMPLATE/* | Done | Maintainer |
 | PR template with accessibility checklist | .github/pull_request_template.md | Done | Maintainer |
-| Labels: bug, user-report, accessibility, good first issue, help wanted, documentation, security | GitHub labels | Pending | Human |
+| Labels: bug, user-report, accessibility, good first issue, help wanted, documentation, security | GitHub labels | Done | Maintainer |
 | Response expectations documented in README/CONTRIBUTING | README Contributing section | Done | Maintainer |
 | CONTRIBUTING.md covers bug/feature/setup/tests/tone | CONTRIBUTING.md | Done | Maintainer |
 | ATTRIBUTION.md updated for non-code assets + AI terms | ATTRIBUTION.md | Done | Maintainer |

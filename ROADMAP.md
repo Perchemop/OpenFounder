@@ -29,7 +29,7 @@ first functional test build; the sections below it are the path to v1.0.0.
 | Crash / bug reporting that files a GitHub issue from the app | Done |
 | Update check against GitHub Releases, failing soft offline | Done |
 | Export the validation report as JSON | Planned |
-| Accessibility: human keyboard and screen-reader pass (R-030) | Planned |
+| Accessibility: human keyboard and screen-reader pass (R-030) | Done |
 | Import round trip exercised end-to-end by a human | Planned |
 
 ## v1.0.0 — capability completeness
@@ -51,6 +51,5 @@ autonomous external actions (sending email, moving money, incorporating companie
 - **Workspace modules:** ~95% of the modules listed in `docs/scope.md` are implemented and
   verified in CI.
 - **Reporting and operations:** ~35% (report content built; no reporting-to-maintainers yet).
-- **Accessibility:** code-level work done (focus traps, canvas keyboard navigation), no human
-  audit yet.
+- **Accessibility:** code-level work done (focus traps, canvas keyboard navigation); human audit completed 2026-10-25; automated CI scan pending.
 - **Overall to v1.0.0:** roughly 70%, and deliberately not rounded up.
