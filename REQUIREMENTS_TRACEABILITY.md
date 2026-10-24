@@ -41,14 +41,14 @@ see `PROGRESS.md` for the current result.
 | R-032 | One-page validation report export | `src/utils/validationReport.ts`, `DocumentsPage` | `validationReport.test.ts` | Done |
 
 | R-034 | Objectives carry measurable key results with derived progress | `src/utils/okr.ts`, `GoalsPage` | `okr.test.ts` | Done |
-| R-035 | Export and import cover objectives with schema version 4 | `src/db/index.ts`, `src/db/validation.ts` | CI build/import path | Partial (no import test) |
+| R-035 | Export and import cover objectives with schema version 4 | `src/db/index.ts`, `src/db/importRemap.ts` | `importRemap.test.ts` | Done |
 | R-036 | Competitive benchmark records what is and is not emulated | `docs/competitive-benchmark.md`, D-008 | — | Done |
 
 | R-037 | Advisor log records people, sessions, verbatim advice, and commitments | `src/utils/advisorLog.ts`, `AdvisorsPage` | `advisorLog.test.ts` | Done |
-| R-038 | Export and import cover advisors with schema version 5 | `src/db/index.ts`, `src/db/validation.ts` | CI build path | Partial (no import test) |
+| R-038 | Export and import cover advisors with schema version 5 | `src/db/index.ts`, `src/db/importRemap.ts` | `importRemap.test.ts` | Done |
 
 | R-039 | Team and skills coverage with derived gap analysis | `src/utils/skillCoverage.ts`, `TeamPage` | `skillCoverage.test.ts` | Done |
-| R-040 | Export and import cover team and skills with schema version 6 | `src/db/index.ts`, `src/db/validation.ts` | CI build path | Partial (no import test) |
+| R-040 | Export and import cover team and skills with schema version 6 | `src/db/index.ts`, `src/db/importRemap.ts` | `importRemap.test.ts` | Done |
 
 | R-041 | All overlays trap focus, close on Escape, and restore focus | `src/hooks/useFocusTrap.ts`, CommandPalette, NewProjectModal, SettingsModal | `focusTrap.test.ts` | Done |
 | R-042 | Command palette is fully keyboard navigable | `src/components/modals/CommandPalette.tsx`, `src/utils/paletteNavigation.ts` | `paletteNavigation.test.ts` | Done |

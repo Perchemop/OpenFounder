@@ -50,6 +50,9 @@ semantic versioning for its export schema and application releases.
   node in that direction, nodes are reachable by Tab in reading order, Delete removes a node, and
   focus visibly indicates the selected node.
 
+- Import remapping extracted into pure functions (`src/db/importRemap.ts`) with tests, closing
+  the untested-import gap for objectives, advisors, team members, and skill requirements.
+
 ### Changed
 
 - Pages deploy workflow now installs with Bun instead of `npm ci`, which failed because the

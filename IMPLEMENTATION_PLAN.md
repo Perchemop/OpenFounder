@@ -50,6 +50,11 @@ is covered by tests.
 - [x] Export as Markdown from one action (Markdown copy already existed)
 - [ ] Export as JSON from the same action
 
+## Data integrity hardening
+
+- [x] Pure `src/db/importRemap.ts` covering every nested ID rewrite (objectives, advisors with
+  sessions and commitments, team, skills, roadmap, risks), extracted from `importProjectPackage`
+
 ## Phase 5 — Polish and packaging
 
 - [ ] Performance pass at 500+ rows per table
