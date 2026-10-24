@@ -107,6 +107,8 @@ jobs:
           path: .
           format: spdx-json
           output-file: sbom.spdx.json
+      - name: Licence class gate
+        run: node scripts/licence-check.js
       - name: Upload SBOM
         uses: actions/upload-artifact@v4
         with:
