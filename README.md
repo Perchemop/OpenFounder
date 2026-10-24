@@ -222,7 +222,9 @@ Coverage includes:
 - [ ] Accessibility audit
 - [ ] Optional cloud sync (still local-first)
 
----
+## Contributing
+
+Contributions are welcome. Please see CONTRIBUTING.md for how to file bugs, propose features, set up a dev environment, and submit pull requests. The project aims to respond to non-security issues within 7 days and prioritises accessibility reports. Review is public; code-of-conduct and security issues are handled privately.
 
 ## License
 

@@ -1,0 +1,33 @@
+name: Feature request
+description: Propose a new capability
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Features must fit VISION.md and docs/scope.md. No fabricated evidence and no out-of-domain tools.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem it solves
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope alignment
+      options:
+        - label: Fits evidence-first validation
+        - label: Local-first / private by default
+        - label: No fabricated claims or sources

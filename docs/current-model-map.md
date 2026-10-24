@@ -46,3 +46,11 @@ NVIDIA free:
 
 Routing lives in `~/.config/opencode/failover.json` (`fallbacksByAgent`). This table is a record,
 not a hard-coded dependency: when a model disappears, re-discover and update both files.
+
+## Research method used for documentation
+
+Public competitive research and name-conflict checks are recorded in `docs/research/` with summaries
+and original URLs only (per guide §2.4). Web search is performed via the agent's websearch tool and
+results are summarised in prose; URLs are retained for verification but no content is copied.
+Human approval is required before research findings are used to justify feature work
+(`docs/research/README.md`).

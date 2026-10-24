@@ -29,6 +29,9 @@
 3. Which accessibility standard is the target (WCAG 2.2 AA appears reasonable)?
 4. Is cloud sync still out of scope after v1, or should the data layer prepare for it now?
 5. Should evidence promotion be a hard block or a warning the founder can override with a reason?
+6. Employer IP / outside-contribution policy: confirm no employer restrictions apply to the maintainer (Part II §19.6).
+7. Name conflicts: the name OpenFounder is used by other projects (see docs/product-name.md). Is a rename desired before any marketing/domain work?
+8. Part II conflicts requiring human approval: branch protection + required checks, two administrators, MFA enforcement, private vulnerability reporting, secret scanning + push protection, and any domain/handle reservations.
 
 ## Decision rule
 

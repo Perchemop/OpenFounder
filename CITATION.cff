@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it as below.
+title: OpenFounder
+authors:
+  - family-names: Perchemop
+    given-names: 
+  - family-names: OpenFounder Dev
+    given-names: 
+version: 0.1.0
+date-released: 2026-10-24
+url: https://github.com/Perchemop/OpenFounder
+license: MIT OR Apache-2.0
+repository-code: https://github.com/Perchemop/OpenFounder

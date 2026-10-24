@@ -1,0 +1,46 @@
+name: Bug report
+description: Report a reproducible defect
+title: "[bug] "
+labels: ["bug", "user-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please keep discussion public; security issues use SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Settings → version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Exact steps from start
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, browser
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots
+      description: If you used the app bug reporter, paste the preview text (no secrets).

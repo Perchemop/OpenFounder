@@ -90,3 +90,23 @@ MIT is retained and Apache-2.0 is added, so the project is dual licensed at the 
 matters for a tool founders may embed, and MIT keeps integration friction low for permissive
 stacks. This also closes open question 1 in `docs/assumptions-and-questions.md`.
 *Rejected:* MIT alone (no express patent grant); GPL (incompatible with permissive embedding).
+
+## D-010 · 2026-10-24 · Governance: single maintainer with liberal contribution, tiebreaker recorded
+
+Project uses a single maintainer model with liberal contribution principles moving toward
+merit-based maintainers. Direction is set by VISION.md and scope.md; day-to-day decisions are by
+consensus seeking where possible, with the maintainer as tiebreaker and recorder of reasons in
+DECISIONS.md. This is described in GOVERNANCE.md.
+
+*Why:* matches current team size and the guide's recommendation to record governance explicitly;
+prevents implicit power and makes growth paths clear.
+*Rejected:* BDFL with no written process; pure meritocracy with formal voting without recorded
+rationale.
+
+## D-011 · 2026-10-24 · DCO is welcome but not required
+
+Signed-off-by is encouraged for contributors who want it, but the project does not require DCO
+signatures. Inbound = outbound licensing is enforced by the CONTRIBUTING.md terms.
+
+*Why:* lowers friction for first-time contributors while keeping the licence clean. No CLA is used.
+*Rejected:* mandatory DCO for every commit; requiring a CLA.
