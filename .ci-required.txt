@@ -3,3 +3,6 @@ verify (macos-latest)
 verify (windows-latest)
 build (static)
 summary
+dependency review
+gitleaks
+sbom
