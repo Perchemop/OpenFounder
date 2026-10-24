@@ -212,7 +212,7 @@ export const AdvisorsPage: React.FC<AdvisorsPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-            <Users className="w-5 h-5 text-sky-500" />
+            <Users className="w-5 h-5 text-sky-500"  aria-hidden="true" />
             <span>Advisors &amp; Mentors</span>
           </h1>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-2xl">
@@ -305,7 +305,7 @@ export const AdvisorsPage: React.FC<AdvisorsPageProps> = ({
 
       {advisors.length === 0 ? (
         <div className="bg-white dark:bg-zinc-900 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl p-8 text-center">
-          <Users className="w-8 h-8 text-zinc-300 dark:text-zinc-600 mx-auto mb-3" />
+          <Users className="w-8 h-8 text-zinc-300 dark:text-zinc-600 mx-auto mb-3"  aria-hidden="true" />
           <h2 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">No advisors yet</h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-md mx-auto">
             Add the people who already help you — a former founder, a paid coach, a customer
@@ -547,7 +547,7 @@ export const AdvisorsPage: React.FC<AdvisorsPageProps> = ({
                             key={`${session.id}-q${index}`}
                             className="mt-1.5 text-[11px] italic text-zinc-500 dark:text-zinc-400 flex space-x-1"
                           >
-                            <MessageSquareQuote className="w-3 h-3 shrink-0 mt-0.5" />
+                            <MessageSquareQuote className="w-3 h-3 shrink-0 mt-0.5"  aria-hidden="true" />
                             <span>“{quote}”</span>
                           </p>
                         ))}

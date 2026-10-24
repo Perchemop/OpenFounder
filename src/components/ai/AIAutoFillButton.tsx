@@ -54,9 +54,9 @@ export const AIAutoFillButton: React.FC<AIAutoFillButtonProps> = ({
       className={`inline-flex items-center justify-center rounded-md font-medium transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${sizeClasses} ${variantClasses} ${className}`}
     >
       {isLoading ? (
-        <Loader2 className="w-3 h-3 animate-spin shrink-0 text-current" />
+        <Loader2 className="w-3 h-3 animate-spin shrink-0 text-current"  aria-hidden="true" />
       ) : (
-        <Sparkles className="w-3 h-3 shrink-0 text-current" />
+        <Sparkles className="w-3 h-3 shrink-0 text-current"  aria-hidden="true" />
       )}
       <span>{isLoading ? loadingLabel : label}</span>
     </button>

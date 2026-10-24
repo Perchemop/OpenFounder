@@ -133,7 +133,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
     <div className="p-6 max-w-6xl mx-auto space-y-6">
       {project.isSynthetic && (
         <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/80 rounded-xl p-3.5 flex items-start space-x-3 text-xs text-amber-900 dark:text-amber-200">
-          <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" aria-hidden="true" />
           <div className="space-y-0.5">
             <span className="font-bold tracking-wide uppercase text-[10px] bg-amber-200/80 dark:bg-amber-900/60 px-1.5 py-0.5 rounded mr-1.5 text-amber-900 dark:text-amber-100">
               Synthetic Demo Workspace
@@ -177,7 +177,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             }}
             className="flex items-center space-x-2 px-3.5 py-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-semibold hover:bg-amber-100 transition-colors shrink-0 shadow-2xs cursor-pointer"
           >
-            <Sparkles className="w-4 h-4 text-amber-500" />
+            <Sparkles className="w-4 h-4 text-amber-500" aria-hidden="true" />
             <span>Consult AI Co-Founder</span>
           </button>
         </div>
@@ -216,7 +216,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       <div className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center space-x-1.5 text-[11px] uppercase tracking-wider text-amber-400 dark:text-amber-600 font-bold">
-            <Target className="w-3.5 h-3.5" />
+            <Target className="w-3.5 h-3.5" aria-hidden="true" />
             <span>Highest-Value Next Action</span>
           </div>
           <h2 className="text-sm font-semibold">{nextRecommendedAction.title}</h2>
@@ -229,14 +229,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           className="px-4 py-2 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shrink-0 flex items-center space-x-1.5"
         >
           <span>{nextRecommendedAction.btnLabel}</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
         </button>
       </div>
 
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2 text-xs font-semibold text-zinc-900 dark:text-zinc-100">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <ShieldCheck className="w-4 h-4 text-emerald-500" aria-hidden="true" />
             <span>Evidence Integrity</span>
           </div>
           <button
@@ -295,7 +295,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
         {integrity.unsupported > 0 && integrity.weakestType ? (
           <div className="mt-3 flex items-start space-x-2 text-[11px] text-amber-800 dark:text-amber-300 bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-lg p-2.5">
-            <ShieldAlert className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <ShieldAlert className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" aria-hidden="true" />
             <span>
               Weakest area:{' '}
               <strong className="capitalize">{integrity.weakestType}</strong> (
@@ -319,7 +319,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2 text-xs font-semibold text-zinc-900 dark:text-zinc-100">
-            <ShieldAlert className="w-4 h-4 text-rose-500" />
+            <ShieldAlert className="w-4 h-4 text-rose-500" aria-hidden="true" />
             <span>Risk Register Snapshot</span>
           </div>
           <button
@@ -393,7 +393,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-xs font-semibold text-zinc-900 dark:text-zinc-100">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" aria-hidden="true" />
               <span>What We Know</span>
             </div>
             <button
@@ -427,7 +427,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-xs font-semibold text-zinc-900 dark:text-zinc-100">
-              <Scale className="w-4 h-4 text-amber-500" />
+              <Scale className="w-4 h-4 text-amber-500" aria-hidden="true" />
               <span>What Is Uncertain</span>
             </div>
             <button
@@ -461,7 +461,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-xs font-semibold text-zinc-900 dark:text-zinc-100">
-              <FlaskConical className="w-4 h-4 text-purple-500" />
+              <FlaskConical className="w-4 h-4 text-purple-500" aria-hidden="true" />
               <span>Validation Tests</span>
             </div>
             <button
@@ -513,7 +513,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               <div className="font-semibold text-xs text-zinc-900 dark:text-zinc-100">{item.label}</div>
               <div className="text-[11px] text-zinc-500">{item.count}</div>
             </div>
-            <ArrowRight className="w-3.5 h-3.5 text-zinc-400" />
+            <ArrowRight className="w-3.5 h-3.5 text-zinc-400" aria-hidden="true" />
           </button>
         ))}
       </div>

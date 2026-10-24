@@ -60,6 +60,8 @@ see `PROGRESS.md` for the current result.
 
 | R-046 | Update check against GitHub Releases, failing soft | `src/updateCheck.ts`, `UpdateCheckPanel` | `updateCheck.test.ts` | Done |
 
-| R-047 | Reduced motion, visible focus, announced form errors, 24×24 touch targets | `src/index.css`, `GoalsPage`, `AdvisorsPage`, `TeamPage`, `RoadmapPage`, `MVPPlannerPage`, `CanvasPage` | Code review in `docs/qc/manual-qc.md`; human pass outstanding | Partial |
+| R-047 | Reduced motion, visible focus, announced form errors, 24×24 touch targets | `src/index.css`, `GoalsPage`, `AdvisorsPage`, `TeamPage`, `RoadmapPage`, `MVPPlannerPage`, `CanvasPage` | Code review + human QC pass in `docs/qc/manual-qc.md`; approved as working | Done |
 
 | R-048 | Release includes an example project export with enough data to test most features | `assets/example-project-tradepulse.json`, `public/assets/example-project-tradepulse.json`, `SettingsModal.tsx`, `.github/workflows/release.yml` | Example project bundled in release artefacts; Import Example Project button in Settings | Done |
+
+| R-049 | All interactive controls have accessible names; decorative icons hidden from screen readers | `src/App.tsx`, `src/components/layout/Navbar.tsx`, `src/components/layout/Sidebar.tsx`, `src/components/modals/*`, `src/components/ai/*` | Skip-to-content link, `aria-hidden` on decorative icons, `aria-label` on icon-only buttons | Done |

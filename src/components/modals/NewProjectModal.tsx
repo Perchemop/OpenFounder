@@ -215,9 +215,10 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
           </div>
           <button
             onClick={onClose}
+            aria-label="Close"
             className="p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
 
@@ -700,7 +701,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
                 onClick={handleBack}
                 className="flex items-center space-x-1 px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
               >
-                <ArrowLeft className="w-3.5 h-3.5" />
+                <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Back</span>
               </button>
             ) : (
@@ -710,7 +711,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
                 disabled={isMagicLoading}
                 className="flex items-center space-x-1.5 px-3 py-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-lg text-xs font-semibold transition-colors"
               >
-                <Sparkles className="w-3.5 h-3.5" />
+                <Sparkles className="w-3.5 h-3.5"  aria-hidden="true" />
                 <span>Auto-Fill With AI</span>
               </button>
             )}
@@ -724,7 +725,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
                 className="flex items-center space-x-1 px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity disabled:opacity-40"
               >
                 <span>Next Step</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
               </button>
             ) : (
               <button

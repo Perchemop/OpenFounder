@@ -5,7 +5,13 @@ semantic versioning for its export schema and application releases.
 
 ## [Unreleased]
 
-Nothing yet; entries appear here as work lands.
+### Accessibility
+
+- Skip-to-content link for keyboard and screen-reader users (`src/App.tsx`)
+- `aria-hidden="true"` on decorative icons across all pages and components
+- `aria-label` on icon-only buttons (close buttons in Settings, NewProject, CommandPalette, AI Co-founder modals)
+- `aria-hidden="true"` on icons inside buttons that already have an accessible name
+
 
 ## [0.2.0] — 2026-10-25
 

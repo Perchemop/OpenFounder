@@ -2,6 +2,28 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-25 · Accessibility Phase 1 (code-level fixes)
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- Skip-to-content link in `src/App.tsx` (keyboard + screen-reader users)
+- `aria-hidden="true"` on decorative icons across all pages/components (~23 files)
+- `aria-label` on icon-only close buttons in SettingsModal, NewProjectModal, CommandPalette, AICofounderPanel
+- `aria-hidden="true"` on icons inside buttons that already have an accessible name
+- Form label audit: GoalsPage (`Field` wrapper), EvidencePage (explicit `<label>`), TeamPage (`aria-label`) — all acceptable
+
+### Verification
+
+- CI green (required: verify ×3, build (static), summary, gitleaks, sbom)
+
+### Known gaps
+
+- Automated axe scan in CI is a placeholder (needs `@axe-core/playwright` + updated `bun.lock`)
+- Contrast ratios not yet measured against WCAG 2.2 AA
+- ARIA live regions for dynamic content not yet added
+
 ## 2026-10-25 · Example project for release testing (R-048)
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

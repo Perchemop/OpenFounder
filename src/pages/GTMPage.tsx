@@ -204,7 +204,7 @@ export const GTMPage: React.FC<GTMPageProps> = ({
         <div>
           <div className="flex items-center space-x-2">
             <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-              <Megaphone className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <Megaphone className="w-5 h-5 text-emerald-600 dark:text-emerald-400"  aria-hidden="true" />
               <span>Go-To-Market & Channel Strategy</span>
             </h1>
             {saveStatus === 'saving' && (
@@ -215,7 +215,7 @@ export const GTMPage: React.FC<GTMPageProps> = ({
             )}
             {saveStatus === 'saved' && (
               <span className="flex items-center space-x-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
-                <CheckCircle2 className="w-3 h-3" />
+                <CheckCircle2 className="w-3 h-3"  aria-hidden="true" />
                 <span>Autosaved {lastSaved ? `at ${lastSaved}` : 'locally'}</span>
               </span>
             )}
@@ -243,7 +243,7 @@ export const GTMPage: React.FC<GTMPageProps> = ({
             }
             className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs"
           >
-            <Sparkles className="w-4 h-4 text-amber-400" />
+            <Sparkles className="w-4 h-4 text-amber-400"  aria-hidden="true" />
             <span>Audit Wedge Strategy</span>
           </button>
         </div>
@@ -253,7 +253,7 @@ export const GTMPage: React.FC<GTMPageProps> = ({
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-xs space-y-4">
         <div className="flex items-center justify-between pb-2 border-b border-zinc-200 dark:border-zinc-800">
           <div className="flex items-center space-x-2 text-xs font-semibold text-zinc-900 dark:text-zinc-100">
-            <Target className="w-4 h-4 text-emerald-500" />
+            <Target className="w-4 h-4 text-emerald-500"  aria-hidden="true" />
             <span>Positioning Statement Builder (Geoffrey Moore Framework)</span>
           </div>
         </div>

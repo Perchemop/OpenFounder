@@ -181,7 +181,7 @@ ${result.error}
       <div className="p-3 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-950/50">
         <div className="flex items-center space-x-2">
           <div className="w-7 h-7 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/20">
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-4 h-4"  aria-hidden="true" />
           </div>
           <div>
             <h3 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 flex items-center space-x-1.5">
@@ -217,10 +217,10 @@ ${result.error}
           </button>
           <button
             onClick={onClose}
-            title="Close panel"
+            aria-label="Close panel"
             className="p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -255,7 +255,7 @@ ${result.error}
 
         {loading && (
           <div className="flex items-center space-x-2 text-zinc-500 text-xs p-2 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg animate-pulse border border-zinc-200 dark:border-zinc-800">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <Sparkles className="w-3.5 h-3.5 text-amber-500"  aria-hidden="true" />
             <span>Co-Founder is evaluating evidence and project context...</span>
           </div>
         )}
