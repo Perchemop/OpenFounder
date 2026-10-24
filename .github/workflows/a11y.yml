@@ -18,7 +18,7 @@ jobs:
           bun-version: latest
 
       - name: Install deps
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Build static
         run: bun run build:static
@@ -28,15 +28,14 @@ jobs:
 
       - name: Serve static
         run: |
-          nohup npx serve dist -l 4173 > serve.log 2>&1 &
+          nohup python3 -m http.server 4173 --directory dist > serve.log 2>&1 &
           echo $! > server.pid
           npx wait-on http://localhost:4173
 
-      - name: Run axe
+      - name: Run axe tests
         run: |
-          echo "Accessibility smoke test placeholder – Axe Playwright not installed in CI yet."
-          echo "Violations: 0"
-          # Placeholder: replace with real axe-core/playwright run once dependencies are added.
+          echo "Accessibility smoke placeholder – Axe Playwright requires @axe-core/playwright and ts-node setup."
+          echo "Violations: not checked in CI yet"
 
       - name: Cleanup
         if: always()
