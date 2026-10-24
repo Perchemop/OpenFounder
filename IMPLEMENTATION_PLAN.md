@@ -38,7 +38,7 @@ is covered by tests.
 
 - [x] Focus trap and restore for all modals (`useFocusTrap`)
 - [x] Keyboard navigation for the canvas (spatial arrow selection, Delete, Enter)
-- [ ] Contrast pass in both themes; automated axe check in CI
+- [x] Contrast pass in both themes; automated axe check in CI — `.github/workflows/a11y.yml` runs Playwright + axe-core; critical contrast violations fixed
 - [x] Complete `docs/qc/manual-qc.md` keyboard section — code-review pass recorded 2026-10-24; human pass completed 2026-10-25
 
 ## Phase 4 — Reporting

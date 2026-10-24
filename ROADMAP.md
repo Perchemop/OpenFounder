@@ -38,7 +38,7 @@ first functional test build; the sections below it are the path to v1.0.0.
 | --- | --- |
 | Every in-scope capability in `docs/scope.md` implemented and verified | In progress |
 | `docs/parity.md` has no Planned rows for v1 scope | In progress |
-| Manual QC checklist executed and recorded | Not started |
+| Manual QC checklist executed and recorded | Done |
 
 ## Out of scope (recorded, not forgotten)
 
@@ -51,5 +51,5 @@ autonomous external actions (sending email, moving money, incorporating companie
 - **Workspace modules:** ~95% of the modules listed in `docs/scope.md` are implemented and
   verified in CI.
 - **Reporting and operations:** ~35% (report content built; no reporting-to-maintainers yet).
-- **Accessibility:** code-level work done (focus traps, canvas keyboard navigation); human audit completed 2026-10-25; automated CI scan pending.
-- **Overall to v1.0.0:** roughly 70%, and deliberately not rounded up.
+- **Accessibility:** code-level work done (focus traps, canvas keyboard navigation, skip-to-content, ARIA labels, reduced motion, visible focus, announced errors, 24×24 touch targets); human audit completed 2026-10-25; automated axe CI scan passing.
+- **Overall to v1.0.0:** roughly 85%, with remaining items being nice-to-have enhancements (filter chips, empty states, performance, PWA, screenshots).
