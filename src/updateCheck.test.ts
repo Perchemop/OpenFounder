@@ -11,9 +11,10 @@ import {
 } from './updateCheck';
 
 function release(overrides: Partial<ReleaseInfo> = {}): ReleaseInfo {
+  const tagName = overrides.tagName ?? 'v1.0.0';
   return {
-    tagName: 'v1.0.0',
-    htmlUrl: 'https://github.com/Perchemop/OpenFounder/releases/tag/v1.0.0',
+    tagName,
+    htmlUrl: `https://github.com/Perchemop/OpenFounder/releases/tag/${tagName}`,
     prerelease: false,
     ...overrides,
   };
