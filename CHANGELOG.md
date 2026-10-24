@@ -53,6 +53,11 @@ semantic versioning for its export schema and application releases.
 - Import remapping extracted into pure functions (`src/db/importRemap.ts`) with tests, closing
   the untested-import gap for objectives, advisors, team members, and skill requirements.
 
+- Documentation and process baseline required by the operating guide: pull request template,
+  `CONTRIBUTING.md`, `ROADMAP.md` with readiness percentages, `docs/design/brand.md`, an original
+  SVG mark in `assets/`, and `docs/research/` notes with a recorded approval gate.
+- Project is now dual licensed MIT OR Apache-2.0 (D-009).
+
 ### Changed
 
 - Pages deploy workflow now installs with Bun instead of `npm ci`, which failed because the

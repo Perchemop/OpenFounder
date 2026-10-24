@@ -202,6 +202,8 @@ Coverage includes:
 | [PROGRESS.md](PROGRESS.md) | Session log with verified results |
 | [CHANGELOG.md](CHANGELOG.md) | Release notes |
 | [ATTRIBUTION.md](ATTRIBUTION.md) | Third-party licences and asset provenance |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | How to contribute, and the licence terms for PRs |
+| [ROADMAP.md](ROADMAP.md) | Readiness percentages and staged milestones |
 
 ---
 
@@ -224,7 +226,10 @@ Coverage includes:
 
 ## License
 
-MIT — see [LICENSE](LICENSE) and [ATTRIBUTION.md](ATTRIBUTION.md).
+Dual licensed under **MIT OR Apache-2.0**, at your option — see [LICENSE](LICENSE),
+[LICENSE-MIT](LICENSE-MIT), [LICENSE-APACHE](LICENSE-APACHE), and
+[ATTRIBUTION.md](ATTRIBUTION.md). Contributions are accepted under the same terms
+([CONTRIBUTING.md](CONTRIBUTING.md)).
 
 ---
 

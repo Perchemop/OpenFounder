@@ -76,6 +76,17 @@ is covered by tests.
   - `TeamPage` with members, requirements, and derived coverage
 - [ ] First-hire pipeline (local only)
 
+## Guide compliance (2026-10-24 review of the operating manual)
+
+- [x] `.github/PULL_REQUEST_TEMPLATE.md`, `CONTRIBUTING.md`, `ROADMAP.md`
+- [x] `docs/design/brand.md` + original `assets/logo.svg`
+- [x] `docs/research/` notes with a recorded human gate
+- [x] Dual licence MIT OR Apache-2.0 (D-009)
+- [ ] `release.yml` for semver tags
+- [ ] In-app crash / bug reporting
+- [ ] In-app update check
+- [ ] `v0.1.0` GitHub Release
+
 ## Working agreement
 
 - One slice per pull request; no mixed refactors.
