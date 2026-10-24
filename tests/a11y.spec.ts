@@ -27,7 +27,7 @@ test('axe accessibility scan: demo workspace dashboard', async ({ page }) => {
   await page.waitForLoadState('networkidle');
 
   // Load the demo workspace to test a populated dashboard
-  await page.click('button:has-text("Load Demo Workspace (TradePulse)"');
+  await page.click('button:has-text("Load Demo Workspace (TradePulse)")');
   await page.waitForLoadState('networkidle');
 
   const results = await new AxeBuilder({ page })
