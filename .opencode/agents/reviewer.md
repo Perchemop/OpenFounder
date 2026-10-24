@@ -1,11 +1,30 @@
 ---
 description: Reviews a diff or pull request for correctness, regressions, data safety, and process compliance. Does not implement fixes.
 mode: subagent
-permission:
-  edit: deny
-  bash: deny
+model: opencode/beam-free#high
+permissions:
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "git status*"
+    effect: allow
+  - action: shell
+    resource: "git diff*"
+    effect: allow
+  - action: shell
+    resource: "git log*"
+    effect: allow
+  - action: shell
+    resource: "git show*"
+    effect: allow
+  - action: subagent
+    resource: "*"
+    effect: deny
 ---
-
 Review the change and report findings. Do not modify files.
 
 Check specifically:

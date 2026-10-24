@@ -1,10 +1,30 @@
 ---
 description: Fast read-only codebase search and context gathering.
 mode: subagent
-permission:
-  edit: deny
+model: opencode/mimo-v2.6-flash-free
+permissions:
+  - action: edit
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "*"
+    effect: deny
+  - action: shell
+    resource: "git status*"
+    effect: allow
+  - action: shell
+    resource: "git diff*"
+    effect: allow
+  - action: shell
+    resource: "git log*"
+    effect: allow
+  - action: shell
+    resource: "git show*"
+    effect: allow
+  - action: subagent
+    resource: "*"
+    effect: deny
 ---
-
 Explore and report only.
 
 - Locate files, symbols, tests, and call sites; quote short excerpts with paths and line numbers.

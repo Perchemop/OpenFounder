@@ -63,6 +63,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="relative flex items-center">
           <select
             id="project-selector-dropdown"
+            aria-label="Select project"
             className="text-xs font-medium bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md py-1.5 pl-2.5 pr-7 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:focus:ring-zinc-500 cursor-pointer max-w-[180px] sm:max-w-[240px] truncate"
             value={currentProject?.id || ''}
             onChange={(e) => onSelectProject(e.target.value)}
@@ -102,7 +103,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <button
           id="btn-command-palette-trigger"
           onClick={onOpenCommandPalette}
-          className="hidden md:flex items-center space-x-2 text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700/80 px-2.5 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 transition-colors"
+          className="hidden md:flex items-center space-x-2 text-xs text-zinc-700 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700/80 px-2.5 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 transition-colors"
         >
           <Search className="w-3.5 h-3.5" aria-hidden="true" />
           <span>Search workspace...</span>
