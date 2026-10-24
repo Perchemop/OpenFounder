@@ -22,6 +22,13 @@
 - [ ] Secrets and tokens not committed
 - [ ] User-facing strings and UI are original (no copied trade dress)
 
+### Accessibility (for UI changes)
+
+- [ ] Tab order is logical and visible focus is present
+- [ ] Forms have labels and errors are announced
+- [ ] Meaning is not colour alone; reduced motion is honoured
+- [ ] Touch targets ≥24×24 px on primary surfaces
+
 ## Local verification
 
 <!-- How a human can try this on the primary OS -->

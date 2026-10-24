@@ -17,11 +17,37 @@ If you need a different arrangement, say so in the pull request before it is mer
 2. Branch from `main`. Keep each pull request to one bounded slice.
 3. Add or update tests for behaviour changes. Pure rules live in `src/utils/` and `src/db/`
    and are unit-tested without a browser.
-4. Run CI, not a local build: `~/.config/opencode/scripts/ci.sh run "<what changed>"` is the
-   verification entry point. The repository never requires a local full build.
+4. Verification is CI. Heavy builds never run on this machine: use `~/.config/opencode/scripts/ci.sh run "<what changed>"` to commit, push, and wait for GitHub Actions.
+   Contributors on other machines run their own CI; never require contributors to run costly builds locally.
 5. Update tracking files in the same pull request: `REQUIREMENTS_TRACEABILITY.md`,
    `IMPLEMENTATION_PLAN.md`, `CHANGELOG.md`, `ROADMAP.md`, and `docs/parity.md`.
 6. Fill in the pull request template honestly, including the "Local verification" section.
+
+### Filing a bug
+
+Use the Bug report issue template. Include app version from Settings, steps to reproduce, expected vs actual, environment, and a preview from the in-app bug reporter if you used it. Security issues follow SECURITY.md, not public issues.
+
+### Proposing a feature
+
+Use the Feature request template and check it against `VISION.md` and `docs/scope.md`. Features that require proprietary assets or fake capability will be declined.
+
+### Setting up
+
+```bash
+git clone https://github.com/Perchemop/OpenFounder.git
+cd OpenFounder
+bun install
+```
+Run the app with `bun run dev:vite`. No backend is required for development.
+
+Running tests locally is a contributor responsibility on machines where it is feasible. CI is the authoritative verification; do not claim CI will pass based on a local run on this constrained machine.
+
+### Expectations and tone
+
+- Discuss in the issue before large changes.
+- Review feedback with kindness, and give kind review.
+- Decisions are recorded; see `DECISIONS.md`, `GOVERNANCE.md`, and `CODE_OF_CONDUCT.md`.
+- The maintainer aims to respond to non-security issues within 7 days and to accessibility reports with priority.
 
 ## Clean-room rules
 
@@ -29,6 +55,10 @@ Contributions must not include proprietary source, assets, or substantial copied
 not reproduce third-party trademarks or visual identity. Research notes belong in
 `docs/research/` as original behavioural summaries with URLs, and require explicit human approval
 before dependent feature work.
+
+## Developer Certificate of Origin
+
+Signed-off-by is welcome but not required. The project uses inbound = outbound with the MIT OR Apache-2.0 licence; no CLA is required.
 
 ## Definition of done
 
