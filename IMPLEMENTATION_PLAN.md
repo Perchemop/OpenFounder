@@ -85,7 +85,7 @@ is covered by tests.
 - [x] `release.yml` for semver tags (draft GitHub Release with CHANGELOG section + checksums)
 - [x] In-app crash / bug reporting (`src/bugReport.ts` + `BugReportModal`, error boundary entry point
   and a manual entry point in Settings)
-- [ ] In-app update check
+- [x] In-app update check (`src/updateCheck.ts` + `UpdateCheckPanel`, fail-soft, hour cache)
 - [ ] `v0.1.0` GitHub Release
 
 ## Working agreement
