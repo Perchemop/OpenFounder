@@ -157,7 +157,7 @@ export const CompetitorsPage: React.FC<CompetitorsPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-            <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <Users className="w-5 h-5 text-emerald-600 dark:text-emerald-400"  aria-hidden="true" />
             <span>Competitor Matrix & Gaps</span>
           </h1>
           <p className="text-xs text-zinc-500 mt-0.5">
@@ -211,7 +211,7 @@ export const CompetitorsPage: React.FC<CompetitorsPageProps> = ({
       {/* AI Co-founder gap audit prompt bar */}
       <div className="p-3.5 bg-zinc-100/70 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700/80 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-center space-x-2 text-zinc-700 dark:text-zinc-300">
-          <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+          <Sparkles className="w-4 h-4 text-amber-500 shrink-0"  aria-hidden="true" />
           <span>Need help finding customer complaints and unaddressed market niches?</span>
         </div>
         <button
@@ -317,7 +317,7 @@ export const CompetitorsPage: React.FC<CompetitorsPageProps> = ({
 
           {competitors.length === 0 && (
             <div className="col-span-2 p-12 text-center border border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl space-y-2">
-              <Users className="w-8 h-8 text-zinc-400 mx-auto" />
+              <Users className="w-8 h-8 text-zinc-400 mx-auto"  aria-hidden="true" />
               <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                 No competitors or substitutes logged yet.
               </p>

@@ -145,7 +145,7 @@ export const RisksPage: React.FC<RisksPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-            <ShieldAlert className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+            <ShieldAlert className="w-5 h-5 text-rose-600 dark:text-rose-400"  aria-hidden="true" />
             <span>Risk Register</span>
           </h1>
           <p className="text-xs text-zinc-500 mt-0.5">

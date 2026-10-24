@@ -186,7 +186,7 @@ export const BusinessModelPage: React.FC<BusinessModelPageProps> = ({
         <div>
           <div className="flex items-center space-x-2">
             <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-              <Receipt className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <Receipt className="w-5 h-5 text-emerald-600 dark:text-emerald-400"  aria-hidden="true" />
               <span>Business Model & Unit Economics</span>
             </h1>
             {saveStatus === 'saving' && (
@@ -197,7 +197,7 @@ export const BusinessModelPage: React.FC<BusinessModelPageProps> = ({
             )}
             {saveStatus === 'saved' && (
               <span className="flex items-center space-x-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
-                <CheckCircle2 className="w-3 h-3" />
+                <CheckCircle2 className="w-3 h-3"  aria-hidden="true" />
                 <span>Autosaved {lastSaved ? `at ${lastSaved}` : 'locally'}</span>
               </span>
             )}
@@ -225,7 +225,7 @@ export const BusinessModelPage: React.FC<BusinessModelPageProps> = ({
             }
             className="flex items-center space-x-1.5 px-3.5 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs"
           >
-            <Sparkles className="w-4 h-4 text-amber-400" />
+            <Sparkles className="w-4 h-4 text-amber-400"  aria-hidden="true" />
             <span>Audit Economics with AI</span>
           </button>
         </div>

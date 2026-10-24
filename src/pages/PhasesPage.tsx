@@ -100,7 +100,7 @@ export const PhasesPage: React.FC<PhasesPageProps> = ({
               }`}
             >
               {isCompleted ? (
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500"  aria-hidden="true" />
               ) : isCurrent ? (
                 <span className="w-2 h-2 rounded-full bg-amber-500" />
               ) : (
@@ -135,7 +135,7 @@ export const PhasesPage: React.FC<PhasesPageProps> = ({
         {/* AI Guidance Bar */}
         <div className="bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/60 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-start space-x-2.5">
-            <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+            <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5"  aria-hidden="true" />
             <div>
               <h3 className="text-xs font-semibold text-amber-900 dark:text-amber-200">
                 Recommended Co-Founder Inquiry

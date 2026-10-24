@@ -132,7 +132,7 @@ export const TeamPage: React.FC<TeamPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-            <Users className="w-5 h-5 text-sky-500" />
+            <Users className="w-5 h-5 text-sky-500"  aria-hidden="true" />
             <span>Team &amp; Skills</span>
           </h1>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-2xl">
@@ -423,7 +423,7 @@ export const TeamPage: React.FC<TeamPageProps> = ({
 
       {coverage.length > 0 && summary.covered === summary.requirements && (
         <p className="text-[11px] text-emerald-700 dark:text-emerald-400 flex items-center space-x-1.5">
-          <CheckCircle2 className="w-3.5 h-3.5" />
+          <CheckCircle2 className="w-3.5 h-3.5"  aria-hidden="true" />
           <span>Every requirement is covered at the level you set.</span>
         </p>
       )}

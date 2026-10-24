@@ -185,7 +185,7 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-            <FlaskConical className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <FlaskConical className="w-5 h-5 text-emerald-600 dark:text-emerald-400"  aria-hidden="true" />
             <span>Validation Experiments</span>
           </h1>
           <p className="text-xs text-zinc-500 mt-0.5">
@@ -304,7 +304,7 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div className="p-2.5 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-900/40 text-emerald-900 dark:text-emerald-300 space-y-1">
                   <div className="font-semibold text-[10px] uppercase tracking-wider flex items-center space-x-1">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600"  aria-hidden="true" />
                     <span>Success Threshold (Pass)</span>
                   </div>
                   <div>{exp.successCriteria || 'Not set'}</div>
@@ -347,7 +347,7 @@ export const ValidationPage: React.FC<ValidationPageProps> = ({
 
         {filtered.length === 0 && (
           <div className="p-12 text-center border border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl space-y-2">
-            <FlaskConical className="w-8 h-8 text-zinc-400 mx-auto" />
+            <FlaskConical className="w-8 h-8 text-zinc-400 mx-auto"  aria-hidden="true" />
             <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
               No validation experiments created for this dimension yet.
             </p>

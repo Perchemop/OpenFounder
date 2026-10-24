@@ -205,7 +205,7 @@ export const GoalsPage: React.FC<GoalsPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-            <Target className="w-5 h-5 text-emerald-500" />
+            <Target className="w-5 h-5 text-emerald-500"  aria-hidden="true" />
             <span>Goals &amp; Scorecard</span>
           </h1>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-2xl">
@@ -239,7 +239,7 @@ export const GoalsPage: React.FC<GoalsPageProps> = ({
 
       {objectives.length === 0 ? (
         <div className="bg-white dark:bg-zinc-900 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl p-8 text-center">
-          <Target className="w-8 h-8 text-zinc-300 dark:text-zinc-600 mx-auto mb-3" />
+          <Target className="w-8 h-8 text-zinc-300 dark:text-zinc-600 mx-auto mb-3"  aria-hidden="true" />
           <h2 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">
             No objectives yet
           </h2>
@@ -673,7 +673,7 @@ function KeyResultRow({
         <span className="text-[10px] text-zinc-400 font-mono pb-2">{progress}%</span>
         {saved && (
           <span className="text-[10px] text-emerald-600 dark:text-emerald-400 pb-2 flex items-center space-x-0.5">
-            <CheckCircle2 className="w-3 h-3" />
+            <CheckCircle2 className="w-3 h-3"  aria-hidden="true" />
             <span>Saved</span>
           </span>
         )}

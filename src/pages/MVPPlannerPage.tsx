@@ -155,7 +155,7 @@ export const MVPPlannerPage: React.FC<MVPPlannerPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-            <ListTodo className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <ListTodo className="w-5 h-5 text-emerald-600 dark:text-emerald-400"  aria-hidden="true" />
             <span>MVP Scope & MoSCoW Backlog</span>
           </h1>
           <p className="text-xs text-zinc-500 mt-0.5">
@@ -215,7 +215,7 @@ export const MVPPlannerPage: React.FC<MVPPlannerPageProps> = ({
           }
           className="flex items-center space-x-1.5 px-3 py-1.5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 shrink-0"
         >
-          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+          <Sparkles className="w-3.5 h-3.5 text-amber-400"  aria-hidden="true" />
           <span>Audit MVP Scope</span>
         </button>
       </div>

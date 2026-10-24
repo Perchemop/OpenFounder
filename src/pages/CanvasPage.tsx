@@ -236,7 +236,7 @@ export const CanvasPage: React.FC<CanvasPageProps> = ({ projectId }) => {
       <div className="h-12 border-b border-zinc-200 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 backdrop-blur px-4 flex items-center justify-between z-10">
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-1.5 font-semibold text-xs text-zinc-900 dark:text-zinc-100">
-            <Network className="w-4 h-4 text-emerald-500" />
+            <Network className="w-4 h-4 text-emerald-500"  aria-hidden="true" />
             <span>Interactive Project Canvas</span>
           </div>
 

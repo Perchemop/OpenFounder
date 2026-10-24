@@ -230,7 +230,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col max-h-[70vh]">
         {/* Search bar */}
         <div className="p-3 border-b border-zinc-200 dark:border-zinc-800 flex items-center space-x-2 bg-zinc-50 dark:bg-zinc-950">
-          <Search className="w-4 h-4 text-zinc-400 shrink-0" />
+          <Search className="w-4 h-4 text-zinc-400 shrink-0"  aria-hidden="true" />
           <input
             type="text"
             placeholder="Search claims, research, interviews, risks, roadmap..."
@@ -240,8 +240,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             className="w-full bg-transparent text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none"
             autoFocus
           />
-          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-600">
-            <X className="w-4 h-4" />
+          <button onClick={onClose} aria-label="Close" className="p-1 text-zinc-400 hover:text-zinc-600">
+            <X className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
 

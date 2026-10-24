@@ -218,9 +218,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </h2>
           <button
             onClick={onClose}
+            aria-label="Close"
             className="p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800"
           >
-            <X className="w-4 h-4" />
+            <X className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
 
@@ -514,7 +515,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     }`}
                   >
                     {testStatus.result.success ? (
-                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <CheckCircle2 className="w-3.5 h-3.5"  aria-hidden="true" />
                     ) : (
                       <AlertCircle className="w-3.5 h-3.5" />
                     )}
@@ -529,7 +530,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="space-y-4">
               <div className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 space-y-2">
                 <div className="flex items-center space-x-2 font-semibold text-zinc-900 dark:text-zinc-100">
-                  <Shield className="w-4 h-4 text-emerald-500" />
+                  <Shield className="w-4 h-4 text-emerald-500"  aria-hidden="true" />
                   <span>Privacy First Principle</span>
                 </div>
                 <p className="text-[11px] text-zinc-600 dark:text-zinc-300 leading-relaxed">
@@ -574,7 +575,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     onClick={handleImportExampleProject}
                     className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40 rounded-md font-medium"
                   >
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <Sparkles className="w-3.5 h-3.5"  aria-hidden="true" />
                     <span>Import Example Project</span>
                   </button>
                 </div>

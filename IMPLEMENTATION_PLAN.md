@@ -93,8 +93,9 @@ is covered by tests.
 - [x] `ACCESSIBILITY.md` (WCAG 2.2 AA target, known limitations, report path)
 - [x] Reduced motion, visible focus, `role="alert"` errors, 24×24 touch targets
 - [x] Accessibility issue template and label; PR checklist for UI changes
-- [ ] Automated accessibility scan in CI
-- [ ] Human keyboard and screen-reader pass (R-030)
+- [x] Human keyboard and screen-reader pass (R-030) — completed 2026-10-25
+- [x] Phase 1 code-level fixes: skip-to-content link, `aria-hidden` on decorative icons, `aria-label` on icon-only buttons
+- [ ] Automated accessibility scan in CI (placeholder workflow exists; needs `@axe-core/playwright` + `bun.lock` update)
 
 ## Example project for release testing (2026-10-25)
 

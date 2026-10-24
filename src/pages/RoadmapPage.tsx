@@ -83,7 +83,7 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-            <Milestone className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <Milestone className="w-5 h-5 text-emerald-600 dark:text-emerald-400"  aria-hidden="true" />
             <span>Visual Roadmap & Milestones</span>
           </h1>
           <p className="text-xs text-zinc-500 mt-0.5">

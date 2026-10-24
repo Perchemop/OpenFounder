@@ -45,7 +45,7 @@ This checklist maps the guide's pre-launch requirements to evidence and owner.
 | Inline errors use role="alert" | Goals/Advisors/Team pages | Done | Maintainer |
 | Touch targets ≥24px on primary chrome | Code changes | Done | Maintainer |
 | Automated a11y scanning in CI | n/a | Pending | Maintainer |
-| Human keyboard and screen-reader pass | docs/qc/manual-qc.md | Pending | Human |
+| Human keyboard and screen-reader pass | docs/qc/manual-qc.md | Done | Human |
 
 ## Legal / community
 

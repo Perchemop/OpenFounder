@@ -76,7 +76,7 @@ function AppContent() {
   if (loading) {
     return (
       <div className="h-screen w-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 space-y-3">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-500"  aria-hidden="true" />
         <span className="text-xs font-medium font-mono">
           Initializing OpenFounder workspace...
         </span>
@@ -86,6 +86,13 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-white transition-colors">
+      {/* Skip to main content for keyboard and screen-reader users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-4 py-2 rounded font-semibold"
+      >
+        Skip to main content
+      </a>
       <Navbar
         currentProject={currentProject}
         projects={projects}
@@ -108,7 +115,7 @@ function AppContent() {
           openRisksCount={openRisksCount}
         />
 
-        <main className="flex-1 overflow-y-auto relative">
+        <main id="main-content" className="flex-1 overflow-y-auto relative">
           {currentProject ? (
             <>
               {activeTab === 'dashboard' && (
@@ -315,7 +322,7 @@ function AppContent() {
           className="fixed bottom-5 right-5 z-20 flex items-center space-x-2 px-3.5 py-2.5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all text-xs font-semibold group cursor-pointer"
           title="Open AI Co-founder (Ctrl+J)"
         >
-          <Sparkles className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" />
+          <Sparkles className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform"  aria-hidden="true" />
           <span>Ask AI Co-Founder</span>
           <span className="text-[10px] font-mono opacity-60 ml-1">⌘J</span>
         </button>

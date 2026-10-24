@@ -341,7 +341,7 @@ export const LandingPageStudio: React.FC<LandingPageStudioProps> = ({
         <div>
           <div className="flex items-center space-x-2">
             <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-              <Globe className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <Globe className="w-5 h-5 text-emerald-600 dark:text-emerald-400"  aria-hidden="true" />
               <span>Landing Page Studio & Exporter</span>
             </h1>
             {saveStatus === 'saving' && (
@@ -352,7 +352,7 @@ export const LandingPageStudio: React.FC<LandingPageStudioProps> = ({
             )}
             {saveStatus === 'saved' && (
               <span className="flex items-center space-x-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
-                <CheckCircle2 className="w-3 h-3" />
+                <CheckCircle2 className="w-3 h-3"  aria-hidden="true" />
                 <span>Autosaved {lastSaved ? `at ${lastSaved}` : 'locally'}</span>
               </span>
             )}

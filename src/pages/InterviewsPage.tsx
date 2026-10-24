@@ -181,7 +181,7 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-            <MessageSquareQuote className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <MessageSquareQuote className="w-5 h-5 text-emerald-600 dark:text-emerald-400"  aria-hidden="true" />
             <span>Customer Discovery (The Mom Test)</span>
           </h1>
           <p className="text-xs text-zinc-500 mt-0.5">
@@ -211,7 +211,7 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
       {/* The Mom Test Golden Rules Warning */}
       <div className="bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/60 rounded-xl p-4 space-y-3">
         <div className="flex items-center space-x-2 text-xs font-semibold text-amber-900 dark:text-amber-200">
-          <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+          <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400"  aria-hidden="true" />
           <span>The Mom Test: 3 Unbreakable Principles</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-amber-900/90 dark:text-amber-200/80">
@@ -335,7 +335,7 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
 
         {interviews.length === 0 && (
           <div className="col-span-2 p-12 text-center border border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl space-y-2">
-            <MessageSquareQuote className="w-8 h-8 text-zinc-400 mx-auto" />
+            <MessageSquareQuote className="w-8 h-8 text-zinc-400 mx-auto"  aria-hidden="true" />
             <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
               No customer discovery interviews recorded.
             </p>

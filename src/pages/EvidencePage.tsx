@@ -330,7 +330,7 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
-            <Scale className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <Scale className="w-5 h-5 text-emerald-600 dark:text-emerald-400"  aria-hidden="true" />
             <span>Evidence Ledger</span>
           </h1>
           <p className="text-xs text-zinc-500 mt-0.5">
@@ -369,7 +369,7 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
         </div>
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3">
           <div className="text-[10px] uppercase tracking-wider font-semibold text-zinc-500 flex items-center space-x-1">
-            <ShieldCheck className="w-3 h-3 text-emerald-500" />
+            <ShieldCheck className="w-3 h-3 text-emerald-500"  aria-hidden="true" />
             <span>Supported</span>
           </div>
           <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
@@ -381,7 +381,7 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
         </div>
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3">
           <div className="text-[10px] uppercase tracking-wider font-semibold text-zinc-500 flex items-center space-x-1">
-            <ShieldAlert className="w-3 h-3 text-rose-500" />
+            <ShieldAlert className="w-3 h-3 text-rose-500"  aria-hidden="true" />
             <span>Unsupported</span>
           </div>
           <div className="text-lg font-bold text-rose-600 dark:text-rose-400">
@@ -588,7 +588,7 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
               {formError.length > 0 && (
                 <div className="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 rounded-lg text-rose-800 dark:text-rose-300 space-y-1">
                   <div className="font-semibold flex items-center space-x-1.5">
-                    <ShieldAlert className="w-3.5 h-3.5" />
+                    <ShieldAlert className="w-3.5 h-3.5"  aria-hidden="true" />
                     <span>This status needs more evidence</span>
                   </div>
                   <ul className="list-disc list-inside space-y-0.5">
@@ -761,7 +761,7 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
               {editError.length > 0 && (
                 <div className="p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 rounded-lg text-rose-800 dark:text-rose-300 space-y-1">
                   <div className="font-semibold flex items-center space-x-1.5">
-                    <ShieldAlert className="w-3.5 h-3.5" />
+                    <ShieldAlert className="w-3.5 h-3.5"  aria-hidden="true" />
                     <span>Promotion blocked — nothing was saved</span>
                   </div>
                   <ul className="list-disc list-inside space-y-0.5">
@@ -921,7 +921,7 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-md w-full p-5 shadow-2xl space-y-4">
             <div className="flex items-start space-x-3">
-              <ShieldAlert className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+              <ShieldAlert className="w-5 h-5 text-rose-500 shrink-0 mt-0.5"  aria-hidden="true" />
               <div className="space-y-1">
                 <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                   Evidence required
