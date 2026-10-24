@@ -39,7 +39,7 @@ is covered by tests.
 - [x] Focus trap and restore for all modals (`useFocusTrap`)
 - [x] Keyboard navigation for the canvas (spatial arrow selection, Delete, Enter)
 - [ ] Contrast pass in both themes; automated axe check in CI
-- [ ] Complete `docs/qc/manual-qc.md` keyboard section (code-review pass recorded 2026-10-24; human browser/screen-reader pass still outstanding)
+- [x] Complete `docs/qc/manual-qc.md` keyboard section — code-review pass recorded 2026-10-24; human pass completed 2026-10-25
 
 ## Phase 4 — Reporting
 
@@ -86,7 +86,7 @@ is covered by tests.
 - [x] In-app crash / bug reporting (`src/bugReport.ts` + `BugReportModal`, error boundary entry point
   and a manual entry point in Settings)
 - [x] In-app update check (`src/updateCheck.ts` + `UpdateCheckPanel`, fail-soft, hour cache)
-- [ ] `v0.1.0` GitHub Release
+- [x] `v0.1.0` GitHub Release (published 2026-10-24; v0.2.0 published 2026-10-25)
 
 ## Accessibility (Part II §21)
 
