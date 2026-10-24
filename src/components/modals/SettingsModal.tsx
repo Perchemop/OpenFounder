@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { BugReportModal } from './BugReportModal';
 import { UpdateCheckPanel } from '../UpdateCheckPanel';
+import { CURRENT_APP_VERSION } from '../../updateCheck';
 import {
   X,
   Cpu,
@@ -646,14 +647,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           isOpen={bugReportOpen}
           onClose={() => setBugReportOpen(false)}
           input={{
-            appVersion: '1.0.0',
+            appVersion: CURRENT_APP_VERSION,
             origin: 'manual',
             summary: 'Problem reported from Settings → Integrity Audit',
           }}
         />
 
         <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50 dark:bg-zinc-950">
-          <span className="text-[11px] text-zinc-500">OpenFounder v1.0.0 (dual licensed FOSS)</span>
+          <span className="text-[11px] text-zinc-500">OpenFounder v{CURRENT_APP_VERSION} (dual licensed FOSS)</span>
           <div className="flex items-center space-x-2">
             <button onClick={onClose} className="px-3 py-1.5 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 rounded-lg">
               Cancel
