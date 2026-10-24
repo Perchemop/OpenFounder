@@ -5,6 +5,22 @@ semantic versioning for its export schema and application releases.
 
 ## [Unreleased]
 
+Nothing yet; entries appear here as work lands.
+
+## [0.1.0] — 2026-10-24
+
+First functional test build; limited scope. The workspace modules below are implemented and
+CI-verified on Linux, macOS, and Windows, and the static build deploys to GitHub Pages. Not yet
+done: the human keyboard and screen-reader pass (`docs/qc/manual-qc.md`), automated accessibility
+scanning, and any multi-platform installer beyond the static web build.
+
+### Baseline
+
+Before the documentation and CI work recorded below, the project already contained: projects,
+phases, evidence ledger, risk register, experiments, interviews, research, competitors, canvas,
+MVP planner, roadmap, business model, GTM, landing-page studio, documents, and a multi-provider
+AI co-founder with offline fallback.
+
 ### Added
 
 - Process foundation: `docs/` brief, scope, inspiration, architecture, parity, assumptions,
@@ -93,8 +109,12 @@ semantic versioning for its export schema and application releases.
 - Documents export reads real fields (`estimatedDays`, `solvesProblem`, `productDescription`)
   instead of non-existent `effort`, `rationale`, and `description` properties.
 
-## [1.0.0] — 2026-10-10
+### Known limitations
 
-Baseline before this documentation and CI work: projects, phases, evidence ledger, risk register,
-experiments, interviews, research, competitors, canvas, MVP planner, roadmap, business model,
-GTM, landing-page studio, documents, and multi-provider AI co-founder with offline fallback.
+- No human keyboard-only or screen-reader pass has been executed yet; `docs/qc/manual-qc.md` is
+  the outstanding checklist.
+- Touch-target sizes and colour contrast have not been audited against WCAG 2.2 AA.
+- The release workflow is exercised by this release for the first time; artefact names and notes
+  are intentionally minimal.
+- Data is local to the browser profile (IndexedDB); there is no sync or account system by
+  design, and the AI co-founder works offline in fallback mode.

@@ -4,7 +4,8 @@ Readiness percentages are updated **only from verified evidence** (green CI, mer
 where the guide requires it — a human pass). A capability listed as Done has code behind it and
 tests behind the code.
 
-Current stage: **pre-v0.1.0**. Everything below the v0.1.0 gate is the release blocker list.
+Current stage: **v0.1.0 released (2026-10-24)**. The gate table records the evidence for the
+first functional test build; the sections below it are the path to v1.0.0.
 
 ## v0.1.0 — first functional test build (release gate)
 
@@ -17,9 +18,9 @@ Current stage: **pre-v0.1.0**. Everything below the v0.1.0 gate is the release b
 | Update check | Done | `src/updateCheck.ts`, fail-soft with an hour cache |
 | CI green (format/type check, tests, build) | Done | `.github/workflows/ci.yml`, `.ci-required.txt` |
 | README with build and run instructions | Done | `README.md` |
-| CHANGELOG entry for 0.1.0 | **To do** | created when the tag is cut |
-| Legal baseline (LICENSE, ATTRIBUTION, no secrets) | **To do** | dual licence not yet in place |
-| GitHub Release `v0.1.0` published | **To do** | `release.yml` exists but no tag has been cut |
+| CHANGELOG entry for 0.1.0 | Done | `## [0.1.0] — 2026-10-24` section |
+| Legal baseline (LICENSE, ATTRIBUTION, no secrets) | Done | dual licence MIT OR Apache-2.0 (D-009); ATTRIBUTION current |
+| GitHub Release `v0.1.0` published | Done | tagged `v0.1.0`; draft built by `release.yml`, then published |
 
 ## v0.2.0 — reporting and polish
 

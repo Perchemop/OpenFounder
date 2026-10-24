@@ -2,6 +2,47 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-24 · Guide compliance, bug reporting, update check, v0.1.0
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- Pure, tested import remapping (`src/db/importRemap.ts`) wired into `importProjectPackage`
+  (PR #10, R-035/038/040).
+- Guide-compliance baseline (PR #11): `.github/PULL_REQUEST_TEMPLATE.md`, `CONTRIBUTING.md`,
+  `ROADMAP.md`, `docs/design/brand.md`, original `assets/logo.svg`, `docs/research/` with a
+  recorded human gate, dual licence MIT OR Apache-2.0 (D-009).
+- `release.yml` (PR #12): semver tags run the full gate, package the static build with SHA-256
+  checksums, and publish a draft GitHub Release with the CHANGELOG section.
+- In-app bug reporting (PR #13, R-045, C-28): `src/bugReport.ts` builds a scrubbed, bounded
+  report and a pre-filled issue URL with no token; `BugReportModal` previews the payload;
+  entry points from the error boundary and Settings → Integrity Audit.
+- Fail-soft update check (PR #14, R-046, C-29): `src/updateCheck.ts` + `UpdateCheckPanel`;
+  offline, rate-limited, and malformed responses report "unavailable", never "up to date".
+- Repository-local git identity set to `OpenFounder Dev <dev@example.com>` per the operating
+  guide §5.5; existing history left untouched (the rule is adopted, not retro-applied).
+- Version single-sourced as `CURRENT_APP_VERSION` (`0.1.0`) across package.json, the export
+  metadata, the dossier template, Settings, and the error boundary.
+- CHANGELOG restructured: `[Unreleased]` folded into `[0.1.0] — 2026-10-24`; the never-released
+  `[1.0.0]` heading replaced by an honest Baseline subsection plus Known limitations.
+- `v0.1.0` tagged and released via `release.yml` (see below for the run result).
+
+### Verification
+
+- PRs #10–#13 merged with every required check green (`verify` ×3, `build (static)`, `summary`).
+- PR #14: first push failed the unit test on three platforms (the test factory kept the default
+  `htmlUrl` when overriding `tagName`, so the URL assertion mismatched). Fixed the factory to
+  derive the URL from the tag; re-ran green. The branch also needed rebasing onto main after an
+  earlier squash merge left it on stale history; the rebase replayed only the slice commits.
+- Identity on new commits verified: `git log --format='%an <%ae>'` shows `OpenFounder Dev`.
+
+### Known gaps
+
+- No human keyboard or screen-reader pass yet (R-030); no automated accessibility scanning in CI.
+- GitHub account-level security settings (MFA enforcement, second admin, branch protection,
+  private vulnerability reporting) are repo/account configuration and need the owner.
+
 ## 2026-10-24 · Canvas keyboard navigation (R-043)
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

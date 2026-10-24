@@ -1,6 +1,7 @@
 import React, { Component, type ErrorInfo, type ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Bug } from 'lucide-react';
 import { BugReportModal } from './modals/BugReportModal';
+import { CURRENT_APP_VERSION } from '../updateCheck';
 
 interface Props {
   children: ReactNode;
@@ -72,7 +73,7 @@ export class ErrorBoundary extends Component<Props, State> {
             isOpen={this.state.isReportOpen}
             onClose={() => this.setState({ isReportOpen: false })}
             input={{
-              appVersion: '1.0.0',
+              appVersion: CURRENT_APP_VERSION,
               origin: 'error_boundary',
               summary: this.state.error
                 ? `${this.state.error.name}: ${this.state.error.message}`

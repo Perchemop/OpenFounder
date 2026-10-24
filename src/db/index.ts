@@ -34,6 +34,7 @@ import {
   remapSkillRequirement,
   remapTeamMember,
 } from './importRemap';
+import { CURRENT_APP_VERSION } from '../updateCheck';
 
 export { validateWorkspaceReferences } from './validation';
 export type {
@@ -316,7 +317,7 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
   return {
     schemaVersion: 6,
     exportedAt: new Date().toISOString(),
-    appVersion: '1.0.0',
+    appVersion: CURRENT_APP_VERSION,
     project,
     evidence,
     research,

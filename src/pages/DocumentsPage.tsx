@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CURRENT_APP_VERSION } from '../updateCheck';
 import {
   FileText,
   Download,
@@ -80,7 +81,7 @@ export const DocumentsPage: React.FC<DocumentsPageProps> = ({
       return `${syntheticNotice}# ${project.name} — Comprehensive Project Dossier
 **Metadata:**
 - Generated: ${new Date().toISOString()}
-- Workspace Engine: OpenFounder v1.0.0 (Local-First FOSS)
+- Workspace Engine: OpenFounder v${CURRENT_APP_VERSION} (Local-First FOSS)
 - Current Stage: ${project.stage} (Phase ${project.currentPhaseIndex + 1} of 10)
 - Category: ${project.category}
 - Synthetic Demo Project: ${project.isSynthetic ? 'Yes' : 'No'}
