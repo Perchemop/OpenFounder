@@ -61,3 +61,5 @@ see `PROGRESS.md` for the current result.
 | R-046 | Update check against GitHub Releases, failing soft | `src/updateCheck.ts`, `UpdateCheckPanel` | `updateCheck.test.ts` | Done |
 
 | R-047 | Reduced motion, visible focus, announced form errors, 24×24 touch targets | `src/index.css`, `GoalsPage`, `AdvisorsPage`, `TeamPage`, `RoadmapPage`, `MVPPlannerPage`, `CanvasPage` | Code review in `docs/qc/manual-qc.md`; human pass outstanding | Partial |
+
+| R-048 | Release includes an example project export with enough data to test most features | `assets/example-project-tradepulse.json`, `public/assets/example-project-tradepulse.json`, `SettingsModal.tsx`, `.github/workflows/release.yml` | Example project bundled in release artefacts; Import Example Project button in Settings | Done |

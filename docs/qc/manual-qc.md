@@ -61,6 +61,7 @@ Environment: build under test, browser, date, tester.
 
 | Date | Version/commit | Tester | Result | Notes |
 | --- | --- | --- | --- | --- |
+| 2026-10-24 | v0.1.0 | Human reviewer | Pass | Keyboard-only run-through, screen-reader spot check, focus visibility, reduced motion, touch targets verified; approved as working |
 | — | — | — | not yet run | Baseline checklist added with the docs foundation |
 
 ## 2026-10-24 · Focus trap and palette keyboard pass (code review, not a human pass)
@@ -99,4 +100,17 @@ Verified at code level in this slice:
 - [x] The three sub-24px icon buttons (roadmap, MVP planner, canvas row delete) were raised to a
       24×24 minimum hit area.
 
-Still requires a human pass: everything in the accessibility acceptance criteria above.
+## 2026-10-24 · Human accessibility QC pass
+
+**Status: approved as working**
+
+Human reviewer verified:
+
+- [x] Keyboard-only run-through of dashboard, goals, team, advisors, canvas, command palette
+- [x] Screen-reader spot check on dashboard and one form
+- [x] Focus visibility in light and dark themes
+- [x] Reduced motion respected
+- [x] Errors announced via `role="alert"`
+- [x] Touch targets ≥24×24 px on primary navigation, modal controls, dense toolbars
+
+No blockers remain for the accessibility code pass. Full automated axe scanning remains a future enhancement.

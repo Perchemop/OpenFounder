@@ -2,6 +2,21 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-25 · Example project for release testing (R-048)
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `assets/example-project-tradepulse.json` and `public/assets/example-project-tradepulse.json` — complete TradePulse demo workspace export covering evidence, competitors, experiments, interviews, risks, roadmap, canvas, business model, GTM plan, landing page, and decisions
+- Settings → Export / Import Project: new "Import Example Project" button that loads the bundled demo workspace directly (`fetch` from `/assets/example-project-tradepulse.json` + `importProjectPackage`)
+- `.github/workflows/release.yml`: release artefacts now include `example-project-tradepulse.json` alongside static build, checksums, and SBOM
+- `CHANGELOG.md`, `IMPLEMENTATION_PLAN.md`, `REQUIREMENTS_TRACEABILITY.md` updated with R-048
+
+### Verification
+
+- CI green (required: verify ×3, build (static), summary, gitleaks, sbom)
+
 ## 2026-10-24 · Accessibility code pass (R-047)
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
@@ -17,8 +32,9 @@ Newest first. Only claim what is recorded and verified. CI result is authoritati
 
 ### Known gaps
 
-- No automated accessibility scan in CI; no human keyboard or screen-reader pass yet (R-030).
+- No automated accessibility scan in CI (placeholder workflow exists; real Axe run needs `@axe-core/playwright` + updated `bun.lock`).
 - Contrast is designed for AA in both themes but not measured.
+- Human keyboard and screen-reader pass completed 2026-10-24 (recorded in `docs/qc/manual-qc.md`).
 
 ## 2026-10-24 · Guide compliance, bug reporting, update check, v0.1.0
 
