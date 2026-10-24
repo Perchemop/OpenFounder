@@ -12,6 +12,10 @@ semantic versioning for its export schema and application releases.
 - `aria-label` on icon-only buttons (close buttons in Settings, NewProject, CommandPalette, AI Co-founder modals)
 - `aria-hidden="true"` on icons inside buttons that already have an accessible name
 
+### Added
+
+- JSON export in Documents page: "Download .json" button alongside "Download .md" for document templates
+
 
 ## [0.2.0] — 2026-10-25
 

@@ -2,6 +2,19 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-25 · JSON export in Documents page
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `DocumentsPage.tsx`: added "Download .json" button alongside "Download .md" for document templates
+- JSON payload includes template name, project data, generated content, and timestamp
+
+### Verification
+
+- CI green (required: verify ×3, build (static), summary, gitleaks, sbom; a11y advisory passed)
+
 ## 2026-10-25 · Automated accessibility scan in CI
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
