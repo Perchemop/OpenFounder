@@ -62,6 +62,11 @@ semantic versioning for its export schema and application releases.
   static build with SHA-256 checksums, and publishes a **draft** GitHub Release whose body is
   taken from the matching CHANGELOG entry.
 
+- Crash / bug reporting: `src/bugReport.ts` builds a scrubbed, bounded report (home paths and long
+  ids removed, stack capped) and a pre-filled GitHub issue URL, with no token held by the app.
+  `BugReportModal` previews the exact payload before anything is opened, and is reachable from the
+  error boundary and from Settings → Integrity Audit.
+
 ### Changed
 
 - Pages deploy workflow now installs with Bun instead of `npm ci`, which failed because the

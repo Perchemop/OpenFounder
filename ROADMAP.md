@@ -13,7 +13,7 @@ Current stage: **pre-v0.1.0**. Everything below the v0.1.0 gate is the release b
 | Runnable build for the primary platform | Ready | `bun run build:static` + `deploy.yml` publish to GitHub Pages; CI `build (static)` green |
 | One real workflow with real persistence | Done | Evidence ledger with guarded promotion; Dexie persistence |
 | App identity, theme, window title | Done | `OpenFounder`, light/dark theme |
-| Crash / error boundary | **To do** | `ErrorBoundary` exists but cannot report a bug |
+| Crash / error boundary | Done | `ErrorBoundary` + `BugReportModal` with scrubbed payload |
 | Update check | **To do** | not implemented |
 | CI green (format/type check, tests, build) | Done | `.github/workflows/ci.yml`, `.ci-required.txt` |
 | README with build and run instructions | Done | `README.md` |
@@ -25,7 +25,7 @@ Current stage: **pre-v0.1.0**. Everything below the v0.1.0 gate is the release b
 
 | Capability | Status |
 | --- | --- |
-| Crash / bug reporting that files a GitHub issue from the app | Planned |
+| Crash / bug reporting that files a GitHub issue from the app | Done |
 | Update check against GitHub Releases, failing soft offline | Planned |
 | Export the validation report as JSON | Planned |
 | Accessibility: human keyboard and screen-reader pass (R-030) | Planned |

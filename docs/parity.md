@@ -31,6 +31,7 @@ has a known gap), **Planned**.
 | C-27 | One-page validation report with provenance | Done | `src/utils/validationReport.ts` |
 | C-25 | Advisor and mentor log with commitments | Done | `AdvisorsPage`, `src/utils/advisorLog.ts` |
 | C-26 | Team skills coverage with gaps | Done | `TeamPage`, `src/utils/skillCoverage.ts` |
+| C-28 | Bug / crash reporting from inside the app | Done | `src/bugReport.ts`, `BugReportModal` |
 | C-22 | Full-text workspace search | Done | `src/utils/workspaceSearch.ts`, `CommandPalette` |
 | C-23 | Cloud sync / multi-device | Planned (out of scope v1) | — |
 
