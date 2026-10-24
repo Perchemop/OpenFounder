@@ -36,7 +36,7 @@ describe('buildBugReportTitle', () => {
 
 describe('buildBugReportBody', () => {
   it('includes what happened, steps, environment, and technical detail, in that order', () => {
-    const body = buildBugReport({
+    const body = buildBugReportBody({
       ...base,
       userNotes: 'I had three claims open.',
       stepsToReproduce: ['Open ledger', 'Promote claim'],
