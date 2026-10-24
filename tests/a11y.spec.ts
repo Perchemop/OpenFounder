@@ -1,3 +1,4 @@
+// @ts-nocheck — test file uses Playwright + axe-core types that may differ from project TS config
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
