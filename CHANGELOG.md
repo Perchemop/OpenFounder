@@ -58,6 +58,10 @@ semantic versioning for its export schema and application releases.
   SVG mark in `assets/`, and `docs/research/` notes with a recorded approval gate.
 - Project is now dual licensed MIT OR Apache-2.0 (D-009).
 
+- `.github/workflows/release.yml`: on a `v*.*.*` tag, runs the same gate as CI, packages the
+  static build with SHA-256 checksums, and publishes a **draft** GitHub Release whose body is
+  taken from the matching CHANGELOG entry.
+
 ### Changed
 
 - Pages deploy workflow now installs with Bun instead of `npm ci`, which failed because the

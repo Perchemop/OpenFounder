@@ -19,7 +19,7 @@ Current stage: **pre-v0.1.0**. Everything below the v0.1.0 gate is the release b
 | README with build and run instructions | Done | `README.md` |
 | CHANGELOG entry for 0.1.0 | **To do** | created when the tag is cut |
 | Legal baseline (LICENSE, ATTRIBUTION, no secrets) | **To do** | dual licence not yet in place |
-| GitHub Release `v0.1.0` published | **To do** | needs `release.yml` first |
+| GitHub Release `v0.1.0` published | **To do** | `release.yml` exists but no tag has been cut |
 
 ## v0.2.0 — reporting and polish
 

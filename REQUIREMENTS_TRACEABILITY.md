@@ -33,6 +33,7 @@ see `PROGRESS.md` for the current result.
 | R-024 | Command palette navigates pages and searches core entities | `src/components/modals/CommandPalette.tsx`, `src/utils/workspaceSearch.ts` | `workspaceSearch.test.ts` | Done |
 | R-025 | No telemetry by default; keys session-only by default | `src/db/index.ts`, `src/types/index.ts`, `SettingsModal` | `validation.test.ts` (config defaults) | Done |
 | R-026 | Static build deployable to GitHub Pages | `vite.config.ts`, `.github/workflows/deploy.yml` | CI build job | Done |
+| R-044 | Semver tags publish a GitHub Release with notes and checksums | `.github/workflows/release.yml` | CHANGELOG extraction verified locally; release run not yet exercised | Partial |
 | R-027 | Pull requests are verified by CI (lint, tests, build) | `.github/workflows/ci.yml` | CI itself | Done |
 | R-028 | Project is MIT licensed with attribution | `LICENSE`, `ATTRIBUTION.md` | — | Done |
 | R-029 | Command palette searches research, interviews, risks, roadmap | `src/utils/workspaceSearch.ts`, `CommandPalette` | `workspaceSearch.test.ts` | Done |
