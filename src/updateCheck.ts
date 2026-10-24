@@ -4,7 +4,7 @@
  * "we do not know", never "up to date" and never an error dialog.
  */
 
-export const CURRENT_APP_VERSION = '0.1.0';
+export const CURRENT_APP_VERSION = '0.2.0';
 export const RELEASE_REPOSITORY = 'Perchemop/OpenFounder';
 export const RELEASES_URL = `https://api.github.com/repos/${RELEASE_REPOSITORY}/releases`;
 
