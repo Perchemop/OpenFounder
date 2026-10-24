@@ -3,3 +3,5 @@ verify (macos-latest)
 verify (windows-latest)
 build (static)
 summary
+gitleaks
+sbom

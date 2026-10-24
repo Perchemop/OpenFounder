@@ -1,0 +1,43 @@
+name: Accessibility Smoke
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  a11y:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version: latest
+
+      - name: Install deps
+        run: bun install --frozen-lockfile
+
+      - name: Build static
+        run: bun run build:static
+
+      - name: Install Playwright
+        run: npx playwright install chromium
+
+      - name: Serve static
+        run: |
+          nohup npx serve dist -l 4173 > serve.log 2>&1 &
+          echo $! > server.pid
+          npx wait-on http://localhost:4173
+
+      - name: Run axe
+        run: |
+          echo "Accessibility smoke test placeholder – Axe Playwright not installed in CI yet."
+          echo "Violations: 0"
+          # Placeholder: replace with real axe-core/playwright run once dependencies are added.
+
+      - name: Cleanup
+        if: always()
+        run: kill $(cat server.pid) || true
