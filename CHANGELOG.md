@@ -5,6 +5,10 @@ semantic versioning for its export schema and application releases.
 
 ## [Unreleased]
 
+Nothing yet; entries appear here as work lands.
+
+## [0.2.0] — 2026-10-25
+
 ### Added
 
 - Example project export (`assets/example-project-tradepulse.json`): a complete TradePulse demo workspace with evidence, competitors, experiments, interviews, risks, roadmap, canvas, business model, GTM plan, and landing page — importable via Settings → Export / Import Project to explore most features.
@@ -13,6 +17,7 @@ semantic versioning for its export schema and application releases.
 ### Changed
 
 - Release artefacts now include `example-project-tradepulse.json` alongside the static build, checksums, and SBOM.
+- App version single-sourced to `0.2.0` across package.json, exports, dossier header, Settings, and the error boundary.
 
 ## [0.1.0] — 2026-10-24
 
