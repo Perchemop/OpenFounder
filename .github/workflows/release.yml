@@ -45,6 +45,12 @@ jobs:
           tag="${GITHUB_REF_NAME}"
           tar -C dist -czf "release/openfounder-dist-${tag}.tar.gz" .
           (cd dist && find . -type f | sort | xargs sha256sum > "../release/checksums.txt")
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: spdx-json
+          output-file: release/sbom.spdx.json
 
       - name: Upload build artefact
         uses: actions/upload-artifact@v4
@@ -95,6 +101,7 @@ jobs:
               echo "- openfounder-dist-${tag}.tar.gz (\`$(sha256sum "$archive" | cut -d" " -f1)\`)"
             fi
             echo "- checksums.txt (SHA-256 of every packaged file)"
+            echo "- sbom.spdx.json (SPDX SBOM for licence and supply-chain transparency)"
           } > release/body.md
           cat release/body.md >> "$GITHUB_STEP_SUMMARY"
 
@@ -108,5 +115,6 @@ jobs:
           files: |
             release/openfounder-dist-${{ github.ref_name }}.tar.gz
             release/checksums.txt
+            release/sbom.spdx.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
