@@ -55,3 +55,5 @@ see `PROGRESS.md` for the current result.
 | R-042 | Command palette is fully keyboard navigable | `src/components/modals/CommandPalette.tsx`, `src/utils/paletteNavigation.ts` | `paletteNavigation.test.ts` | Done |
 
 | R-043 | Canvas is keyboard navigable with spatial arrow movements | `src/pages/CanvasPage.tsx`, `src/utils/spatialNavigation.ts` | `spatialNavigation.test.ts` | Done |
+
+| R-045 | In-app crash/bug reporting with a pre-send preview and no stored token | `src/bugReport.ts`, `BugReportModal`, `ErrorBoundary`, SettingsModal | `bugReport.test.ts` | Done |

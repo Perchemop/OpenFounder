@@ -83,7 +83,8 @@ is covered by tests.
 - [x] `docs/research/` notes with a recorded human gate
 - [x] Dual licence MIT OR Apache-2.0 (D-009)
 - [x] `release.yml` for semver tags (draft GitHub Release with CHANGELOG section + checksums)
-- [ ] In-app crash / bug reporting
+- [x] In-app crash / bug reporting (`src/bugReport.ts` + `BugReportModal`, error boundary entry point
+  and a manual entry point in Settings)
 - [ ] In-app update check
 - [ ] `v0.1.0` GitHub Release
 

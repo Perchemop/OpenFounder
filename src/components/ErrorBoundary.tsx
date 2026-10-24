@@ -1,5 +1,6 @@
 import React, { Component, type ErrorInfo, type ReactNode } from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { AlertTriangle, RefreshCw, Bug } from 'lucide-react';
+import { BugReportModal } from './modals/BugReportModal';
 
 interface Props {
   children: ReactNode;
@@ -10,12 +11,13 @@ interface State {
   hasError: boolean;
   error: Error | null;
   errorInfo: ErrorInfo | null;
+  isReportOpen: boolean;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
+    this.state = { hasError: false, error: null, errorInfo: null, isReportOpen: false };
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -28,7 +30,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
+    this.setState({ hasError: false, error: null, errorInfo: null, isReportOpen: false });
   };
 
   render() {
@@ -49,13 +51,43 @@ export class ErrorBoundary extends Component<Props, State> {
               {this.state.error.message}
             </pre>
           )}
-          <button
-            onClick={this.handleReset}
-            className="inline-flex items-center space-x-2 px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity"
-          >
-            <RefreshCw className="w-4 h-4" />
-            <span>Try again</span>
-          </button>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={this.handleReset}
+              className="inline-flex items-center space-x-2 px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Try again</span>
+            </button>
+            <button
+              onClick={() => this.setState({ isReportOpen: true })}
+              className="inline-flex items-center space-x-2 px-4 py-2 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            >
+              <Bug className="w-4 h-4" />
+              <span>Report this crash</span>
+            </button>
+          </div>
+
+          <BugReportModal
+            isOpen={this.state.isReportOpen}
+            onClose={() => this.setState({ isReportOpen: false })}
+            input={{
+              appVersion: '1.0.0',
+              origin: 'error_boundary',
+              summary: this.state.error
+                ? `${this.state.error.name}: ${this.state.error.message}`
+                : 'Unexpected error in OpenFounder',
+              technicalDetail: [
+                this.state.error?.stack ?? '',
+                this.state.errorInfo?.componentStack ?? '',
+              ]
+                .filter((part) => part.trim().length > 0)
+                .join('\n'),
+              diagnostics: {
+                'Route': typeof window === 'undefined' ? 'unknown' : window.location.pathname,
+              },
+            }}
+          />
         </div>
       );
     }
