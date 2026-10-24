@@ -18,7 +18,7 @@ jobs:
           bun-version: latest
 
       - name: Install deps
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Build static
         run: bun run build:static
