@@ -301,7 +301,11 @@ export const TeamPage: React.FC<TeamPageProps> = ({
               className={inputClass}
               aria-label="Focus"
             />
-            {memberError && <p className="text-[11px] text-rose-600">{memberError}</p>}
+            {memberError && (
+              <p role="alert" className="text-[11px] text-rose-600">
+                {memberError}
+              </p>
+            )}
           </div>
         </div>
 
@@ -390,7 +394,11 @@ export const TeamPage: React.FC<TeamPageProps> = ({
               <UserPlus2 className="w-3.5 h-3.5" />
               <span>Add requirement</span>
             </button>
-            {skillError && <p className="text-[11px] text-rose-600">{skillError}</p>}
+            {skillError && (
+              <p role="alert" className="text-[11px] text-rose-600">
+                {skillError}
+              </p>
+            )}
           </div>
         </div>
       </div>

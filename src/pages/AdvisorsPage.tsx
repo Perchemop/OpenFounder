@@ -289,7 +289,11 @@ export const AdvisorsPage: React.FC<AdvisorsPageProps> = ({
             aria-label="Advisor expertise"
           />
         </div>
-        {advisorError && <p className="mt-2 text-[11px] text-rose-600">{advisorError}</p>}
+        {advisorError && (
+          <p role="alert" className="mt-2 text-[11px] text-rose-600">
+            {advisorError}
+          </p>
+        )}
         <button
           onClick={createAdvisor}
           className="mt-3 inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-semibold hover:opacity-90"

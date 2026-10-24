@@ -87,6 +87,14 @@ AI co-founder with offline fallback.
   running version with the newest stable GitHub release, caches for an hour, and fails soft —
   offline, rate-limited, or malformed responses report "unavailable" rather than "up to date".
 
+### Accessibility
+
+- `src/index.css` guarantees a visible focus indicator (`:focus-visible`) and honours
+  `prefers-reduced-motion: reduce` for all CSS-driven animation.
+- Inline form errors on the goals, advisors, and team pages now use `role="alert"` so they are
+  announced, not only displayed.
+- The three icon-only delete buttons below the 24×24 CSS-pixel minimum were enlarged.
+
 ### Changed
 
 - Pages deploy workflow now installs with Bun instead of `npm ci`, which failed because the

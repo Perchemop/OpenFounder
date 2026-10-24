@@ -254,7 +254,7 @@ export const MVPPlannerPage: React.FC<MVPPlannerPageProps> = ({
                       </h4>
                       <button
                         onClick={() => handleDeleteFeature(feat.id)}
-                        className="text-zinc-400 hover:text-rose-600 p-0.5"
+                        className="text-zinc-400 hover:text-rose-600 p-1.5"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>

@@ -37,6 +37,20 @@ Environment: build under test, browser, date, tester.
 - [ ] Light and dark themes both meet readable contrast.
 - [ ] Layout works at 1280×800 and 1920×1080 without horizontal scroll of the shell.
 
+### Accessibility acceptance criteria (required for UI changes)
+
+- [ ] Keyboard-only run-through of every main flow; nothing requires a pointer.
+- [ ] Focus indicator visible on every interactive control in both themes.
+- [ ] Every form control labelled; errors announced and programmatically associated.
+- [ ] `prefers-reduced-motion` respected (no transitions or animation when the OS setting is on).
+- [ ] One screen-reader spot check (NVDA + Firefox, or VoiceOver + Safari) on the dashboard and
+      one form.
+- [ ] 200% browser zoom: no loss of content or function; narrow reflow checked.
+- [ ] Touch targets at least 24×24 CSS pixels on primary navigation, modal controls, and dense
+      toolbars.
+- [ ] High-contrast mode: status text and badges remain legible.
+- [ ] Accessibility issue reporters are told when a fix ships.
+
 ## Failure states
 
 - [ ] Offline mode AI returns deterministic guidance and never claims a source.
@@ -70,3 +84,19 @@ Still requires a human pass, and is not claimed as done above:
 - [ ] Actual Tab order and focus visibility in a real browser (light and dark).
 - [ ] Screen-reader labelling of the palette rows and dialogs.
 - [ ] Focus trap behaviour with the AI co-founder panel and the canvas open.
+
+## 2026-10-24 · Accessibility code pass (code review, not a human pass)
+
+Verified at code level in this slice:
+
+- [x] `src/index.css` guarantees a visible `:focus-visible` indicator, so no control can lose its
+      outline on a custom surface.
+- [x] `prefers-reduced-motion: reduce` disables transitions and animation globally. All animation
+      in the app is CSS-driven — no JavaScript animation library is imported — so this covers every
+      case.
+- [x] Inline form errors on the goals, advisors, and team pages carry `role="alert"`, so they are
+      announced when they appear rather than only shown.
+- [x] The three sub-24px icon buttons (roadmap, MVP planner, canvas row delete) were raised to a
+      24×24 minimum hit area.
+
+Still requires a human pass: everything in the accessibility acceptance criteria above.
