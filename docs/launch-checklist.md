@@ -61,8 +61,8 @@ This checklist maps the guide's pre-launch requirements to evidence and owner.
 
 | Requirement | Evidence | Status | Owner |
 |---|---|---|---|
-| v0.1.0 tagged and released | GitHub Release v0.1.0 | Done | Maintainer |
-| CHANGELOG entry for 0.1.0 | CHANGELOG.md | Done | Maintainer |
+| v0.2.0 tagged and released | GitHub Release v0.2.0 | Done | Maintainer |
+| CHANGELOG entry for 0.2.0 | CHANGELOG.md | Done | Maintainer |
 | Release notes honest, no hype | Release page | Done | Maintainer |
 | Example project included in release artefacts | `assets/example-project-tradepulse.json`, release.yml | Done | Maintainer |
 

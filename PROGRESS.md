@@ -16,6 +16,7 @@ Newest first. Only claim what is recorded and verified. CI result is authoritati
 ### Verification
 
 - CI green (required: verify ×3, build (static), summary, gitleaks, sbom)
+- v0.2.0 tagged and released via release.yml; draft published publicly with example-project-tradepulse.json included as a release artefact
 
 ## 2026-10-24 · Accessibility code pass (R-047)
 
