@@ -26,6 +26,14 @@ import type {
   ProjectWorkspace,
 } from '../types';
 import { validateExportPackage, validateWorkspaceReferences } from './validation';
+import {
+  remapAdvisor,
+  remapObjective,
+  remapRiskItem,
+  remapRoadmapItem,
+  remapSkillRequirement,
+  remapTeamMember,
+} from './importRemap';
 
 export { validateWorkspaceReferences } from './validation';
 export type {
@@ -454,11 +462,7 @@ export async function importProjectPackage(
       }
       if (pkg.roadmap?.length) {
         await db.roadmap.bulkPut(
-          pkg.roadmap.map((r) => ({
-            ...r,
-            id: remapId(r.id, 'rm'),
-            projectId: targetProjectId,
-          }))
+          pkg.roadmap.map((item) => remapRoadmapItem(item, targetProjectId, remapId))
         );
       }
       if (pkg.canvasNodes?.length) {
@@ -490,59 +494,27 @@ export async function importProjectPackage(
       }
       if (pkg.risks?.length) {
         await db.risks.bulkPut(
-          pkg.risks.map((r) => ({
-            ...r,
-            id: remapId(r.id, 'risk'),
-            projectId: targetProjectId,
-          }))
+          pkg.risks.map((item) => remapRiskItem(item, targetProjectId, remapId))
         );
       }
       if (pkg.objectives?.length) {
         await db.objectives.bulkPut(
-          pkg.objectives.map((objective) => ({
-            ...objective,
-            id: remapId(objective.id, 'obj'),
-            projectId: targetProjectId,
-            keyResults: objective.keyResults.map((keyResult, index) => ({
-              ...keyResult,
-              id: remapId(keyResult.id, `kr${index}`),
-            })),
-          }))
+          pkg.objectives.map((objective) => remapObjective(objective, targetProjectId, remapId))
         );
       }
       if (pkg.advisors?.length) {
         await db.advisors.bulkPut(
-          pkg.advisors.map((advisor) => ({
-            ...advisor,
-            id: remapId(advisor.id, 'adv'),
-            projectId: targetProjectId,
-            sessions: advisor.sessions.map((session, index) => ({
-              ...session,
-              id: remapId(session.id, `sess${index}`),
-              commitments: session.commitments.map((commitment, cIndex) => ({
-                ...commitment,
-                id: remapId(commitment.id, `com${cIndex}`),
-              })),
-            })),
-          }))
+          pkg.advisors.map((advisor) => remapAdvisor(advisor, targetProjectId, remapId))
         );
       }
       if (pkg.teamMembers?.length) {
         await db.teamMembers.bulkPut(
-          pkg.teamMembers.map((member) => ({
-            ...member,
-            id: remapId(member.id, 'mem'),
-            projectId: targetProjectId,
-          }))
+          pkg.teamMembers.map((member) => remapTeamMember(member, targetProjectId, remapId))
         );
       }
       if (pkg.skillRequirements?.length) {
         await db.skillRequirements.bulkPut(
-          pkg.skillRequirements.map((entry) => ({
-            ...entry,
-            id: remapId(entry.id, 'sreq'),
-            projectId: targetProjectId,
-          }))
+          pkg.skillRequirements.map((entry) => remapSkillRequirement(entry, targetProjectId, remapId))
         );
       }
       if (pkg.communityInsights?.length) {
