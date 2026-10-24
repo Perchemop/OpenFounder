@@ -95,7 +95,7 @@ is covered by tests.
 - [x] Accessibility issue template and label; PR checklist for UI changes
 - [x] Human keyboard and screen-reader pass (R-030) — completed 2026-10-25
 - [x] Phase 1 code-level fixes: skip-to-content link, `aria-hidden` on decorative icons, `aria-label` on icon-only buttons
-- [ ] Automated accessibility scan in CI (placeholder workflow exists; needs `@axe-core/playwright` + `bun.lock` update)
+- [x] Automated accessibility scan in CI — `.github/workflows/a11y.yml` runs Playwright + axe-core on homepage and demo dashboard; critical violations fail the build
 
 ## Example project for release testing (2026-10-25)
 
