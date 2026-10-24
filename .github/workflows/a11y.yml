@@ -28,15 +28,12 @@ jobs:
 
       - name: Serve static
         run: |
-          nohup npx serve dist -l 4173 > serve.log 2>&1 &
+          nohup python3 -m http.server 4173 --directory dist > serve.log 2>&1 &
           echo $! > server.pid
           npx wait-on http://localhost:4173
 
-      - name: Run axe
-        run: |
-          echo "Accessibility smoke test placeholder – Axe Playwright not installed in CI yet."
-          echo "Violations: 0"
-          # Placeholder: replace with real axe-core/playwright run once dependencies are added.
+      - name: Run axe tests
+        run: npx playwright test tests/a11y.spec.ts --project=chromium
 
       - name: Cleanup
         if: always()
