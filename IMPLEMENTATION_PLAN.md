@@ -82,7 +82,7 @@ is covered by tests.
 - [x] `docs/design/brand.md` + original `assets/logo.svg`
 - [x] `docs/research/` notes with a recorded human gate
 - [x] Dual licence MIT OR Apache-2.0 (D-009)
-- [ ] `release.yml` for semver tags
+- [x] `release.yml` for semver tags (draft GitHub Release with CHANGELOG section + checksums)
 - [ ] In-app crash / bug reporting
 - [ ] In-app update check
 - [ ] `v0.1.0` GitHub Release
