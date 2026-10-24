@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { BugReportModal } from './BugReportModal';
+import { UpdateCheckPanel } from '../UpdateCheckPanel';
 import {
   X,
   Cpu,
@@ -519,6 +520,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   Project data is stored locally in IndexedDB. Nothing is sent to third parties unless you configure an external AI provider.
                 </p>
               </div>
+              <UpdateCheckPanel />
+
               <div className="space-y-2">
                 <h4 className="font-semibold text-zinc-800 dark:text-zinc-200">Local Database Record Count</h4>
                 <div className="grid grid-cols-3 gap-2">

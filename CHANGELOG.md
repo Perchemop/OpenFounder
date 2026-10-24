@@ -67,6 +67,10 @@ semantic versioning for its export schema and application releases.
   `BugReportModal` previews the exact payload before anything is opened, and is reachable from the
   error boundary and from Settings → Integrity Audit.
 
+- Update check (`src/updateCheck.ts`, `UpdateCheckPanel` in Settings → Privacy): compares the
+  running version with the newest stable GitHub release, caches for an hour, and fails soft —
+  offline, rate-limited, or malformed responses report "unavailable" rather than "up to date".
+
 ### Changed
 
 - Pages deploy workflow now installs with Bun instead of `npm ci`, which failed because the
