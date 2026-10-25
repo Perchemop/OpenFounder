@@ -1,0 +1,63 @@
+name: Visual evidence
+
+# Renders the built app and uploads PNGs for the designer agent to review
+# (guide section 27.12). Artefacts only: no pixel baselines are committed, so a
+# font-metric change does not fail the build.
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version: latest
+
+      - name: Install deps
+        run: bun install --frozen-lockfile
+
+      - name: Build static
+        run: bun run build:static
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Serve static
+        run: |
+          nohup python3 -m http.server 4173 --directory dist > serve.log 2>&1 &
+          echo $! > server.pid
+          npx wait-on http://localhost:4173
+
+      - name: Capture screenshots
+        run: ./node_modules/.bin/playwright test tests/visual.spec.ts
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: visual-evidence
+          path: snapshots/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: visual-report
+          path: |
+            playwright-report/
+            serve.log
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Cleanup
+        if: always()
+        run: kill $(cat server.pid) || true
