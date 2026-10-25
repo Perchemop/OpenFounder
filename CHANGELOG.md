@@ -15,6 +15,8 @@ semantic versioning for its export schema and application releases.
 ### Added
 
 - JSON export in Documents page: "Download .json" button alongside "Download .md" for document templates
+- `assets/screenshots/` — desktop, tablet, mobile, and empty-state screenshots captured via CI visual evidence pipeline
+- README walkthrough section with screenshots and step-by-step app tour
 
 
 ## [0.2.0] — 2026-10-25
