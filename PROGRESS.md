@@ -2,6 +2,20 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-25 · Screenshots & README walkthrough
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `assets/screenshots/` — desktop, tablet, mobile, and empty-state screenshots captured via CI visual evidence pipeline
+- README: added "Screenshots & Walkthrough" section with embedded images and step-by-step app tour
+- CHANGELOG.md: added [Unreleased] entries for screenshots and walkthrough
+
+### Verification
+
+- CI green (required: verify ×3, build (static), summary, gitleaks, sbom; a11y advisory passed)
+
 ## 2026-10-25 · JSON export in Documents page
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

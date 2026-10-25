@@ -58,6 +58,37 @@ Keyboard shortcuts:
 
 ---
 
+## Screenshots & Walkthrough
+
+Desktop workspace:
+
+<img src="assets/screenshots/landing-desktop.png" alt="OpenFounder desktop dashboard" width="600" />
+
+Tablet view:
+
+<img src="assets/screenshots/landing-tablet.png" alt="OpenFounder tablet view" width="400" />
+
+Mobile view:
+
+<img src="assets/screenshots/landing-phone.png" alt="OpenFounder mobile view" width="250" />
+
+Empty state (no project):
+
+<img src="assets/screenshots/empty-state.png" alt="OpenFounder empty state" width="500" />
+
+### Walkthrough
+
+1. **Create a project** — Open the app, click "Create New Project", and fill in your idea, problem, target market, and founder context. Or click "Load Demo Workspace (TradePulse)" to explore with example data.
+2. **Work through phases** — The sidebar guides you through 10 founder phases. Complete tasks in each phase to advance.
+3. **Log evidence** — In the Evidence Ledger, record claims with status (assumption → unverified → research-backed → customer-confirmed → experiment-confirmed). A claim cannot be promoted without matching evidence.
+4. **Score risks** — In the Risk Register, score each risk by impact × probability. The dashboard highlights "hot" open risks (score ≥ 4) as your next priority.
+5. **Run experiments** — Design falsifiable tests in Validation. Results feed back into evidence confidence.
+6. **Record interviews** — Log customer discovery interviews with verbatim quotes in Customer Interviews.
+7. **Plan MVP & Roadmap** — Scope features in MVP Planner (MoSCoW) and map milestones in Roadmap.
+8. **Export documents** — Generate Markdown or JSON documents from the Documents page, or export your full workspace as JSON from Settings → Data.
+
+---
+
 ## Tech Stack
 
 - **Frontend**: React 19 + TypeScript + Vite 6 + Tailwind CSS 4

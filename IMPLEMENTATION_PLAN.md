@@ -59,7 +59,7 @@ is covered by tests.
 
 - [ ] Performance pass at 500+ rows per table
 - [ ] PWA/offline install
-- [ ] Screenshots and a truthful README walkthrough
+- [x] Screenshots and a truthful README walkthrough — `assets/screenshots/` (desktop/tablet/mobile/empty-state) + README walkthrough section
 
 ## Phase 1b — Capability additions from the competitive benchmark (2026-10-23)
 
