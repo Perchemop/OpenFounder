@@ -1,5 +1,4 @@
 import { test, expect, type Page } from '@playwright/test';
-import { mkdirSync } from 'node:fs';
 
 /**
  * Visual evidence for the designer agent (guide section 27.12).
@@ -29,10 +28,6 @@ async function settle(page: Page) {
   );
 }
 
-test.beforeAll(() => {
-  mkdirSync(OUT, { recursive: true });
-});
-
 test('landing screen at three viewports', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
@@ -51,10 +46,10 @@ test('landing screen at three viewports', async ({ page }) => {
     const shot = `${OUT}/landing-${name}.png`;
     await page.screenshot({ path: shot, fullPage: true });
 
-    // A blank or monochrome frame means the screenshot proves nothing.
-    expect(page, 'the app must render a non-empty body').toBeTruthy();
+    // A blank frame proves nothing: the app root must have been laid out.
     const box = await page.locator('#root, body').first().boundingBox();
-    expect(box?.width ?? 0, `${name} width`).toBeGreaterThan(0);
+    expect(box?.width ?? 0, `${name} rendered width`).toBeGreaterThan(0);
+    expect(box?.height ?? 0, `${name} rendered height`).toBeGreaterThan(0);
 
     console.log(`captured ${shot} at ${width}x${height}`);
   }
