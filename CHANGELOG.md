@@ -12,6 +12,13 @@ semantic versioning for its export schema and application releases.
 - New `action pinning` CI job (`scripts/check-action-pinning.js`) fails the build if a workflow
   reintroduces a floating tag
 
+### Docs
+
+- `docs/launch-checklist.md`: numbered owner click-path for Dependency graph, secret scanning and
+  push protection, vulnerability reporting, branch protection with the eight required checks, a
+  second admin, and MFA; stale rows corrected (action pinning and the axe scan are done;
+  dependency review is advisory until Dependency graph is on)
+
 ### Changed
 
 - Evidence ledger and Risk register render a bounded window (25 rows) with an explicit
