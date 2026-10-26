@@ -13,7 +13,7 @@ see `PROGRESS.md` for the current result.
 | R-005 | A claim cannot be promoted to research/customer/experiment status without supporting evidence | `src/utils/evidenceIntegrity.ts`, `src/pages/EvidencePage.tsx` | `src/utils/evidenceIntegrity.test.ts` | Done |
 | R-006 | Evidence integrity summary reports verified vs unsupported claims | `src/utils/evidenceIntegrity.ts`, `EvidencePage` | `src/utils/evidenceIntegrity.test.ts` | Done |
 | R-007 | Risk register scores probability × impact and classifies hot risks | `src/utils/riskScoring.ts`, `src/pages/RisksPage.tsx` | `src/utils/riskScoring.test.ts` | Done |
-| R-008 | Dashboard shows open/hot risks and the highest-value next action | `src/pages/DashboardPage.tsx` | `riskScoring.test.ts` (scoring only) | Partial |
+| R-008 | Dashboard shows open/hot risks and the highest-value next action | `src/pages/DashboardPage.tsx`, `src/utils/nextAction.ts` | `nextAction.test.ts` (precedence across all six branches), `riskScoring.test.ts` | Done |
 | R-009 | Experiments define hypothesis, method, sample size, success and failure criteria | `src/pages/ValidationPage.tsx`, `src/types/index.ts` | — | Done |
 | R-010 | Customer interviews capture pain, workarounds, willingness to pay, verbatim quotes | `src/pages/InterviewsPage.tsx` | — | Done |
 | R-011 | Research sources capture type, category, findings, relevance, confidence | `src/pages/ResearchPage.tsx` | — | Done |

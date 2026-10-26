@@ -2,6 +2,23 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-26 · Tested dashboard next-action rules
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `src/utils/nextAction.ts` — pure `deriveNextAction` holding the precedence rules that used to
+  live inline in `DashboardPage`
+- `src/utils/nextAction.test.ts` — seven cases covering every branch, hot-risk precedence over an
+  untested assumption, running-experiment precedence, and the mitigated/low-risk exclusions
+- `DashboardPage` now renders the derived action; behaviour is unchanged
+- R-008 moved from Partial to Done in `REQUIREMENTS_TRACEABILITY.md`
+
+### Verification
+
+- CI result recorded below (verify ×3 runs the Vitest suite)
+
 ## 2026-10-26 · Tracking reconciliation and process feedback
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
