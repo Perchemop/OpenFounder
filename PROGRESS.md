@@ -2,6 +2,23 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-26 · Supply-chain hardening: pinned actions and toolchain
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `deploy.yml` and `codeql.yml` had floating tags (`@v4`, `@v3`); every `uses:` across all six
+  workflows is now a full commit SHA resolved from the upstream tag
+- `ci.yml` `dependency-review-action` pinned to the newest v4 release (`v4.9.0`)
+- Bun pinned to `1.4.4` (was `latest`) in all workflows
+- `scripts/check-action-pinning.js` added and wired as a new `action pinning` CI job, also added to
+  `.ci-required.txt` and the `summary` gate, so a floating tag fails CI
+
+### Verification
+
+- CI result recorded below (`action pinning` must report success)
+
 ## 2026-10-26 · Bounded rendering for dense tables
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
