@@ -7,6 +7,8 @@ semantic versioning for its export schema and application releases.
 
 ### Changed
 
+- Dashboard next-step recommendation extracted to `src/utils/nextAction.ts` and covered by
+  `nextAction.test.ts`, so the precedence rules are testable instead of inline JSX logic
 - Tracking reconciled with merged code: C-21 and R-030/R-044 closed, parity known-gaps rewritten,
   ROADMAP readiness updated to reflect the shipped PWA and accessibility work
 - `docs/process-feedback.md` added under addendum §N so agent friction is recorded in the repo

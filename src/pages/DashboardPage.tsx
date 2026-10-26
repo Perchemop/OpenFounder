@@ -24,11 +24,11 @@ import type { WorkspaceTab } from '../components/layout/Sidebar';
 import {
   isOpenRisk,
   isHotRisk,
-  riskScore,
   scoreLabel,
   sortRisksByScore,
 } from '../utils/riskScoring';
 import { summarizeEvidenceIntegrity } from '../utils/evidenceIntegrity';
+import { deriveNextAction } from '../utils/nextAction';
 
 interface DashboardPageProps {
   project: Project | null;
@@ -75,7 +75,6 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   const runningExperiments = experiments.filter((e) => e.status === 'running');
   const passedExperiments = experiments.filter((e) => e.status === 'passed');
   const failedExperiments = experiments.filter((e) => e.status === 'failed');
-  const mustFeatures = features.filter((f) => f.priority === 'must');
 
   const openRisks = risks.filter(isOpenRisk);
   const hotRisks = sortRisksByScore(openRisks.filter(isHotRisk));
@@ -83,51 +82,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
   const integrity = summarizeEvidenceIntegrity(evidence);
 
-  let nextRecommendedAction = {
-    title: 'Define Foundational Assumptions',
-    description:
-      'Log your baseline assumptions regarding customer behavior into the Evidence Ledger.',
-    tab: 'evidence' as WorkspaceTab,
-    btnLabel: 'Open Evidence Ledger',
-  };
-
-  if (hotRisks.length > 0 && runningExperiments.length === 0) {
-    nextRecommendedAction = {
-      title: 'Address Your Highest Risk',
-      description: `"${hotRisks[0].title}" scores ${riskScore(hotRisks[0].probability, hotRisks[0].impact)}/9. Design a test or mitigation before expanding scope.`,
-      tab: 'risks' as WorkspaceTab,
-      btnLabel: 'Open Risk Register',
-    };
-  } else if (unverifiedAssumptions.length > 0 && runningExperiments.length === 0) {
-    nextRecommendedAction = {
-      title: 'Test Your Riskiest Assumption',
-      description: `You have ${unverifiedAssumptions.length} untested assumptions. Design an experiment or conduct customer interviews before writing code.`,
-      tab: 'validation' as WorkspaceTab,
-      btnLabel: 'Launch Experiment',
-    };
-  } else if (runningExperiments.length > 0) {
-    nextRecommendedAction = {
-      title: 'Collect Experiment Results',
-      description: `Experiment "${runningExperiments[0].hypothesis.slice(0, 45)}..." is currently running. Record your findings and update evidence confidence.`,
-      tab: 'validation' as WorkspaceTab,
-      btnLabel: 'Update Experiment',
-    };
-  } else if (competitors.length < 2) {
-    nextRecommendedAction = {
-      title: 'Map Competitor Landscape',
-      description:
-        'Document at least 2 direct or indirect competitor workarounds to understand existing customer friction.',
-      tab: 'competitors' as WorkspaceTab,
-      btnLabel: 'Add Competitors',
-    };
-  } else if (mustFeatures.length === 0) {
-    nextRecommendedAction = {
-      title: 'Scope Your MVP Backlog',
-      description: 'Select fewer than 4 "Must-Have" features to prove value without scope creep.',
-      tab: 'mvp' as WorkspaceTab,
-      btnLabel: 'Prioritize MVP',
-    };
-  }
+  const nextRecommendedAction = deriveNextAction({
+    evidence,
+    experiments,
+    competitors,
+    features,
+    risks,
+  });
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-6">
