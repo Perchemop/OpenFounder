@@ -2,6 +2,24 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-26 · PWA / offline install
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `public/manifest.json` + `public/icon.svg` + `public/icon-maskable.svg` — installable app identity
+- `public/sw.js` — offline shell: network-first navigations with cached fallback, cache-first
+  static assets, `/api/` excluded so live AI responses are never cached
+- `src/main.tsx` registers the worker only when `import.meta.env.PROD`
+- `src/vite-env.d.ts` for Vite env typing
+- Fixed the example-project fetch in `SettingsModal` to respect the configured base path
+  (`import.meta.env.BASE_URL`), so it works on a GitHub Pages project site
+
+### Verification
+
+- CI result recorded below (required: verify ×3, build (static), summary, gitleaks, sbom)
+
 ## 2026-10-26 · Filter chips and actionable empty states
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

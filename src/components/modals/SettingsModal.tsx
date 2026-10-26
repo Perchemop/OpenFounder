@@ -173,7 +173,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   const handleImportExampleProject = async () => {
     try {
-      const res = await fetch('/assets/example-project-tradepulse.json');
+      const res = await fetch(
+        `${import.meta.env.BASE_URL}assets/example-project-tradepulse.json`,
+      );
       if (!res.ok) throw new Error(`Failed to load example project (${res.status})`);
       const pkg = await res.json();
       await importProjectPackage(pkg);
