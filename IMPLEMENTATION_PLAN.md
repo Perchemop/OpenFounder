@@ -31,8 +31,10 @@ is covered by tests.
 ## Phase 2 — Search and navigation
 
 - [x] Full-text search across research, interviews, risks, roadmap
-- [ ] Filter chips per entity page with URL-state-free local persistence
-- [ ] Empty states that name the next action
+- [x] Filter chips per entity page with URL-state-free local persistence — shared
+      `src/components/ui/FilterChip.tsx`; evidence status, research category, risk status/category,
+      interview severity, team commitment
+- [x] Empty states that name the next action — evidence, MVP planner, roadmap, interviews, team
 
 ## Phase 3 — Accessibility
 

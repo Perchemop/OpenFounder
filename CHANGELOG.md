@@ -14,6 +14,9 @@ semantic versioning for its export schema and application releases.
 
 ### Added
 
+- Shared `FilterChip` component (`src/components/ui/FilterChip.tsx`) with `aria-pressed`
+- Severity filter on Customer Interviews and commitment filter on Team
+- Empty states on Evidence, MVP Planner, Roadmap, Interviews, and Team now name the next action
 - JSON export in Documents page: "Download .json" button alongside "Download .md" for document templates
 - `assets/screenshots/` — desktop, tablet, mobile, and empty-state screenshots captured via CI visual evidence pipeline
 - README walkthrough section with screenshots and step-by-step app tour
