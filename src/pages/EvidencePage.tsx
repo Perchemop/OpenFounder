@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Scale,
   Plus,
@@ -13,6 +13,7 @@ import type { EvidenceItem, EvidenceStatus, ClaimType } from '../types';
 import { db } from '../db';
 import { generateEvidenceMatrix, suggestProjectField } from '../ai/autoCompleteService';
 import { AIAutoFillButton } from '../components/ai/AIAutoFillButton';
+import { DEFAULT_PAGE_SIZE, nextVisibleCount, pageItems } from '../utils/pagination';
 import {
   evaluateEvidencePromotion,
   summarizeEvidenceIntegrity,
@@ -203,10 +204,23 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
     }
   };
 
-  const filteredEvidence = evidence.filter((item) => {
-    if (filterStatus === 'all') return true;
-    return item.status === filterStatus;
-  });
+  const filteredEvidence = useMemo(
+    () =>
+      evidence.filter((item) => {
+        if (filterStatus === 'all') return true;
+        return item.status === filterStatus;
+      }),
+    [evidence, filterStatus],
+  );
+
+  // Bounded rendering: the ledger can hold hundreds of rows, so only a window is
+  // rendered at a time and "Show more" grows it.
+  const [visibleCount, setVisibleCount] = useState(DEFAULT_PAGE_SIZE);
+  const evidencePage = pageItems(filteredEvidence, visibleCount);
+  const selectStatusFilter = (status: string) => {
+    setFilterStatus(status);
+    setVisibleCount(DEFAULT_PAGE_SIZE);
+  };
 
   const unverifiedCount = evidence.filter(
     (e) => e.status === 'unverified' || e.status === 'assumption'
@@ -428,7 +442,7 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
       {/* Filter Tabs */}
       <div className="flex items-center space-x-1 overflow-x-auto pb-1 text-xs">
         <button
-          onClick={() => setFilterStatus('all')}
+          onClick={() => selectStatusFilter('all')}
           className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
             filterStatus === 'all'
               ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
@@ -451,7 +465,7 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
           return (
             <button
               key={st}
-              onClick={() => setFilterStatus(st)}
+              onClick={() => selectStatusFilter(st)}
               className={`px-3 py-1.5 rounded-lg font-medium transition-colors whitespace-nowrap ${
                 filterStatus === st
                   ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
@@ -479,7 +493,7 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 text-zinc-800 dark:text-zinc-200">
-              {filteredEvidence.map((item) => {
+              {evidencePage.visible.map((item) => {
                 const isRisky =
                   item.status === 'unverified' || item.status === 'assumption';
                 return (
@@ -568,6 +582,24 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
             </tbody>
           </table>
         </div>
+
+        {evidencePage.total > 0 && (
+          <div className="flex items-center justify-between gap-3 border-t border-zinc-200 dark:border-zinc-800 px-4 py-2.5 text-[11px] text-zinc-500">
+            <span>
+              Showing {evidencePage.visible.length} of {evidencePage.total} claims
+              {evidencePage.hasMore ? ` · ${evidencePage.hiddenCount} hidden` : ''}
+            </span>
+            {evidencePage.hasMore && (
+              <button
+                type="button"
+                onClick={() => setVisibleCount(nextVisibleCount(filteredEvidence, visibleCount))}
+                className="px-3 py-1.5 rounded-lg font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+              >
+                Show {Math.min(DEFAULT_PAGE_SIZE, evidencePage.hiddenCount)} more
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Add Claim Modal */}
