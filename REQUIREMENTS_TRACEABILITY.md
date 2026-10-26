@@ -33,11 +33,11 @@ see `PROGRESS.md` for the current result.
 | R-024 | Command palette navigates pages and searches core entities | `src/components/modals/CommandPalette.tsx`, `src/utils/workspaceSearch.ts` | `workspaceSearch.test.ts` | Done |
 | R-025 | No telemetry by default; keys session-only by default | `src/db/index.ts`, `src/types/index.ts`, `SettingsModal` | `validation.test.ts` (config defaults) | Done |
 | R-026 | Static build deployable to GitHub Pages | `vite.config.ts`, `.github/workflows/deploy.yml` | CI build job | Done |
-| R-044 | Semver tags publish a GitHub Release with notes and checksums | `.github/workflows/release.yml` | CHANGELOG extraction verified locally; release run not yet exercised | Partial |
+| R-044 | Semver tags publish a GitHub Release with notes and checksums | `.github/workflows/release.yml` | Exercised by the `v0.1.0` and `v0.2.0` releases (build, `checksums.txt`, `sbom.spdx.json`, example project) | Done |
 | R-027 | Pull requests are verified by CI (lint, tests, build) | `.github/workflows/ci.yml` | CI itself | Done |
 | R-028 | Project is MIT licensed with attribution | `LICENSE`, `ATTRIBUTION.md` | — | Done |
 | R-029 | Command palette searches research, interviews, risks, roadmap | `src/utils/workspaceSearch.ts`, `CommandPalette` | `workspaceSearch.test.ts` | Done |
-| R-030 | Accessibility audit and keyboard pass recorded | `docs/qc/manual-qc.md`, `src/hooks/useFocusTrap.ts`, `CanvasPage` | `focusTrap.test.ts`, `paletteNavigation.test.ts`, `spatialNavigation.test.ts` | Partial (code-review pass recorded; human pass outstanding) |
+| R-030 | Accessibility audit and keyboard pass recorded | `docs/qc/manual-qc.md`, `src/hooks/useFocusTrap.ts`, `CanvasPage` | `focusTrap.test.ts`, `paletteNavigation.test.ts`, `spatialNavigation.test.ts`; human keyboard + screen-reader pass recorded 2026-10-25 and approved as working | Done |
 | R-031 | Dashboard surfaces the evidence integrity score | `DashboardPage`, `src/utils/evidenceIntegrity.ts` | `src/utils/evidenceIntegrity.test.ts` | Done |
 | R-032 | One-page validation report export | `src/utils/validationReport.ts`, `DocumentsPage` | `validationReport.test.ts` | Done |
 
@@ -65,3 +65,7 @@ see `PROGRESS.md` for the current result.
 | R-048 | Release includes an example project export with enough data to test most features | `assets/example-project-tradepulse.json`, `public/assets/example-project-tradepulse.json`, `SettingsModal.tsx`, `.github/workflows/release.yml` | Example project bundled in release artefacts; Import Example Project button in Settings | Done |
 
 | R-049 | All interactive controls have accessible names; decorative icons hidden from screen readers | `src/App.tsx`, `src/components/layout/Navbar.tsx`, `src/components/layout/Sidebar.tsx`, `src/components/modals/*`, `src/components/ai/*` | Skip-to-content link, `aria-hidden` on decorative icons, `aria-label` on icon-only buttons | Done |
+
+| R-050 | The app installs as a PWA and keeps working offline after the first load | `public/manifest.json`, `public/icon.svg`, `public/icon-maskable.svg`, `public/sw.js`, `src/main.tsx` | Service worker registered only in production builds; `/api/` responses are never cached; CI `build (static)` green | Done |
+
+| R-051 | Listing pages filter locally without URL state, and empty states name the next action | `src/components/ui/FilterChip.tsx`, `InterviewsPage`, `TeamPage`, `EvidencePage`, `MVPPlannerPage`, `RoadmapPage` | CI type check + a11y scan; filters are component state, never query params | Done |

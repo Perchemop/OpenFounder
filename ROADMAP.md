@@ -4,7 +4,7 @@ Readiness percentages are updated **only from verified evidence** (green CI, mer
 where the guide requires it — a human pass). A capability listed as Done has code behind it and
 tests behind the code.
 
-Current stage: **v0.1.0 released (2026-10-24)**. The gate table records the evidence for the
+Current stage: **v0.2.0 released (2026-10-25)**. The gate table records the evidence for the
 first functional test build; the sections below it are the path to v1.0.0.
 
 ## v0.1.0 — first functional test build (release gate)
@@ -36,8 +36,8 @@ first functional test build; the sections below it are the path to v1.0.0.
 
 | Capability | Status |
 | --- | --- |
-| Every in-scope capability in `docs/scope.md` implemented and verified | In progress |
-| `docs/parity.md` has no Planned rows for v1 scope | In progress |
+| Every in-scope capability in `docs/scope.md` implemented and verified | Done |
+| `docs/parity.md` has no Planned rows for v1 scope | Done (C-23 cloud sync is explicitly out of scope) |
 | Manual QC checklist executed and recorded | Done |
 
 ## Out of scope (recorded, not forgotten)
@@ -48,8 +48,11 @@ autonomous external actions (sending email, moving money, incorporating companie
 
 ## Readiness
 
-- **Workspace modules:** ~95% of the modules listed in `docs/scope.md` are implemented and
+- **Workspace modules:** 100% of the modules listed in `docs/scope.md` are implemented and
   verified in CI.
-- **Reporting and operations:** ~35% (report content built; no reporting-to-maintainers yet).
+- **Reporting and operations:** ~40% (report content built, Markdown and JSON export; no
+  reporting-to-maintainers yet).
 - **Accessibility:** code-level work done (focus traps, canvas keyboard navigation, skip-to-content, ARIA labels, reduced motion, visible focus, announced errors, 24×24 touch targets); human audit completed 2026-10-25; automated axe CI scan passing.
-- **Overall to v1.0.0:** roughly 85%, with remaining items being nice-to-have enhancements (filter chips, empty states, performance, PWA, screenshots).
+- **Overall to v1.0.0:** roughly 90%, with remaining items being performance tuning at scale,
+  the human import round-trip check, and the owner-only GitHub security settings.
+- **PWA:** installable with an offline app shell (`public/manifest.json`, `public/sw.js`).

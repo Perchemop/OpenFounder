@@ -1,22 +1,23 @@
 # Current Model Map
 
-Discovered at session start (2026-10-23) via the OpenCode model catalogue. Tier order is fixed by
-`guide.md` §5: **OpenCode free → NVIDIA free**. No paid provider is used, and no local model
-hosting (Ollama) is used for agent work even though the app itself supports Ollama for users.
+Discovered at session start (re-checked 2026-10-26) via the OpenCode model catalogue. Tier order
+is fixed by `guide.md` §5: **OpenCode free → NVIDIA free → paid keys last resort**. No paid
+provider is used, and no local model hosting (Ollama) is used for agent work even though the app
+itself supports Ollama for users.
 
 ## Live free catalogue at discovery time
 
-OpenCode free:
+OpenCode free (7 IDs; `big-pickle` is free but not named `-free`):
 
 - `opencode/big-pickle`
-- `opencode/glm-5.3-flash-free`
-- `opencode/deepseek-v4.1-flash-free`
-- `opencode/mimo-v2.6-flash-free`
-- `opencode/beam-free`
-- `opencode/nemotron-3.5-super-vl-free`
 - `opencode/flint-40b-free`
+- `opencode/nemotron-3.5-super-vl-free` (vision)
+- `opencode/beam-free`
+- `opencode/mimo-v2.6-flash-free`
+- `opencode/deepseek-v4.1-flash-free`
+- `opencode/glm-5.3-flash-free`
 
-NVIDIA free:
+NVIDIA free (12 IDs):
 
 - `nvidia/z-ai/glm-5.3`, `nvidia/z-ai/glm-5.3-flash`
 - `nvidia/deepseek-ai/deepseek-v4.1-flash`
@@ -43,6 +44,7 @@ NVIDIA free:
 | Test writer | `opencode/deepseek-v4.1-flash-free` | `nvidia/z-ai/glm-5.3-flash` | Vitest specs |
 | Docs writer | `opencode/beam-free` | `nvidia/openai/gpt-oss-20b` | Tracking files |
 | CI runner | `opencode/glm-5.3-flash-free` | `nvidia/openai/gpt-oss-20b` | Interprets workflow output |
+| Designer / visual review | `opencode/nemotron-3.5-super-vl-free` | `nvidia/nvidia/nemotron-3.5-super-vl-120b-a12b` | Vision-capable for screenshot artefacts |
 
 Routing lives in `~/.config/opencode/failover.json` (`fallbacksByAgent`). This table is a record,
 not a hard-coded dependency: when a model disappears, re-discover and update both files.
