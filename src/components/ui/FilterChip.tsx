@@ -1,22 +1,16 @@
-interface FilterChipProps<T extends string> {
+interface FilterChipProps {
   label: string;
-  value: T;
+  value: string;
   count?: number;
   isActive: boolean;
-  onSelect: (value: T) => void;
+  onSelect: (value: string) => void;
 }
 
 /**
  * A single filter chip. Filter state is held locally by the page (no URL
  * params), so the selection survives re-renders within the session.
  */
-export function FilterChip<T extends string>({
-  label,
-  value,
-  count,
-  isActive,
-  onSelect,
-}: FilterChipProps<T>) {
+export function FilterChip({ label, value, count, isActive, onSelect }: FilterChipProps) {
   return (
     <button
       type="button"

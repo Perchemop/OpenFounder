@@ -58,6 +58,8 @@ export const TeamPage: React.FC<TeamPageProps> = ({
 
   // Commitment filter — display only; skill coverage still uses every member.
   const [commitmentFilter, setCommitmentFilter] = useState<'all' | TeamCommitment>('all');
+  const selectCommitment = (value: string) =>
+    setCommitmentFilter(value as 'all' | TeamCommitment);
   const filteredMembers =
     commitmentFilter === 'all'
       ? members
@@ -221,7 +223,7 @@ export const TeamPage: React.FC<TeamPageProps> = ({
           value="all"
           count={members.length}
           isActive={commitmentFilter === 'all'}
-          onSelect={setCommitmentFilter}
+          onSelect={selectCommitment}
         />
         {(['full_time', 'part_time', 'advisor', 'contractor'] as const).map((value) => (
           <FilterChip
@@ -230,7 +232,7 @@ export const TeamPage: React.FC<TeamPageProps> = ({
             value={value}
             count={members.filter((member) => member.commitment === value).length}
             isActive={commitmentFilter === value}
-            onSelect={setCommitmentFilter}
+            onSelect={selectCommitment}
           />
         ))}
       </div>

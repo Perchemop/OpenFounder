@@ -42,9 +42,9 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
   const [surprisesOrObjections, setSurprisesOrObjections] = useState('');
 
   // Severity filter — local state only (no URL params).
-  const [severityFilter, setSeverityFilter] = useState<
-    'all' | 'mild' | 'moderate' | 'severe' | 'dealbreaker'
-  >('all');
+  type SeverityFilter = 'all' | 'mild' | 'moderate' | 'severe' | 'dealbreaker';
+  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>('all');
+  const selectSeverity = (value: string) => setSeverityFilter(value as SeverityFilter);
 
   const filteredInterviews = interviews.filter(
     (item) => severityFilter === 'all' || item.severityRating === severityFilter,
@@ -269,7 +269,7 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
           value="all"
           count={interviews.length}
           isActive={severityFilter === 'all'}
-          onSelect={setSeverityFilter}
+          onSelect={selectSeverity}
         />
         {(['mild', 'moderate', 'severe', 'dealbreaker'] as const).map((severity) => (
           <FilterChip
@@ -278,7 +278,7 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
             value={severity}
             count={interviews.filter((item) => item.severityRating === severity).length}
             isActive={severityFilter === severity}
-            onSelect={setSeverityFilter}
+            onSelect={selectSeverity}
           />
         ))}
       </div>
