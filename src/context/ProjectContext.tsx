@@ -30,6 +30,8 @@ import type {
   Advisor,
   TeamMember,
   SkillRequirement,
+  HiringRole,
+  Candidate,
   AIProviderConfig,
 } from '../types';
 import type { WorkspaceTab } from '../components/layout/Sidebar';
@@ -59,6 +61,8 @@ export interface ProjectContextValue {
   advisors: Advisor[];
   teamMembers: TeamMember[];
   skillRequirements: SkillRequirement[];
+  hiringRoles: HiringRole[];
+  candidates: Candidate[];
 
   // Derived
   projectContextString: string;
@@ -140,6 +144,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const [advisors, setAdvisors] = useState<Advisor[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [skillRequirements, setSkillRequirements] = useState<SkillRequirement[]>([]);
+  const [hiringRoles, setHiringRoles] = useState<HiringRole[]>([]);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
 
   // AI & modals
   const [aiConfig, setAiConfigState] = useState<AIProviderConfig>(getStoredSettings);
@@ -191,6 +197,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       advisorList,
       teamMemberList,
       skillRequirementList,
+      hiringRoleList,
+      candidateList,
     ] = await Promise.all([
       db.evidence.where('projectId').equals(projId).toArray(),
       db.competitors.where('projectId').equals(projId).toArray(),
@@ -204,6 +212,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       db.advisors.where('projectId').equals(projId).toArray(),
       db.teamMembers.where('projectId').equals(projId).toArray(),
       db.skillRequirements.where('projectId').equals(projId).toArray(),
+      db.hiringRoles.where('projectId').equals(projId).toArray(),
+      db.candidates.where('projectId').equals(projId).toArray(),
     ]);
 
     setEvidence(evList);
@@ -218,6 +228,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     setAdvisors(advisorList);
     setTeamMembers(teamMemberList);
     setSkillRequirements(skillRequirementList);
+    setHiringRoles(hiringRoleList);
+    setCandidates(candidateList);
   }, []);
 
   useEffect(() => {
@@ -236,6 +248,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       setAdvisors([]);
       setTeamMembers([]);
       setSkillRequirements([]);
+      setHiringRoles([]);
+      setCandidates([]);
     }
   }, [currentProject, loadProjectData]);
 
@@ -357,6 +371,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       advisors,
       teamMembers,
       skillRequirements,
+      hiringRoles,
+      candidates,
       projectContextString,
       unverifiedEvidenceCount,
       activeExperimentsCount,
@@ -398,6 +414,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       advisors,
       teamMembers,
       skillRequirements,
+      hiringRoles,
+      candidates,
       projectContextString,
       unverifiedEvidenceCount,
       activeExperimentsCount,

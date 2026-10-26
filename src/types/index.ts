@@ -265,6 +265,8 @@ export interface ProjectWorkspace {
   advisors: Advisor[];
   teamMembers: TeamMember[];
   skillRequirements: SkillRequirement[];
+  hiringRoles: HiringRole[];
+  candidates: Candidate[];
 }
 
 export interface CanvasEdge {
@@ -654,5 +656,7 @@ export interface ExportPackage {
   advisors?: Advisor[];
   teamMembers?: TeamMember[];
   skillRequirements?: SkillRequirement[];
+  hiringRoles?: HiringRole[];
+  candidates?: Candidate[];
   chatMessages?: AIChatMessage[];
 }

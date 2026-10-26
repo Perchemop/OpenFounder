@@ -69,3 +69,5 @@ see `PROGRESS.md` for the current result.
 | R-050 | The app installs as a PWA and keeps working offline after the first load | `public/manifest.json`, `public/icon.svg`, `public/icon-maskable.svg`, `public/sw.js`, `src/main.tsx` | Service worker registered only in production builds; `/api/` responses are never cached; CI `build (static)` green | Done |
 
 | R-051 | Listing pages filter locally without URL state, and empty states name the next action | `src/components/ui/FilterChip.tsx`, `InterviewsPage`, `TeamPage`, `EvidencePage`, `MVPPlannerPage`, `RoadmapPage` | CI type check + a11y scan; filters are component state, never query params | Done |
+
+| R-052 | First-hire pipeline keeps roles, candidates, and guarded stage moves locally | `src/utils/hiringPipeline.ts`, `src/types/index.ts`, `db.hiringRoles`, `db.candidates` | `hiringPipeline.test.ts` (transitions, funnel, fill state, next action); `importRemap.test.ts` (candidate→role rewrite); `validation.test.ts` (v7 package) | Partial (data, rules, and export/import done; page UI pending) |

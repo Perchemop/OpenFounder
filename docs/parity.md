@@ -35,6 +35,7 @@ has a known gap), **Planned**.
 | C-29 | Update check against releases | Done | `src/updateCheck.ts`, `UpdateCheckPanel` |
 | C-22 | Full-text workspace search | Done | `src/utils/workspaceSearch.ts`, `CommandPalette` |
 | C-23 | Cloud sync / multi-device | Planned (out of scope v1) | — |
+| C-30 | First-hire pipeline (roles and candidates with guarded stages) | Partial — data model, stage rules, and export/import are done; page UI pending | `src/utils/hiringPipeline.ts`, `db.hiringRoles`, `db.candidates` |
 
 ## Known gaps recorded honestly
 

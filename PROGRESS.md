@@ -2,6 +2,30 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-27 · First-hire pipeline: persistence and export parity
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `db/index.ts`: `hiringRoles` and `candidates` tables at Dexie `version(7)`; export now emits
+  `schemaVersion: 7`; import deletes and rewrites both tables inside the existing transaction
+- `remapHiringPipeline` in `importRemap.ts` remaps roles and candidates together so a candidate
+  cannot point at a role id that moved; an unmatched `roleId` is kept as-is (dangling, not
+  re-pointed) and that behaviour is asserted in `importRemap.test.ts`
+- `validation.ts`: `HiringRoleSchema` / `CandidateSchema`, package fields, `schemaVersion` ceiling
+  raised to 7; validation tests cover a v7 package and reject an unknown candidate stage
+- `ProjectContext` + `ProjectWorkspace` carry the two new collections
+- `runWorkspaceDiagnostics` reports `hiringRolesCount` and `candidatesCount`
+
+### Still to do
+
+- `HiringPage` UI, sidebar entry, filter chips, empty states; then parity/scope entries flip to Done
+
+### Verification
+
+- CI result recorded below
+
 ## 2026-10-27 · First-hire pipeline: domain rules
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

@@ -456,6 +456,47 @@ export const SkillRequirementSchema = z.object({
   createdAt: z.number(),
 });
 
+const HIRING_STAGES = [
+  'identified',
+  'contacted',
+  'screening',
+  'interviewing',
+  'offer',
+  'hired',
+  'rejected',
+  'withdrawn',
+] as const;
+
+export const HiringRoleSchema = z.object({
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
+  title: z.string().min(1).max(200),
+  kind: z.enum(['full_time', 'part_time', 'contract', 'advisor', 'intern']),
+  mustHaveSkills: z.array(z.string().max(100)).max(30).default([]),
+  niceToHaveSkills: z.array(z.string().max(100)).max(30).default([]),
+  budgetNote: z.string().max(1000).default(''),
+  notes: z.string().max(5000).default(''),
+  isSynthetic: z.boolean().optional(),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+});
+
+export const CandidateSchema = z.object({
+  id: SafeIdSchema,
+  projectId: SafeIdSchema,
+  roleId: SafeIdSchema,
+  name: z.string().min(1).max(200),
+  source: z.string().max(500).default(''),
+  stage: z.enum(HIRING_STAGES),
+  strengths: z.array(z.string().max(200)).max(30).default([]),
+  concerns: z.array(z.string().max(200)).max(30).default([]),
+  evidenceNotes: z.string().max(5000).default(''),
+  nextStep: z.string().max(1000).default(''),
+  isSynthetic: z.boolean().optional(),
+  createdAt: z.number(),
+  updatedAt: z.number(),
+});
+
 export const AdvisorCommitmentSchema = z.object({
   id: SafeIdSchema,
   description: z.string().min(1).max(1000),
@@ -523,7 +564,7 @@ export const ObjectiveSchema = z.object({
 
 // Full Export Package Zod Schema
 export const ExportPackageSchema = z.object({
-  schemaVersion: z.number().int().min(1).max(6),
+  schemaVersion: z.number().int().min(1).max(7),
   exportedAt: z.string(),
   appVersion: z.string().max(50),
   project: ProjectSchema,
@@ -546,6 +587,8 @@ export const ExportPackageSchema = z.object({
   advisors: z.array(AdvisorSchema).max(200).optional().default([]),
   teamMembers: z.array(TeamMemberSchema).max(200).optional().default([]),
   skillRequirements: z.array(SkillRequirementSchema).max(500).optional().default([]),
+  hiringRoles: z.array(HiringRoleSchema).max(100).optional().default([]),
+  candidates: z.array(CandidateSchema).max(1000).optional().default([]),
   chatMessages: z.array(AIChatMessageSchema).max(5000).optional().default([]),
 });
 
