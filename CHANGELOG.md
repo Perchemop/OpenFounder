@@ -38,6 +38,9 @@ semantic versioning for its export schema and application releases.
 
 ### Added
 
+- First-hire pipeline persistence: Dexie `version(7)` adds `hiringRoles` and `candidates`;
+  export/import schema v7 carries both, and `remapHiringPipeline` rewrites a candidate's `roleId`
+  onto the remapped role (a dangling reference is preserved, not silently re-pointed)
 - First-hire pipeline domain rules: `HiringRole` / `Candidate` types and
   `src/utils/hiringPipeline.ts` with guarded stage transitions (no jumping straight to "hired"),
   derived role fill state, funnel summary, and next-action copy — covered by

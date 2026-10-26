@@ -1,5 +1,7 @@
 import type {
   Advisor,
+  Candidate,
+  HiringRole,
   Objective,
   RiskItem,
   RoadmapItem,
@@ -61,4 +63,41 @@ export function remapRoadmapItem(item: RoadmapItem, targetProjectId: string, rem
 
 export function remapRiskItem(item: RiskItem, targetProjectId: string, remapId: IdMapper): RiskItem {
   return { ...item, id: remapId(item.id, 'risk'), projectId: targetProjectId };
+}
+
+export function remapHiringRole(
+  role: HiringRole,
+  targetProjectId: string,
+  remapId: IdMapper
+): HiringRole {
+  return { ...role, id: remapId(role.id, 'role'), projectId: targetProjectId };
+}
+
+/**
+ * Roles and candidates are rewritten together, so a candidate cannot end up
+ * pointing at a role id that was remapped out from under it. A candidate whose
+ * `roleId` matches no role in the package keeps its original reference (a
+ * dangling link is preserved rather than silently re-pointed).
+ */
+export function remapHiringPipeline(
+  roles: HiringRole[],
+  candidates: Candidate[],
+  targetProjectId: string,
+  remapId: IdMapper
+): { roles: HiringRole[]; candidates: Candidate[] } {
+  const roleIdMap: Record<string, string> = {};
+  const remappedRoles = roles.map((role) => {
+    const mapped = remapHiringRole(role, targetProjectId, remapId);
+    roleIdMap[role.id] = mapped.id;
+    return mapped;
+  });
+
+  const remappedCandidates = candidates.map((candidate) => ({
+    ...candidate,
+    id: remapId(candidate.id, 'cand'),
+    projectId: targetProjectId,
+    roleId: roleIdMap[candidate.roleId] ?? candidate.roleId,
+  }));
+
+  return { roles: remappedRoles, candidates: remappedCandidates };
 }

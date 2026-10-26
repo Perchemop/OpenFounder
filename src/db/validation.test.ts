@@ -203,6 +203,109 @@ describe('Validation Schemas & Hardening', () => {
       expect(result.data?.project.name).toBe('Demo Project');
     });
 
+    it('accepts a v7 package with a hiring role and a candidate', () => {
+      const samplePackage = {
+        schemaVersion: 7,
+        exportedAt: new Date().toISOString(),
+        appVersion: '0.3.0',
+        project: {
+          id: 'proj_demo_1',
+          name: 'Demo Project',
+          tagline: '',
+          stage: 'validating',
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        },
+        evidence: [],
+        research: [],
+        communityInsights: [],
+        competitors: [],
+        experiments: [],
+        interviews: [],
+        features: [],
+        roadmap: [],
+        canvasNodes: [],
+        canvasEdges: [],
+        decisions: [],
+        hiringRoles: [
+          {
+            id: 'role_1',
+            projectId: 'proj_demo_1',
+            title: 'Founding engineer',
+            kind: 'full_time',
+            mustHaveSkills: ['TypeScript'],
+            niceToHaveSkills: [],
+            budgetNote: '',
+            notes: '',
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          },
+        ],
+        candidates: [
+          {
+            id: 'cand_1',
+            projectId: 'proj_demo_1',
+            roleId: 'role_1',
+            name: 'Alex',
+            source: 'referral',
+            stage: 'interviewing',
+            strengths: [],
+            concerns: [],
+            evidenceNotes: '',
+            nextStep: '',
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          },
+        ],
+      };
+
+      const result = validateExportPackage(samplePackage);
+      expect(result.valid).toBe(true);
+      expect(result.data?.hiringRoles?.[0].title).toBe('Founding engineer');
+      expect(result.data?.candidates?.[0].stage).toBe('interviewing');
+    });
+
+    it('rejects a candidate with an unknown stage', () => {
+      const samplePackage = {
+        schemaVersion: 7,
+        exportedAt: new Date().toISOString(),
+        appVersion: '0.3.0',
+        project: {
+          id: 'proj_demo_1',
+          name: 'Demo Project',
+          tagline: '',
+          stage: 'validating',
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        },
+        evidence: [],
+        research: [],
+        communityInsights: [],
+        competitors: [],
+        experiments: [],
+        interviews: [],
+        features: [],
+        roadmap: [],
+        canvasNodes: [],
+        canvasEdges: [],
+        decisions: [],
+        candidates: [
+          {
+            id: 'cand_1',
+            projectId: 'proj_demo_1',
+            roleId: 'role_1',
+            name: 'Alex',
+            stage: 'ghosted',
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          },
+        ],
+      };
+
+      const result = validateExportPackage(samplePackage);
+      expect(result.valid).toBe(false);
+    });
+
     it('rejects payload with missing project or invalid schema version', () => {
       const invalidPackage = {
         schemaVersion: 99,

@@ -1,13 +1,24 @@
 import { describe, it, expect } from 'vitest';
 import {
   remapAdvisor,
+  remapHiringPipeline,
+  remapHiringRole,
   remapObjective,
   remapRiskItem,
   remapRoadmapItem,
   remapSkillRequirement,
   remapTeamMember,
 } from './importRemap';
-import type { Advisor, Objective, RiskItem, RoadmapItem, SkillRequirement, TeamMember } from '../types';
+import type {
+  Advisor,
+  Candidate,
+  HiringRole,
+  Objective,
+  RiskItem,
+  RoadmapItem,
+  SkillRequirement,
+  TeamMember,
+} from '../types';
 
 /** Deterministic mapper so tests can assert exact IDs. */
 function mapper(ids: string[]): (id: string, prefix: string) => string {
@@ -201,5 +212,66 @@ describe('flat entities', () => {
       projectId: TARGET,
       category: 'pricing',
     });
+  });
+});
+
+describe('hiring pipeline', () => {
+  const role: HiringRole = {
+    id: 'role1',
+    projectId: 'proj_old',
+    title: 'Founding engineer',
+    kind: 'full_time',
+    mustHaveSkills: ['TypeScript'],
+    niceToHaveSkills: [],
+    budgetNote: '',
+    notes: '',
+    createdAt: 0,
+    updatedAt: 0,
+  };
+  const candidate: Candidate = {
+    id: 'cand1',
+    projectId: 'proj_old',
+    roleId: 'role1',
+    name: 'Alex',
+    source: 'referral',
+    stage: 'interviewing',
+    strengths: [],
+    concerns: [],
+    evidenceNotes: 'Trial task shipped in two days.',
+    nextStep: 'Reference call',
+    createdAt: 0,
+    updatedAt: 0,
+  };
+
+  it('rewrites the role id and retargets the project', () => {
+    expect(remapHiringRole(role, TARGET, mapper(['role_new']))).toMatchObject({
+      id: 'role_new',
+      projectId: TARGET,
+      kind: 'full_time',
+    });
+  });
+
+  it('rewrites a candidate onto the remapped role id', () => {
+    const mapped = remapHiringPipeline([role], [candidate], TARGET, mapper(['role_new', 'cand_new']));
+    expect(mapped.roles[0].id).toBe('role_new');
+    expect(mapped.candidates[0].id).toBe('cand_new');
+    expect(mapped.candidates[0].roleId).toBe('role_new');
+    expect(mapped.candidates[0].projectId).toBe(TARGET);
+    expect(mapped.candidates[0].evidenceNotes).toBe('Trial task shipped in two days.');
+  });
+
+  it('keeps a dangling candidate reference instead of silently re-pointing it', () => {
+    const orphan = { ...candidate, id: 'cand2', roleId: 'role_missing' };
+    const mapped = remapHiringPipeline([role], [orphan], TARGET, mapper(['role_new', 'cand_new']));
+    expect(mapped.candidates[0].roleId).toBe('role_missing');
+  });
+
+  it('does not mutate the input', () => {
+    const roles = [structuredClone(role)];
+    const candidates = [structuredClone(candidate)];
+    remapHiringPipeline(roles, candidates, TARGET, mapper(['role_new', 'cand_new']));
+    expect(roles[0].id).toBe('role1');
+    expect(candidates[0].id).toBe('cand1');
+    expect(candidates[0].roleId).toBe('role1');
   });
 });

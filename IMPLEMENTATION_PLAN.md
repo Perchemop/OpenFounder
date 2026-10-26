@@ -80,7 +80,8 @@ is covered by tests.
   - `src/utils/skillCoverage.ts` (coverage status, gaps, summary) + tests
   - `TeamPage` with members, requirements, and derived coverage
 - [ ] First-hire pipeline (local only) — in progress: domain types + guarded stage rules
-      (`src/utils/hiringPipeline.ts`) landed; persistence, UI, and export parity still to do
+      (`src/utils/hiringPipeline.ts`), Dexie `version(7)` tables (`hiringRoles`, `candidates`),
+      and export/import schema v7 with candidate→role ID remap landed; UI still to do
 
 ## Guide compliance (2026-10-24 review of the operating manual)
 
