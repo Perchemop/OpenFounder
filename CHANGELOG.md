@@ -14,6 +14,8 @@ semantic versioning for its export schema and application releases.
 
 ### Added
 
+- Installable PWA: web app manifest, maskable icon, and an offline app-shell service worker
+  registered only in production builds
 - Shared `FilterChip` component (`src/components/ui/FilterChip.tsx`) with `aria-pressed`
 - Severity filter on Customer Interviews and commitment filter on Team
 - Empty states on Evidence, MVP Planner, Roadmap, Interviews, and Team now name the next action

@@ -60,7 +60,8 @@ is covered by tests.
 ## Phase 5 — Polish and packaging
 
 - [ ] Performance pass at 500+ rows per table
-- [ ] PWA/offline install
+- [x] PWA/offline install — `public/manifest.json`, `public/sw.js` offline shell, install icons;
+      registered from `src/main.tsx` in production builds only
 - [x] Screenshots and a truthful README walkthrough — `assets/screenshots/` (desktop/tablet/mobile/empty-state) + README walkthrough section
 
 ## Phase 1b — Capability additions from the competitive benchmark (2026-10-23)
