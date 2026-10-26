@@ -82,7 +82,10 @@ export interface PipelineSummary {
   byStage: StageCount[];
   /** Roles that nobody has been recorded against yet. */
   rolesWithoutCandidates: HiringRole[];
-  /** Roles with no hired candidate and no offer outstanding. */
+  /**
+   * Roles with no hired candidate. An outstanding offer counts as unfilled:
+   * the decision is not made until someone has accepted.
+   */
   unfilledRoles: HiringRole[];
 }
 
@@ -104,8 +107,7 @@ export function summarizePipeline(roles: HiringRole[], candidates: Candidate[]):
     byStage,
     rolesWithoutCandidates: roles.filter((role) => !rolesWithCandidates.has(role.id)),
     unfilledRoles: roles.filter(
-      (role) =>
-        !candidates.some((c) => c.roleId === role.id && (c.stage === 'hired' || c.stage === 'offer')),
+      (role) => !candidates.some((c) => c.roleId === role.id && c.stage === 'hired'),
     ),
   };
 }
