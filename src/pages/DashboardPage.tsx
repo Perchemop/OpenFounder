@@ -24,6 +24,7 @@ import type { WorkspaceTab } from '../components/layout/Sidebar';
 import {
   isOpenRisk,
   isHotRisk,
+  riskScore,
   scoreLabel,
   sortRisksByScore,
 } from '../utils/riskScoring';

@@ -45,6 +45,8 @@ function experiment(status: Experiment['status'] = 'running'): Experiment {
     successCriteria: '2 pre-pay',
     failureCriteria: '0 pre-pay',
     status,
+    createdAt: 1,
+    updatedAt: 1,
   };
 }
 
