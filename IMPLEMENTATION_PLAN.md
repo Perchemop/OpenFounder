@@ -79,7 +79,8 @@ is covered by tests.
 - [x] Team skills coverage (local only)
   - `src/utils/skillCoverage.ts` (coverage status, gaps, summary) + tests
   - `TeamPage` with members, requirements, and derived coverage
-- [ ] First-hire pipeline (local only)
+- [ ] First-hire pipeline (local only) — in progress: domain types + guarded stage rules
+      (`src/utils/hiringPipeline.ts`) landed; persistence, UI, and export parity still to do
 
 ## Guide compliance (2026-10-24 review of the operating manual)
 

@@ -541,6 +541,61 @@ export interface SkillLevels {
   [skill: string]: number;
 }
 
+/**
+ * First-hire pipeline: the roles a small venture is trying to fill and the
+ * people it is talking to. This is a decision log, not an applicant-tracking
+ * system — no résumé parsing, no network calls, no third-party profiles.
+ */
+export type HiringRoleKind = 'full_time' | 'part_time' | 'contract' | 'advisor' | 'intern';
+
+export type HiringStage =
+  | 'identified'
+  | 'contacted'
+  | 'screening'
+  | 'interviewing'
+  | 'offer'
+  | 'hired'
+  | 'rejected'
+  | 'withdrawn';
+
+export interface HiringRole {
+  id: string;
+  projectId: string;
+  title: string;
+  kind: HiringRoleKind;
+  /** Non-negotiable skills; the role is not a fit without them. */
+  mustHaveSkills: string[];
+  niceToHaveSkills: string[];
+  /** What the venture can actually pay or trade, in words. */
+  budgetNote: string;
+  notes: string;
+  isSynthetic?: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface Candidate {
+  id: string;
+  projectId: string;
+  roleId: string;
+  name: string;
+  /** How this person reached you (referral, community, inbound) — free text. */
+  source: string;
+  stage: HiringStage;
+  strengths: string[];
+  concerns: string[];
+  /**
+   * What you actually observed: a trial task, a reference call, a work sample.
+   * Left blank when the person is only known by reputation.
+   */
+  evidenceNotes: string;
+  /** The single next thing to do with this person. */
+  nextStep: string;
+  isSynthetic?: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
 export interface AIChatMessage {
   id: string;
   projectId?: string;
