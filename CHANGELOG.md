@@ -38,6 +38,10 @@ semantic versioning for its export schema and application releases.
 
 ### Added
 
+- First-hire pipeline domain rules: `HiringRole` / `Candidate` types and
+  `src/utils/hiringPipeline.ts` with guarded stage transitions (no jumping straight to "hired"),
+  derived role fill state, funnel summary, and next-action copy — covered by
+  `hiringPipeline.test.ts`
 - Installable PWA: web app manifest, maskable icon, and an offline app-shell service worker
   registered only in production builds
 - Shared `FilterChip` component (`src/components/ui/FilterChip.tsx`) with `aria-pressed`

@@ -2,6 +2,31 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-27 · First-hire pipeline: domain rules
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `types/index.ts`: `HiringRole`, `Candidate`, `HiringStage`, `HiringRoleKind`
+- `src/utils/hiringPipeline.ts`: `canMoveToStage` guard (one step forward, early exit, or no-op;
+  terminal stages are final), `allowedNextStages`, `roleFillState`, `summarizePipeline`,
+  `roleNextAction`
+- `hiringPipeline.test.ts`: 15 cases across transitions, funnel counts, role fill state, and the
+  next-action copy
+- Scope decision recorded: this is a decision log, not an ATS — no résumé parsing, no network, no
+  third-party profiles
+
+### Not yet done (next slices)
+
+- IndexedDB tables (`version(7)`) + export/import schema v7 with ID remap
+- `HiringPage` UI, sidebar entry, filter chips, empty states
+- Parity/scope/traceability entries
+
+### Verification
+
+- CI result recorded below (verify ×3 runs Vitest)
+
 ## 2026-10-27 · Owner steps for repository security settings
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
