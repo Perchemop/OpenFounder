@@ -110,3 +110,17 @@ signatures. Inbound = outbound licensing is enforced by the CONTRIBUTING.md term
 
 *Why:* lowers friction for first-time contributors while keeping the licence clean. No CLA is used.
 *Rejected:* mandatory DCO for every commit; requiring a CLA.
+
+## D-012 · 2026-10-26 · Bounded rendering instead of a virtual-scroll dependency
+
+Dense tables (Evidence ledger, Risk register) render a window of 25 rows by default with an
+explicit "Show more" control, driven by a pure, unit-tested helper (`src/utils/pagination.ts`).
+The row count shown to the user is always stated ("Showing 25 of 500 claims · 475 hidden"), so a
+truncated view is never mistaken for the whole list.
+
+*Why:* a founder workspace can accumulate hundreds of claims per project; the fix is to keep
+rendered work proportional to what is on screen without adding a windowing library. The helper is
+pure and testable in Vitest, which runs in CI, so the behaviour is verifiable without profiling on
+the development machine (heavy work runs in GitHub Actions by policy).
+*Rejected:* adding `react-window`/`virtua` (new dependency, CSS/measurement complexity for a table
+whose height is not fixed); silently limiting rows without telling the user.

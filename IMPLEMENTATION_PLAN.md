@@ -59,7 +59,9 @@ is covered by tests.
 
 ## Phase 5 — Polish and packaging
 
-- [ ] Performance pass at 500+ rows per table
+- [x] Performance pass at 500+ rows per table — bounded rendering (window of 25 + "Show more",
+      visible/hidden counts) on the Evidence ledger and Risk register, backed by the pure,
+      unit-tested `src/utils/pagination.ts` (D-012)
 - [x] PWA/offline install — `public/manifest.json`, `public/sw.js` offline shell, install icons;
       registered from `src/main.tsx` in production builds only
 - [x] Screenshots and a truthful README walkthrough — `assets/screenshots/` (desktop/tablet/mobile/empty-state) + README walkthrough section

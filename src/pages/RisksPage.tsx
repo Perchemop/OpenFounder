@@ -9,6 +9,7 @@ import {
 import type { RiskItem, RiskCategory } from '../types';
 import { db, generateId } from '../db';
 import { riskScore, scoreLabel, isOpenRisk, isHotRisk } from '../utils/riskScoring';
+import { DEFAULT_PAGE_SIZE, nextVisibleCount, pageItems } from '../utils/pagination';
 
 interface RisksPageProps {
   projectId: string;
@@ -84,6 +85,18 @@ export const RisksPage: React.FC<RisksPageProps> = ({
       })
       .sort((a, b) => riskScore(b.probability, b.impact) - riskScore(a.probability, a.impact));
   }, [risks, filterStatus, filterCategory]);
+
+  // Bounded rendering for a register that can grow past a few hundred rows.
+  const [visibleCount, setVisibleCount] = useState(DEFAULT_PAGE_SIZE);
+  const riskPage = pageItems(filteredRisks, visibleCount);
+  const changeStatusFilter = (status: string) => {
+    setFilterStatus(status);
+    setVisibleCount(DEFAULT_PAGE_SIZE);
+  };
+  const changeCategoryFilter = (category: string) => {
+    setFilterCategory(category);
+    setVisibleCount(DEFAULT_PAGE_SIZE);
+  };
 
   const openCount = risks.filter(isOpenRisk).length;
   const criticalCount = risks.filter(
@@ -201,7 +214,7 @@ export const RisksPage: React.FC<RisksPageProps> = ({
       <div className="flex flex-wrap items-center gap-2 text-xs">
         <Filter className="w-3.5 h-3.5 text-zinc-400" />
         <button
-          onClick={() => setFilterStatus('all')}
+          onClick={() => changeStatusFilter('all')}
           className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
             filterStatus === 'all'
               ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
@@ -215,7 +228,7 @@ export const RisksPage: React.FC<RisksPageProps> = ({
           return (
             <button
               key={st}
-              onClick={() => setFilterStatus(st)}
+              onClick={() => changeStatusFilter(st)}
               className={`px-3 py-1.5 rounded-lg font-medium transition-colors whitespace-nowrap ${
                 filterStatus === st
                   ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
@@ -229,7 +242,7 @@ export const RisksPage: React.FC<RisksPageProps> = ({
 
         <select
           value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
+          onChange={(e) => changeCategoryFilter(e.target.value)}
           className="ml-2 px-2 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 border-0 text-xs text-zinc-700 dark:text-zinc-300"
         >
           <option value="all">All categories</option>
@@ -256,7 +269,7 @@ export const RisksPage: React.FC<RisksPageProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 text-zinc-800 dark:text-zinc-200">
-              {filteredRisks.map((risk) => {
+              {riskPage.visible.map((risk) => {
                 const score = riskScore(risk.probability, risk.impact);
                 const scoreInfo = scoreLabel(score);
                 const isHot = isHotRisk(risk);
@@ -346,6 +359,24 @@ export const RisksPage: React.FC<RisksPageProps> = ({
             </tbody>
           </table>
         </div>
+
+        {riskPage.total > 0 && (
+          <div className="flex items-center justify-between gap-3 border-t border-zinc-200 dark:border-zinc-800 px-4 py-2.5 text-[11px] text-zinc-500">
+            <span>
+              Showing {riskPage.visible.length} of {riskPage.total} risks
+              {riskPage.hasMore ? ` · ${riskPage.hiddenCount} hidden` : ''}
+            </span>
+            {riskPage.hasMore && (
+              <button
+                type="button"
+                onClick={() => setVisibleCount(nextVisibleCount(filteredRisks, visibleCount))}
+                className="px-3 py-1.5 rounded-lg font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors"
+              >
+                Show {Math.min(DEFAULT_PAGE_SIZE, riskPage.hiddenCount)} more
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Add Risk Modal */}

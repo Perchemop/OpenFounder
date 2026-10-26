@@ -2,6 +2,28 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-26 · Bounded rendering for dense tables
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `src/utils/pagination.ts` + `pagination.test.ts` — pure windowing helper (`pageItems`,
+  `nextVisibleCount`) with cases for short lists, a 500-row table, empty lists, clamping, and
+  non-mutation
+- Evidence ledger and Risk register render 25 rows by default, with "Showing X of Y · Z hidden"
+  and a "Show more" control; changing a filter resets the window
+- Recorded as D-012 (bounded rendering over a virtual-scroll dependency)
+
+### Honest limits
+
+- No runtime profiling was run on this machine: builds and tests run in GitHub Actions by policy.
+  The claim is bounded render work plus unit-tested paging, not a measured benchmark.
+
+### Verification
+
+- CI result recorded below (verify ×3 runs Vitest; build (static) must stay green)
+
 ## 2026-10-26 · Tested dashboard next-action rules
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

@@ -41,7 +41,9 @@ has a known gap), **Planned**.
 - No pixel-baseline visual regression: `visual.yml` uploads screenshots as artefacts for review
   instead of failing on font-metric drift.
 - Cloud sync / multi-device (C-23) is deliberately out of scope for v1; the app is local-first.
-- Performance with 500+ rows per table has not been measured or tuned yet
-  (`IMPLEMENTATION_PLAN.md`, Phase 5).
+- Performance: dense tables render a bounded window with an explicit "Show more" (D-012). No
+  runtime profiling is run on the development machine — builds and tests run in GitHub Actions by
+  policy — so the guarantee is bounded render work plus unit-tested paging, not a published
+  benchmark.
 - The optional Express server is not deployed by the static GitHub Pages workflow, so `/api/ai/*`
   falls back to browser providers or offline rules when hosted statically.
