@@ -559,7 +559,9 @@ export const EvidencePage: React.FC<EvidencePageProps> = ({
               {filteredEvidence.length === 0 && (
                 <tr>
                   <td colSpan={6} className="p-8 text-center text-zinc-400">
-                    No evidence claims found matching this filter.
+                    {evidence.length === 0
+                      ? 'No evidence claims yet. Use "Add Claim / Assumption" to log what you believe and how you will test it.'
+                      : 'No evidence claims match this status filter. Choose another status or "All".'}
                   </td>
                 </tr>
               )}

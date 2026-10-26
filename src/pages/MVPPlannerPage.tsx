@@ -290,7 +290,7 @@ export const MVPPlannerPage: React.FC<MVPPlannerPageProps> = ({
 
                 {colFeatures.length === 0 && (
                   <div className="p-6 text-center text-zinc-400 text-[11px] italic">
-                    No items in this column.
+                    No features in this column. Use "Add Feature / Task" to scope what belongs here.
                   </div>
                 )}
               </div>

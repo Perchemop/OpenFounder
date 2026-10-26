@@ -171,7 +171,7 @@ export const RoadmapPage: React.FC<RoadmapPageProps> = ({
 
                 {items.length === 0 && (
                   <div className="p-6 text-center text-zinc-400 text-xs italic">
-                    No milestones in this stage.
+                    No milestones in this stage. Use "Add Roadmap Milestone" to plan what gets you here.
                   </div>
                 )}
               </div>

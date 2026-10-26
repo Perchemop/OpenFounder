@@ -10,6 +10,7 @@ import type { CustomerInterview } from '../types';
 import { db } from '../db';
 import { generateInterviewSample, suggestProjectField } from '../ai/autoCompleteService';
 import { AIAutoFillButton } from '../components/ai/AIAutoFillButton';
+import { FilterChip } from '../components/ui/FilterChip';
 
 interface InterviewsPageProps {
   projectId: string;
@@ -39,6 +40,15 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
   const [keyQuotesText, setKeyQuotesText] = useState('');
   const [notesOrTranscript, setNotesOrTranscript] = useState('');
   const [surprisesOrObjections, setSurprisesOrObjections] = useState('');
+
+  // Severity filter — local state only (no URL params).
+  type SeverityFilter = 'all' | 'mild' | 'moderate' | 'severe' | 'dealbreaker';
+  const [severityFilter, setSeverityFilter] = useState<SeverityFilter>('all');
+  const selectSeverity = (value: string) => setSeverityFilter(value as SeverityFilter);
+
+  const filteredInterviews = interviews.filter(
+    (item) => severityFilter === 'all' || item.severityRating === severityFilter,
+  );
 
   const handleSynthesizeInterview = async () => {
     setIsSynthesizing(true);
@@ -252,9 +262,30 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
         </div>
       </div>
 
+      {/* Severity filter */}
+      <div className="flex items-center gap-1 overflow-x-auto pb-1 text-xs">
+        <FilterChip
+          label="All"
+          value="all"
+          count={interviews.length}
+          isActive={severityFilter === 'all'}
+          onSelect={selectSeverity}
+        />
+        {(['mild', 'moderate', 'severe', 'dealbreaker'] as const).map((severity) => (
+          <FilterChip
+            key={severity}
+            label={severity.charAt(0).toUpperCase() + severity.slice(1)}
+            value={severity}
+            count={interviews.filter((item) => item.severityRating === severity).length}
+            isActive={severityFilter === severity}
+            onSelect={selectSeverity}
+          />
+        ))}
+      </div>
+
       {/* Interviews List */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {interviews.map((item) => (
+        {filteredInterviews.map((item) => (
           <div
             key={item.id}
             className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-xs space-y-3 flex flex-col justify-between"
@@ -333,14 +364,18 @@ export const InterviewsPage: React.FC<InterviewsPageProps> = ({
           </div>
         ))}
 
-        {interviews.length === 0 && (
+        {filteredInterviews.length === 0 && (
           <div className="col-span-2 p-12 text-center border border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl space-y-2">
             <MessageSquareQuote className="w-8 h-8 text-zinc-400 mx-auto"  aria-hidden="true" />
             <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-              No customer discovery interviews recorded.
+              {interviews.length === 0
+                ? 'No customer discovery interviews recorded.'
+                : 'No interviews match this severity filter.'}
             </p>
             <p className="text-[11px] text-zinc-500">
-              Conduct at least 5 discovery sessions to gather concrete quotes and verify willingness to pay.
+              {interviews.length === 0
+                ? 'Click "Record Interview" to log your first discovery session and capture verbatim quotes.'
+                : 'Choose another severity or "All" to see every interview.'}
             </p>
           </div>
         )}

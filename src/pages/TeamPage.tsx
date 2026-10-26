@@ -9,6 +9,7 @@ import {
   summarizeSkillCoverage,
   targetLevelToNumber,
 } from '../utils/skillCoverage';
+import { FilterChip } from '../components/ui/FilterChip';
 
 interface TeamPageProps {
   projectId: string;
@@ -54,6 +55,15 @@ export const TeamPage: React.FC<TeamPageProps> = ({
   const [skillError, setSkillError] = useState<string | null>(null);
 
   const [expandedSkill, setExpandedSkill] = useState<string | null>(null);
+
+  // Commitment filter — display only; skill coverage still uses every member.
+  const [commitmentFilter, setCommitmentFilter] = useState<'all' | TeamCommitment>('all');
+  const selectCommitment = (value: string) =>
+    setCommitmentFilter(value as 'all' | TeamCommitment);
+  const filteredMembers =
+    commitmentFilter === 'all'
+      ? members
+      : members.filter((member) => member.commitment === commitmentFilter);
 
   const coverage = useMemo(() => deriveSkillCoverage(requirements, members), [requirements, members]);
   const summary = useMemo(() => summarizeSkillCoverage(coverage), [coverage]);
@@ -206,18 +216,41 @@ export const TeamPage: React.FC<TeamPageProps> = ({
         </div>
       )}
 
+      {/* Commitment filter */}
+      <div className="flex items-center gap-1 overflow-x-auto pb-1 text-xs">
+        <FilterChip
+          label="All"
+          value="all"
+          count={members.length}
+          isActive={commitmentFilter === 'all'}
+          onSelect={selectCommitment}
+        />
+        {(['full_time', 'part_time', 'advisor', 'contractor'] as const).map((value) => (
+          <FilterChip
+            key={value}
+            label={COMMITMENT_LABELS[value]}
+            value={value}
+            count={members.filter((member) => member.commitment === value).length}
+            isActive={commitmentFilter === value}
+            onSelect={selectCommitment}
+          />
+        ))}
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4">
           <h2 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
             Who is building
           </h2>
-          {members.length === 0 ? (
+          {filteredMembers.length === 0 ? (
             <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-              Add the people actually working on this, including yourself.
+              {members.length === 0
+                ? 'Add the people actually working on this, including yourself.'
+                : 'No team members match this commitment filter. Choose another or "All".'}
             </p>
           ) : (
             <ul className="space-y-2">
-              {members.map((member) => (
+              {filteredMembers.map((member) => (
                 <li
                   key={member.id}
                   className="rounded-lg border border-zinc-100 dark:border-zinc-800 p-2.5"

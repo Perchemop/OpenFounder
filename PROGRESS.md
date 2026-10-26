@@ -2,6 +2,23 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-26 · Filter chips and actionable empty states
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `src/components/ui/FilterChip.tsx` — shared chip with `aria-pressed`, local (URL-free) state
+- `InterviewsPage`: filter by pain severity with per-severity counts; empty state distinguishes
+  "no interviews" from "none match this filter"
+- `TeamPage`: filter by commitment; skill coverage deliberately still reads every member
+- `EvidencePage`, `MVPPlannerPage`, `RoadmapPage`: empty states name the control to use next
+- Re-lands work lost when PRs #32/#34 squash-merged as empty commits
+
+### Verification
+
+- CI result recorded below (required: verify ×3, build (static), summary, gitleaks, sbom)
+
 ## 2026-10-25 · Screenshots & README walkthrough
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
