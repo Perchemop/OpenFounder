@@ -2,6 +2,25 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-26 · Tracking reconciliation and process feedback
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `docs/parity.md`: C-21 accessibility audit moved to Done with evidence; known gaps rewritten to
+  what is actually still open
+- `REQUIREMENTS_TRACEABILITY.md`: R-030 and R-044 marked Done; added R-050 (PWA/offline) and
+  R-051 (filter chips + actionable empty states)
+- `ROADMAP.md`: stage updated to v0.2.0, v1.0.0 gate rows closed, readiness updated
+- `README.md`: roadmap checkboxes no longer understate shipped work
+- `docs/current-model-map.md`: free catalogue re-discovered 2026-10-26; designer/vision role added
+- `docs/process-feedback.md`: created (addendum §N) with two entries, incl. the empty-squash trap
+
+### Verification
+
+- CI result recorded below (docs-only slice)
+
 ## 2026-10-26 · PWA / offline install
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

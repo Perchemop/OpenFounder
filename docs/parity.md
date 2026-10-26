@@ -26,7 +26,7 @@ has a known gap), **Planned**.
 | C-18 | AI co-founder with provider fallback | Done | `src/ai/*` |
 | C-19 | Offline deterministic guidance | Done | `providersOffline.ts` |
 | C-20 | Keyboard command palette | Done | `CommandPalette` |
-| C-21 | Accessibility audit | Planned | — |
+| C-21 | Accessibility audit | Done | `ACCESSIBILITY.md`; reduced motion, `:focus-visible`, `role="alert"` errors, 24×24 targets; human keyboard + screen-reader pass recorded 2026-10-25 in `docs/qc/manual-qc.md`; automated axe scan in `.github/workflows/a11y.yml` |
 | C-24 | Objectives and key results with derived progress | Done | `GoalsPage`, `src/utils/okr.ts` |
 | C-27 | One-page validation report with provenance | Done | `src/utils/validationReport.ts` |
 | C-25 | Advisor and mentor log with commitments | Done | `AdvisorsPage`, `src/utils/advisorLog.ts` |
@@ -38,5 +38,10 @@ has a known gap), **Planned**.
 
 ## Known gaps recorded honestly
 
-- No automated accessibility checks; no manual screen-reader pass recorded yet.
-- `README` previously stated "Private / All rights reserved"; replaced by MIT in this baseline.
+- No pixel-baseline visual regression: `visual.yml` uploads screenshots as artefacts for review
+  instead of failing on font-metric drift.
+- Cloud sync / multi-device (C-23) is deliberately out of scope for v1; the app is local-first.
+- Performance with 500+ rows per table has not been measured or tuned yet
+  (`IMPLEMENTATION_PLAN.md`, Phase 5).
+- The optional Express server is not deployed by the static GitHub Pages workflow, so `/api/ai/*`
+  falls back to browser providers or offline rules when hosted statically.

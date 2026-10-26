@@ -248,9 +248,10 @@ Coverage includes:
 - [x] Evidence integrity guardrails + claim editing
 - [x] Pull-request CI on Ubuntu, macOS, and Windows
 - [x] Documentation and tracking baseline
-- [ ] Dashboard evidence-integrity score
-- [ ] Full-text search across research, interviews, risks, roadmap
-- [ ] Accessibility audit
+- [x] Dashboard evidence-integrity score
+- [x] Full-text search across research, interviews, risks, roadmap
+- [x] Accessibility audit (human pass recorded, automated axe scan in CI)
+- [x] Installable PWA with an offline app shell
 - [ ] Optional cloud sync (still local-first)
 
 ## Contributing

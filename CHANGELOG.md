@@ -5,6 +5,12 @@ semantic versioning for its export schema and application releases.
 
 ## [Unreleased]
 
+### Changed
+
+- Tracking reconciled with merged code: C-21 and R-030/R-044 closed, parity known-gaps rewritten,
+  ROADMAP readiness updated to reflect the shipped PWA and accessibility work
+- `docs/process-feedback.md` added under addendum §N so agent friction is recorded in the repo
+
 ### Accessibility
 
 - Skip-to-content link for keyboard and screen-reader users (`src/App.tsx`)
