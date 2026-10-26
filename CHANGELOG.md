@@ -5,6 +5,13 @@ semantic versioning for its export schema and application releases.
 
 ## [Unreleased]
 
+### Security
+
+- Every remote GitHub Action is now pinned to a 40-character commit SHA (deploy, CodeQL and
+  dependency-review were still on floating tags); the Bun toolchain is pinned to `1.4.4`
+- New `action pinning` CI job (`scripts/check-action-pinning.js`) fails the build if a workflow
+  reintroduces a floating tag
+
 ### Changed
 
 - Evidence ledger and Risk register render a bounded window (25 rows) with an explicit

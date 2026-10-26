@@ -32,7 +32,7 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
         with:
-          bun-version: latest
+          bun-version: 1.4.4
 
       - name: Cache Bun packages
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
@@ -61,7 +61,7 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
         with:
-          bun-version: latest
+          bun-version: 1.4.4
 
       - name: Cache Bun packages
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
@@ -94,7 +94,16 @@ jobs:
       contents: read
     steps:
       - name: Dependency Review
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
+
+  pinning:
+    name: action pinning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Every remote action is pinned to a commit SHA
+        run: node scripts/check-action-pinning.js
 
   sbom:
     name: sbom
@@ -137,6 +146,7 @@ jobs:
       - build
       - gitleaks
       - sbom
+      - pinning
     if: always()
     steps:
       - name: Report outcome
@@ -149,7 +159,8 @@ jobs:
           echo "| build | ${{ needs.build.result }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| gitleaks | ${{ needs.gitleaks.result }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| sbom | ${{ needs.sbom.result }} |" >> "$GITHUB_STEP_SUMMARY"
-          if [ "${{ needs.verify.result }}" != "success" ] || [ "${{ needs.build.result }}" != "success" ] || [ "${{ needs.gitleaks.result }}" != "success" ] || [ "${{ needs.sbom.result }}" != "success" ]; then
+          echo "| action pinning | ${{ needs.pinning.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ needs.verify.result }}" != "success" ] || [ "${{ needs.build.result }}" != "success" ] || [ "${{ needs.gitleaks.result }}" != "success" ] || [ "${{ needs.sbom.result }}" != "success" ] || [ "${{ needs.pinning.result }}" != "success" ]; then
             echo "" >> "$GITHUB_STEP_SUMMARY"
             echo "One or more required jobs failed. See the failing job logs." >> "$GITHUB_STEP_SUMMARY"
             exit 1
