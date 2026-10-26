@@ -2,6 +2,28 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-27 · Owner steps for repository security settings
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `docs/launch-checklist.md`: added a numbered, click-by-click owner path for the six unconfigured
+  GitHub settings, with commands to confirm each one afterwards
+- Corrected stale rows: action pinning and automated axe scanning are Done; dependency review is
+  Advisory until Dependency graph is enabled
+- `ROADMAP.md`: the human import round-trip row now records the owner's 2026-10-27 deferral
+
+### Decisions taken by the owner
+
+- First-hire pipeline: build a local-only Roles & Candidates module (in progress)
+- GitHub settings: owner will follow the numbered UI steps
+- Import round-trip QC: deferred
+
+### Verification
+
+- CI result recorded below (docs-only slice)
+
 ## 2026-10-26 · Supply-chain hardening: pinned actions and toolchain
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

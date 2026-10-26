@@ -30,7 +30,7 @@ first functional test build; the sections below it are the path to v1.0.0.
 | Update check against GitHub Releases, failing soft offline | Done |
 | Export the validation report as JSON | Done |
 | Accessibility: human keyboard and screen-reader pass (R-030) | Done |
-| Import round trip exercised end-to-end by a human | Planned |
+| Import round trip exercised end-to-end by a human | Planned — owner deferred the QC pass on 2026-10-26 |
 
 ## v1.0.0 — capability completeness
 
