@@ -17,6 +17,8 @@ import {
   MessageSquare,
   Target,
   Users2,
+  Briefcase,
+  UserPlus,
 } from 'lucide-react';
 import type { WorkspaceTab } from '../layout/Sidebar';
 import type {
@@ -32,6 +34,8 @@ import type {
   Advisor,
   TeamMember,
   SkillRequirement,
+  HiringRole,
+  Candidate,
 } from '../../types';
 import {
   groupSearchResults,
@@ -62,6 +66,8 @@ interface CommandPaletteProps {
   advisors?: Advisor[];
   teamMembers?: TeamMember[];
   skillRequirements?: SkillRequirement[];
+  hiringRoles?: HiringRole[];
+  candidates?: Candidate[];
 }
 
 const RESULT_ICONS: Record<WorkspaceSearchKind, React.ComponentType<{ className?: string }>> = {
@@ -74,6 +80,8 @@ const RESULT_ICONS: Record<WorkspaceSearchKind, React.ComponentType<{ className?
   advisor: Users2,
   team_member: Users,
   skill_requirement: Target,
+  hiring_role: Briefcase,
+  candidate: UserPlus,
   experiment: FlaskConical,
   competitor: Building2,
   feature: ListTodo,
@@ -96,6 +104,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   advisors = [],
   teamMembers = [],
   skillRequirements = [],
+  hiringRoles = [],
+  candidates = [],
 }) => {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -128,6 +138,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     { id: 'canvas' as WorkspaceTab, label: 'Visual Project Canvas', icon: Network },
     { id: 'mvp' as WorkspaceTab, label: 'MVP MoSCoW Scoping', icon: ListTodo },
     { id: 'roadmap' as WorkspaceTab, label: 'Visual Roadmap', icon: Milestone },
+    { id: 'hiring' as WorkspaceTab, label: 'Hiring Pipeline', icon: Briefcase },
     { id: 'documents' as WorkspaceTab, label: 'Export Reports (Markdown/JSON)', icon: FileText },
   ];
 
@@ -147,6 +158,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       advisors,
       teamMembers,
       skillRequirements,
+      hiringRoles,
+      candidates,
       experiments,
       competitors,
       features,

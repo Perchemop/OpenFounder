@@ -383,6 +383,8 @@ function AppContent() {
         advisors={advisors}
         teamMembers={teamMembers}
         skillRequirements={skillRequirements}
+        hiringRoles={hiringRoles}
+        candidates={candidates}
       />
     </div>
   );

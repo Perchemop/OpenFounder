@@ -33,7 +33,7 @@ has a known gap), **Planned**.
 | C-26 | Team skills coverage with gaps | Done | `TeamPage`, `src/utils/skillCoverage.ts` |
 | C-28 | Bug / crash reporting from inside the app | Done | `src/bugReport.ts`, `BugReportModal` |
 | C-29 | Update check against releases | Done | `src/updateCheck.ts`, `UpdateCheckPanel` |
-| C-22 | Full-text workspace search | Done | `src/utils/workspaceSearch.ts`, `CommandPalette` |
+| C-22 | Full-text workspace search | Done | `src/utils/workspaceSearch.ts`, `CommandPalette` — covers evidence, research, interviews, risks, roadmap, goals, advisors, team, hiring roles and candidates, experiments, competitors, features |
 | C-23 | Cloud sync / multi-device | Planned (out of scope v1) | — |
 | C-30 | First-hire pipeline (roles and candidates with guarded stages) | Done | `HiringPage`, `src/utils/hiringPipeline.ts` (stage guard, fill state, next action), `db.hiringRoles`, `db.candidates`, export/import schema v7 |
 
@@ -44,8 +44,8 @@ has a known gap), **Planned**.
   the empty and error states; screens behind the workspace tabs are not yet captured (no stable
   selectors for them).
 - Cloud sync / multi-device (C-23) is deliberately out of scope for v1; the app is local-first.
-- Hiring (C-30) is a local decision log: roles and candidates are not yet searchable from the
-  command palette, and no candidate data is fetched from any external service by design.
+- Hiring (C-30) is a local decision log: no candidate data is fetched from any external service, by
+  design. Roles and candidates are searchable from the command palette (C-22).
 - Performance: dense tables render a bounded window with an explicit "Show more" (D-012). No
   runtime profiling is run on the development machine — builds and tests run in GitHub Actions by
   policy — so the guarantee is bounded render work plus unit-tested paging, not a published
