@@ -10,6 +10,10 @@ import { test, expect, type Page } from '@playwright/test';
  *   1. no uncaught exception or console error on load, and
  *   2. the app actually painted something (the screenshot is not a blank frame).
  *
+ * Covered: the landing screen at three viewports, the empty state (no stored
+ * project), and the error state (the real error boundary, forced with
+ * `?__forceError=1`).
+ *
  * What is *not* covered yet: screens behind the workspace tabs, because there
  * are no stable selectors for them (no role="tab", no data-testid). When those
  * land, add a loop here instead of guessing at CSS classes.
@@ -55,6 +59,21 @@ test('landing screen at three viewports', async ({ page }) => {
   }
 
   expect(errors, `the landing screen must load without errors:\n${errors.join('\n')}`).toEqual([]);
+});
+
+test('error state renders the error boundary', async ({ page }) => {
+  // The app renders its real error boundary when `?__forceError=1` is present
+  // (see src/main.tsx). The intentional error logs to the console, so this test
+  // asserts the visible state instead of a clean console.
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/?__forceError=1');
+  await settle(page);
+
+  await expect(page.getByText('OpenFounder crashed')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
+
+  await page.screenshot({ path: `${OUT}/error-state.png`, fullPage: true });
+  console.log(`captured ${OUT}/error-state.png`);
 });
 
 test('empty state with no stored project', async ({ page, context }) => {
