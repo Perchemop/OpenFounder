@@ -223,7 +223,9 @@ Coverage includes:
 | [docs/scope.md](docs/scope.md) | In-scope and out-of-scope capabilities |
 | [docs/inspiration.md](docs/inspiration.md) | Public frameworks and clean-room boundary |
 | [docs/architecture.md](docs/architecture.md) | Stack, runtime shape, data model, domain rules |
+| [docs/capability-inventory.md](docs/capability-inventory.md) | The capability list this app is designed to deliver, with sources and status |
 | [docs/parity.md](docs/parity.md) | Capability matrix with honest status |
+| [docs/releases/](docs/releases/README.md) | Per-release legal checklist records with CI evidence |
 | [docs/assumptions-and-questions.md](docs/assumptions-and-questions.md) | Assumptions and open questions |
 | [docs/development.md](docs/development.md) | Contribution flow and CI-only verification |
 | [docs/qc/manual-qc.md](docs/qc/manual-qc.md) | Manual quality checklist |

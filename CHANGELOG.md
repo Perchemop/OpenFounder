@@ -14,6 +14,12 @@ semantic versioning for its export schema and application releases.
 
 ### Docs
 
+- `docs/capability-inventory.md`: the `CAP-nnn` capability list required by guide §II.27.3, mapped
+  one-to-one onto the existing parity IDs, with a source and status per row
+- `docs/releases/`: per-release §2.5 legal-checklist records for v0.1.0 and v0.2.0, each naming the
+  CI run that produced its artefacts
+- `CONTRIBUTING.md`: explicit local commands (`bun run lint|test|build:static`) and the Playwright
+  command, with the CI-only restriction scoped to the maintainer's machine
 - `docs/launch-checklist.md`: numbered owner click-path for Dependency graph, secret scanning and
   push protection, vulnerability reporting, branch protection with the eight required checks, a
   second admin, and MFA; stale rows corrected (action pinning and the axe scan are done;
