@@ -2,6 +2,31 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-27 · Command palette covers hiring
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+**Task brief.** Close the gap recorded when the Hiring Pipeline shipped: the palette did not index
+roles or candidates. Acceptance criteria: a query finds a role by title/skill/pay note and a
+candidate by name/source/concern/observed evidence; activating a result opens the Hiring Pipeline
+tab; unit tests cover both kinds. Out of scope: searching anything else, or changing result ranking.
+
+### Done in this session
+
+- `workspaceSearch.ts`: `hiring_role` and `candidate` kinds, a `hiring` search tab, two group
+  entries, and the two builders (role body = must-have/nice-to-have skills, pay note, notes;
+  candidate body = strengths, concerns, observed evidence, next step)
+- `CommandPalette.tsx`: accepts `hiringRoles`/`candidates`, two icons, and a "Hiring Pipeline"
+  quick-nav entry
+- `App.tsx` passes both collections from `ProjectContext`
+- `workspaceSearch.test.ts`: three cases (role fields, candidate fields, tab routing per kind)
+- Tracking: the "not yet searchable" gap removed from `docs/parity.md`, `IMPLEMENTATION_PLAN.md`,
+  and `docs/capability-inventory.md`; CAP-022 evidence broadened
+
+### Verification
+
+- CI result recorded below (verify ×3 runs the new Vitest cases)
+
 ## 2026-10-27 · Verification hygiene: error-state evidence and Dependabot for Actions
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

@@ -82,8 +82,7 @@ is covered by tests.
 - [x] First-hire pipeline (local only) — domain rules (`src/utils/hiringPipeline.ts`), Dexie
       `version(7)` tables, export/import schema v7 with candidate→role ID remap, and the
       `HiringPage` UI with a sidebar entry, stage filter chips, guarded stage moves, and
-      next-action empty states
-  - Known gap: the command palette does not search roles or candidates yet (`workspaceSearch.ts`)
+      next-action empty states; roles and candidates are searchable from the command palette
 
 ## Guide compliance (2026-10-24 review of the operating manual)
 

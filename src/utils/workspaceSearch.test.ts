@@ -1,11 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { searchWorkspace, groupSearchResults } from './workspaceSearch';
 import type {
+  Candidate,
   Competitor,
   CustomerInterview,
   EvidenceItem,
   Experiment,
   FeatureItem,
+  HiringRole,
   ResearchSource,
   RiskItem,
   RoadmapItem,
@@ -190,6 +192,36 @@ const features: FeatureItem[] = [
   },
 ];
 
+const hiringRoles: HiringRole[] = [
+  {
+    ...stamps,
+    id: 'role1',
+    projectId: 'p1',
+    title: 'Founding engineer',
+    kind: 'full_time',
+    mustHaveSkills: ['TypeScript'],
+    niceToHaveSkills: ['design systems'],
+    budgetNote: 'Contract for three months',
+    notes: '',
+  },
+];
+
+const candidates: Candidate[] = [
+  {
+    ...stamps,
+    id: 'cand1',
+    projectId: 'p1',
+    roleId: 'role1',
+    name: 'Alex Rivera',
+    source: 'referral',
+    stage: 'interviewing',
+    strengths: ['shipped an invoicing tool'],
+    concerns: ['wants a larger salary'],
+    evidenceNotes: 'Trial task delivered in two days',
+    nextStep: 'Reference call',
+  },
+];
+
 const data = {
   evidence,
   research,
@@ -201,6 +233,8 @@ const data = {
   experiments,
   competitors,
   features,
+  hiringRoles,
+  candidates,
 };
 
 describe('searchWorkspace', () => {
@@ -302,5 +336,30 @@ describe('groupSearchResults', () => {
 
   it('returns an empty list for no results', () => {
     expect(groupSearchResults([])).toEqual([]);
+  });
+});
+
+describe('hiring search coverage', () => {
+  it('finds a role by title, must-have skill, or budget note', () => {
+    const ids = (query: string) => searchWorkspace(query, data).map((result) => result.id);
+    expect(ids('founding engineer')).toContain('role1');
+    expect(ids('TypeScript')).toContain('role1');
+    expect(ids('Contract for three months')).toContain('role1');
+  });
+
+  it('finds a candidate by name, source, concern, or observed evidence', () => {
+    const ids = (query: string) => searchWorkspace(query, data).map((result) => result.id);
+    expect(ids('Alex Rivera')).toContain('cand1');
+    expect(ids('referral')).toContain('cand1');
+    expect(ids('larger salary')).toContain('cand1');
+    expect(ids('Trial task')).toContain('cand1');
+  });
+
+  it('routes both kinds to the hiring tab', () => {
+    const roleGroups = groupSearchResults(searchWorkspace('TypeScript', data));
+    expect(roleGroups.find((group) => group.kind === 'hiring_role')?.tab).toBe('hiring');
+
+    const candidateGroups = groupSearchResults(searchWorkspace('Alex Rivera', data));
+    expect(candidateGroups.find((group) => group.kind === 'candidate')?.tab).toBe('hiring');
   });
 });

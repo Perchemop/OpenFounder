@@ -47,6 +47,8 @@ semantic versioning for its export schema and application releases.
 
 ### Added
 
+- Command palette covers hiring: roles and candidates are searched by title, skills, source,
+  strengths, concerns, observed evidence, and next step, and a result opens the Hiring Pipeline tab
 - Hiring Pipeline page: role cards with must-have skills, a stage filter, per-candidate stage moves
   limited to legal transitions, and a next-action prompt per role; reachable from the sidebar
 - First-hire pipeline persistence: Dexie `version(7)` adds `hiringRoles` and `candidates`;

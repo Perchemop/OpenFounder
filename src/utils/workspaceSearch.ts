@@ -12,6 +12,9 @@ import type {
   Advisor,
   TeamMember,
   SkillRequirement,
+  HiringRole,
+  // Aliased: this module has its own internal `Candidate` (a search row).
+  Candidate as HiringCandidate,
 } from '../types';
 
 /**
@@ -28,6 +31,7 @@ export type SearchTab =
   | 'goals'
   | 'advisors'
   | 'team'
+  | 'hiring'
   | 'competitors'
   | 'validation'
   | 'mvp';
@@ -42,6 +46,8 @@ export type WorkspaceSearchKind =
   | 'advisor'
   | 'team_member'
   | 'skill_requirement'
+  | 'hiring_role'
+  | 'candidate'
   | 'experiment'
   | 'competitor'
   | 'feature';
@@ -56,6 +62,8 @@ export interface WorkspaceSearchData {
   advisors?: readonly Advisor[];
   teamMembers?: readonly TeamMember[];
   skillRequirements?: readonly SkillRequirement[];
+  hiringRoles?: readonly HiringRole[];
+  candidates?: readonly HiringCandidate[];
   experiments?: readonly Experiment[];
   competitors?: readonly Competitor[];
   features?: readonly FeatureItem[];
@@ -98,6 +106,8 @@ const GROUP_ORDER: ReadonlyArray<Pick<WorkspaceSearchGroup, 'kind' | 'label' | '
   { kind: 'advisor', label: 'Advisors', tab: 'advisors' },
   { kind: 'team_member', label: 'Team', tab: 'team' },
   { kind: 'skill_requirement', label: 'Skill requirements', tab: 'team' },
+  { kind: 'hiring_role', label: 'Hiring roles', tab: 'hiring' },
+  { kind: 'candidate', label: 'Candidates', tab: 'hiring' },
   { kind: 'experiment', label: 'Experiments', tab: 'validation' },
   { kind: 'competitor', label: 'Competitors', tab: 'competitors' },
   { kind: 'feature', label: 'Features', tab: 'mvp' },
@@ -243,6 +253,28 @@ function buildCandidates(data: WorkspaceSearchData): Candidate[] {
       title: item.skill,
       detail: `importance ${item.importance} · target ${item.targetLevel}`,
       body: joinText(item.why),
+    });
+  }
+
+  for (const item of data.hiringRoles ?? []) {
+    candidates.push({
+      id: item.id,
+      kind: 'hiring_role',
+      tab: 'hiring',
+      title: item.title,
+      detail: item.kind.replace(/_/g, ' '),
+      body: joinText(item.mustHaveSkills, item.niceToHaveSkills, item.budgetNote, item.notes),
+    });
+  }
+
+  for (const item of data.candidates ?? []) {
+    candidates.push({
+      id: item.id,
+      kind: 'candidate',
+      tab: 'hiring',
+      title: item.name,
+      detail: [item.source, item.stage.replace(/_/g, ' ')].filter(Boolean).join(' · '),
+      body: joinText(item.strengths, item.concerns, item.evidenceNotes, item.nextStep),
     });
   }
 
