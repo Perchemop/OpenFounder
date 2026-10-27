@@ -13,7 +13,8 @@ import type {
   TeamMember,
   SkillRequirement,
   HiringRole,
-  Candidate,
+  // Aliased: this module has its own internal `Candidate` (a search row).
+  Candidate as HiringCandidate,
 } from '../types';
 
 /**
@@ -62,7 +63,7 @@ export interface WorkspaceSearchData {
   teamMembers?: readonly TeamMember[];
   skillRequirements?: readonly SkillRequirement[];
   hiringRoles?: readonly HiringRole[];
-  candidates?: readonly Candidate[];
+  candidates?: readonly HiringCandidate[];
   experiments?: readonly Experiment[];
   competitors?: readonly Competitor[];
   features?: readonly FeatureItem[];
