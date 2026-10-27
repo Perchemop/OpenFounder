@@ -40,7 +40,25 @@ bun install
 ```
 Run the app with `bun run dev:vite`. No backend is required for development.
 
-Running tests locally is a contributor responsibility on machines where it is feasible. CI is the authoritative verification; do not claim CI will pass based on a local run on this constrained machine.
+### Running the checks locally
+
+```bash
+bun run lint        # TypeScript type check
+bun run test        # Vitest unit suite
+bun run build:static  # production static build
+```
+
+These are the same commands CI runs, so please run them before opening a pull request.
+
+**On this project's maintenance setup specifically:** the maintainer's laptop is
+memory-constrained and restarts under load, so the maintainer runs builds and tests in GitHub
+Actions (via `~/.config/opencode/scripts/ci.sh`) and treats the CI result as authoritative. That
+restriction applies to *this* machine only — contributors are expected and encouraged to run the
+commands above locally, and a local green run is a normal part of the workflow for everyone else.
+
+The end-to-end accessibility scan needs Playwright browsers; `bunx playwright install chromium`
+once, then `bunx playwright test tests/a11y.spec.ts tests/visual.spec.ts` with the app served on
+`http://localhost:4173`.
 
 ### Expectations and tone
 

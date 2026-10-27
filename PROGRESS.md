@@ -2,6 +2,35 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-27 · Guide compliance: inventory, release records, decisions
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `docs/capability-inventory.md` (guide §II.27.3): `CAP-001`–`CAP-031`, each with observable
+  behaviour, acceptance criteria, a public source or an explicit "original design", status, and a
+  1:1 link to its `docs/parity.md` row; recorded exclusions carry reasons
+- `docs/releases/`: `README.md` defines the per-release record, and `v0.1.0.md` / `v0.2.0.md` hold
+  the §2.5 checklist with the real tag CI runs (`40071128359`, `40129190002`) and asset lists
+- `DECISIONS.md`: D-013 records guide §5.5 as commit-enforced with PR authorship following the
+  pushing account (owner chose option (a) after a plain-language explanation); D-014 records the
+  GitHub MCP staying disabled with the `gh` CLI as the GitHub integration
+- `CONTRIBUTING.md`: local commands named, and the "CI is authoritative" restriction scoped to the
+  maintainer's machine so contributors are not pushed away (guide §II.26.1)
+- `README.md`: docs index points at the inventory and the release records
+
+### Honest notes
+
+- The v0.1.0 and v0.2.0 checklists were reconstructed after the fact from artefacts and CI runs, and
+  the files say so; no row claims a contemporaneous note.
+- `docs/capability-inventory.md` cites only public standards and product home pages already recorded
+  or checked here; no URL was invented for a claimed behaviour.
+
+### Verification
+
+- CI result recorded below (docs-only slice)
+
 ## 2026-10-27 · Hiring Pipeline page (UI slice)
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

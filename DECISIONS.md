@@ -124,3 +124,36 @@ pure and testable in Vitest, which runs in CI, so the behaviour is verifiable wi
 the development machine (heavy work runs in GitHub Actions by policy).
 *Rejected:* adding `react-window`/`virtua` (new dependency, CSS/measurement complexity for a table
 whose height is not fixed); silently limiting rows without telling the user.
+
+## D-013 · 2026-10-27 · Git identity applies to commits; PR authorship follows the pushing account
+
+Guide §5.5 ("every commit, pull request, merge and tag is authored as `<App Name> Dev`
+<dev@example.com>") is enforced where it is enforceable and recorded where it is not:
+
+- **Enforced:** the commit object. `ci.sh` asserts the repository-local identity is
+  `OpenFounder Dev <dev@example.com>` before committing and refuses a mismatch.
+- **Not enforceable:** a pull request's author and the "merged by" line. GitHub derives both from
+  the account whose credential pushed the branch, and offers no override. On this setup that is the
+  owner's account (`Perchemop`), so a PR shows `Perchemop` regardless of the commit metadata.
+
+Raised by guide §II.26.7, which asked for a decision. Chosen with the owner: option (a).
+*Why:* a rule that no available mechanism can satisfy is worse than a narrower rule that holds;
+this keeps the public claim true.
+*Rejected:* (b) a machine account whose token performs the push — it would satisfy §5.5 end to end
+but adds a push-capable credential to create, store, and rotate; (c) leaving the wording as written
+and recording an exception, which keeps a public rule that is partly unmet.
+
+## D-014 · 2026-10-27 · GitHub integration stays on the `gh` CLI; the GitHub MCP remains disabled
+
+Addendum §D.1 lists the GitHub MCP in the minimum tool set. The global OpenCode config has it
+present but disabled with a placeholder token, and the owner chose to leave it that way.
+
+- Every GitHub action (pull requests, merges, workflow logs, release inspection) is performed with
+  the authenticated `gh` CLI, which is already the flow `ci.sh` depends on and is auditable from the
+  session log.
+- Context7 MCP stays enabled for library documentation.
+
+*Why:* avoids introducing a second long-lived credential (a PAT in the agent config) that would
+have to be created, stored, and rotated for no capability this repository needs today.
+*Rejected:* enabling the MCP with a fine-scoped PAT now; it can be revisited if a workflow needs
+MCP-only features (for example server-side issue search) that `gh` cannot express.
