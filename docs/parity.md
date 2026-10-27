@@ -35,13 +35,15 @@ has a known gap), **Planned**.
 | C-29 | Update check against releases | Done | `src/updateCheck.ts`, `UpdateCheckPanel` |
 | C-22 | Full-text workspace search | Done | `src/utils/workspaceSearch.ts`, `CommandPalette` |
 | C-23 | Cloud sync / multi-device | Planned (out of scope v1) | — |
-| C-30 | First-hire pipeline (roles and candidates with guarded stages) | Partial — data model, stage rules, and export/import are done; page UI pending | `src/utils/hiringPipeline.ts`, `db.hiringRoles`, `db.candidates` |
+| C-30 | First-hire pipeline (roles and candidates with guarded stages) | Done | `HiringPage`, `src/utils/hiringPipeline.ts` (stage guard, fill state, next action), `db.hiringRoles`, `db.candidates`, export/import schema v7 |
 
 ## Known gaps recorded honestly
 
 - No pixel-baseline visual regression: `visual.yml` uploads screenshots as artefacts for review
   instead of failing on font-metric drift.
 - Cloud sync / multi-device (C-23) is deliberately out of scope for v1; the app is local-first.
+- Hiring (C-30) is a local decision log: roles and candidates are not yet searchable from the
+  command palette, and no candidate data is fetched from any external service by design.
 - Performance: dense tables render a bounded window with an explicit "Show more" (D-012). No
   runtime profiling is run on the development machine — builds and tests run in GitHub Actions by
   policy — so the guarantee is bounded render work plus unit-tested paging, not a published

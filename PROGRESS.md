@@ -2,6 +2,29 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-27 · Hiring Pipeline page (UI slice)
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `src/pages/HiringPage.tsx`: role cards (title, engagement, must-haves, pay note), a stage filter
+  chip row with per-stage counts, candidate cards showing source, strengths, concerns, observed
+  evidence and next step, and a per-role next-action prompt
+- Stage moves use a select listing only `allowedNextStages(...)`, so a candidate cannot be moved
+  straight to Hired; deleting a role removes its candidates in one transaction
+- Sidebar entry (`Briefcase`, "Hiring Pipeline") and `App.tsx` wiring; pages read from
+  `ProjectContext`
+- Tracking updated: IMPLEMENTATION_PLAN Phase 1b item complete, parity C-30 Done, R-052 Done
+
+### Known gap (recorded, not hidden)
+
+- The command palette does not index roles or candidates yet; noted in `docs/parity.md`
+
+### Verification
+
+- CI result recorded below (verify ×3 = type check + Vitest; a11y and visual jobs run too)
+
 ## 2026-10-27 · First-hire pipeline: persistence and export parity
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

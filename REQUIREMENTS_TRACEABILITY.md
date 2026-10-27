@@ -70,4 +70,4 @@ see `PROGRESS.md` for the current result.
 
 | R-051 | Listing pages filter locally without URL state, and empty states name the next action | `src/components/ui/FilterChip.tsx`, `InterviewsPage`, `TeamPage`, `EvidencePage`, `MVPPlannerPage`, `RoadmapPage` | CI type check + a11y scan; filters are component state, never query params | Done |
 
-| R-052 | First-hire pipeline keeps roles, candidates, and guarded stage moves locally | `src/utils/hiringPipeline.ts`, `src/types/index.ts`, `db.hiringRoles`, `db.candidates` | `hiringPipeline.test.ts` (transitions, funnel, fill state, next action); `importRemap.test.ts` (candidate→role rewrite); `validation.test.ts` (v7 package) | Partial (data, rules, and export/import done; page UI pending) |
+| R-052 | First-hire pipeline keeps roles, candidates, and guarded stage moves locally | `HiringPage`, `src/utils/hiringPipeline.ts`, `db.hiringRoles`, `db.candidates` | `hiringPipeline.test.ts` (transitions, funnel, fill state, next action); `importRemap.test.ts` (candidate→role rewrite); `validation.test.ts` (v7 package) | Done (page reachable from the sidebar; not yet covered by the palette search) |

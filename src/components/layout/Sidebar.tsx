@@ -18,6 +18,7 @@ import {
   Shield,
   Target,
   Users2,
+  Briefcase,
 } from 'lucide-react';
 
 export type WorkspaceTab =
@@ -34,6 +35,7 @@ export type WorkspaceTab =
   | 'goals'
   | 'advisors'
   | 'team'
+  | 'hiring'
   | 'business'
   | 'gtm'
   | 'landing'
@@ -88,6 +90,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'goals' as WorkspaceTab, label: 'Goals & Scorecard', icon: Target },
     { id: 'advisors' as WorkspaceTab, label: 'Advisors & Mentors', icon: Users2 },
     { id: 'team' as WorkspaceTab, label: 'Team & Skills', icon: Users },
+    { id: 'hiring' as WorkspaceTab, label: 'Hiring Pipeline', icon: Briefcase },
     { id: 'business' as WorkspaceTab, label: 'Business Model', icon: Receipt },
     { id: 'gtm' as WorkspaceTab, label: 'Go-To-Market Plan', icon: Megaphone },
     { id: 'landing' as WorkspaceTab, label: 'Landing Page Studio', icon: Globe },
