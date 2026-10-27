@@ -26,6 +26,7 @@ import { RisksPage } from './pages/RisksPage';
 import { GoalsPage } from './pages/GoalsPage';
 import { AdvisorsPage } from './pages/AdvisorsPage';
 import { TeamPage } from './pages/TeamPage';
+import { HiringPage } from './pages/HiringPage';
 
 import { Sparkles, Loader2 } from 'lucide-react';
 
@@ -48,6 +49,8 @@ function AppContent() {
     advisors,
     teamMembers,
     skillRequirements,
+    hiringRoles,
+    candidates,
     projectContextString,
     unverifiedEvidenceCount,
     activeExperimentsCount,
@@ -239,6 +242,16 @@ function AppContent() {
                   members={teamMembers}
                   requirements={skillRequirements}
                   onTeamUpdated={reloadCurrentProjectData}
+                  onOpenAICofounderWithPrompt={openAICofounderWithPrompt}
+                />
+              )}
+
+              {activeTab === 'hiring' && (
+                <HiringPage
+                  projectId={currentProject.id}
+                  roles={hiringRoles}
+                  candidates={candidates}
+                  onHiringUpdated={reloadCurrentProjectData}
                   onOpenAICofounderWithPrompt={openAICofounderWithPrompt}
                 />
               )}

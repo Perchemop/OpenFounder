@@ -38,6 +38,8 @@ semantic versioning for its export schema and application releases.
 
 ### Added
 
+- Hiring Pipeline page: role cards with must-have skills, a stage filter, per-candidate stage moves
+  limited to legal transitions, and a next-action prompt per role; reachable from the sidebar
 - First-hire pipeline persistence: Dexie `version(7)` adds `hiringRoles` and `candidates`;
   export/import schema v7 carries both, and `remapHiringPipeline` rewrites a candidate's `roleId`
   onto the remapped role (a dangling reference is preserved, not silently re-pointed)
