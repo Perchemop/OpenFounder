@@ -2,6 +2,30 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-27 · Verification hygiene: error-state evidence and Dependabot for Actions
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+### Done in this session
+
+- `tests/visual.spec.ts` captures the error state at 1280×800 and asserts the real error boundary is
+  showing (`OpenFounder crashed` + a working "Try again" control)
+- `src/main.tsx` gains an inert `?__forceError=1` hook that renders the true `ErrorBoundary`; it
+  does nothing without the parameter and is documented in both files
+- `.github/dependabot.yml` adds the `github-actions` ecosystem alongside `npm` (guide §II.25)
+- `docs/parity.md` known gaps updated to state exactly which states the visual job does and does not
+  capture
+
+### Honest notes
+
+- The visual job still has no pixel baselines; the error screenshot is an artefact for review, not a
+  brittle diff.
+- Workspace-tab screens remain uncaptured until stable selectors exist.
+
+### Verification
+
+- CI result recorded below (`visual` job must render the error boundary without failing)
+
 ## 2026-10-27 · Guide compliance: inventory, release records, decisions
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

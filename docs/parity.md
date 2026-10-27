@@ -40,7 +40,9 @@ has a known gap), **Planned**.
 ## Known gaps recorded honestly
 
 - No pixel-baseline visual regression: `visual.yml` uploads screenshots as artefacts for review
-  instead of failing on font-metric drift.
+  instead of failing on font-metric drift. It captures the landing screen at three viewports plus
+  the empty and error states; screens behind the workspace tabs are not yet captured (no stable
+  selectors for them).
 - Cloud sync / multi-device (C-23) is deliberately out of scope for v1; the app is local-first.
 - Hiring (C-30) is a local decision log: roles and candidates are not yet searchable from the
   command palette, and no candidate data is fetched from any external service by design.

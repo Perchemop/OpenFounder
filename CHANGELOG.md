@@ -7,6 +7,9 @@ semantic versioning for its export schema and application releases.
 
 ### Security
 
+- Dependabot now watches `github-actions` as well as `npm` (guide §II.25)
+- Visual evidence captures the error state as well as empty and landing, using the real error
+  boundary (inert without `?__forceError=1`)
 - Every remote GitHub Action is now pinned to a 40-character commit SHA (deploy, CodeQL and
   dependency-review were still on floating tags); the Bun toolchain is pinned to `1.4.4`
 - New `action pinning` CI job (`scripts/check-action-pinning.js`) fails the build if a workflow
