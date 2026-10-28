@@ -40,7 +40,7 @@ describe('buildBugReportBody', () => {
       ...base,
       userNotes: 'I had three claims open.',
       stepsToReproduce: ['Open ledger', 'Promote claim'],
-      technicalDetail: 'TypeError: cannot read\nat promote (/home/leo/app/src/x.ts:1:1)',
+      technicalDetail: 'TypeError: cannot read\nat promote (/home/user/app/src/x.ts:1:1)',
     });
 
     const sections = ['### What happened', '### Steps to reproduce', '### Environment', '### Technical detail'];
@@ -72,12 +72,12 @@ describe('buildBugReportBody', () => {
 
   it('scrubs home paths and long hex ids, and caps stack lines', () => {
     const detail = Array.from({ length: 40 }, (_, index) =>
-      `at fn${index} (/home/leo/x.ts:${index}:1) id=abcdef0123456789abcdef0123456789`
+      `at fn${index} (/home/user/x.ts:${index}:1) id=abcdef0123456789abcdef0123456789`
     ).join('\n');
     const body = buildBugReportBody({ ...base, technicalDetail: detail });
     const block = body.slice(body.indexOf('### Technical detail'));
 
-    expect(block).not.toContain('/home/leo');
+    expect(block).not.toContain('/home/user');
     expect(block).toContain('~');
     expect(block).not.toContain('abcdef0123456789');
     expect(block).toContain('<id>');
