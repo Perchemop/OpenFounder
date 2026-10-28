@@ -6,3 +6,6 @@ summary
 gitleaks
 sbom
 action pinning
+
+# pii.yml — personal-data gate (guide II.29)
+Personal data scan
