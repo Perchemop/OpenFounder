@@ -38,7 +38,10 @@ raised for the history purge. Out of scope: performing the history purge (needs 
 
 ### Verification
 
-- CI result recorded below (`personal data scan` must report success)
+- CI run **40669926319** (`verify` ×3, `build (static)`, `summary`, `gitleaks`, `sbom`,
+  `action pinning`, `personal data scan`) — all success; only advisory `dependency review` failed
+  (Dependency graph still disabled). The required `personal data scan` check is green on tree,
+  history, and metadata.
 
 ## 2026-10-27 · Command palette covers hiring
 
