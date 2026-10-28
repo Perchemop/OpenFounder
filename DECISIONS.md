@@ -157,3 +157,32 @@ present but disabled with a placeholder token, and the owner chose to leave it t
 have to be created, stored, and rotated for no capability this repository needs today.
 *Rejected:* enabling the MCP with a fine-scoped PAT now; it can be revisited if a workflow needs
 MCP-only features (for example server-side issue search) that `gh` cannot express.
+
+## D-015 · 2026-10-28 · Personal-data and secret scan is a required gate, with a hashed baseline for history
+
+Guide §II.29 (owner directive 2026-10-27) makes a personal-data and secret scan mandatory before
+every commit, push, and release. Adopted as follows:
+
+- `scripts/personal-data-scan.js` runs in three modes: the working tree, the whole history plus
+  commit metadata, and a built artefact tree. It includes dotfiles and dot-directories.
+- The `personal data scan` job is a **required** check (`.ci-required.txt`), and `release.yml` scans
+  the extracted tarball and the asset set before a draft release is published.
+- Every hit is **classified**; synthetic values (`dev@example.com`, `/home/runner`,
+  `/home/example-user`), documented placeholders, and `git@host` SSH remotes are reported as allowed
+  with their reason. Anything else fails the gate.
+
+Two pre-existing history findings are recorded in `docs/security/known-historical-findings.json` by
+the **SHA-256 of the value**, never the value itself: a maintainer home path that sat in
+`.opencode/agents/*.md` until PR #52, and a too-plausible test-fixture path in `src/bugReport.test.ts`
+(replaced with a reserved example path in this slice). Both are clean at HEAD; both remain readable
+in history.
+
+*Why:* the gate must be honest in both directions — red for a new leak, and green for a known one
+that is already published, with the residual risk written down instead of hidden. Hashing lets the
+scan recognise the value without re-publishing it.
+*Pending owner decision:* purging history (`git filter-repo`, force-push, re-clone) for the two
+findings. That is a deliberate, owner-approved action (guide §II.29.4 step 3), not a reflex, and
+branch protection with `enforce_admins` must be lifted temporarily to do it.
+*Rejected:* leaving the scan as advisory ("a scan that is not a required check is a suggestion");
+listing the values in a baseline file in clear text; deleting the historical commits without owner
+approval.

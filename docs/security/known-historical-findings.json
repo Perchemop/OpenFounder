@@ -1,0 +1,27 @@
+{
+  "note": "Known personal-data findings that existed in git history. Values are recorded as SHA-256 only, never in clear text (guide II.29.1: a document may describe the defect, it must not reproduce the value). The gate stays red for any value NOT listed here. Remove an entry only after the history purge has been performed and verified.",
+  "scan": "scripts/personal-data-scan.js history",
+  "findings": [
+    {
+      "sha256": "40aaa5591a99d559f747b8966e8f0d0fec8fba2236347ccb443a9142bde351b8",
+      "kind": "home path",
+      "where": [
+        ".opencode/agents/ci-runner.md",
+        ".opencode/agents/designer.md",
+        ".opencode/agents/fixer.md",
+        ".opencode/agents/tester.md"
+      ],
+      "status": "removed from HEAD (PR #52, commit 12ab9d5); still readable in history",
+      "reason": "Known historical leak of the maintainer OS account name inside a shell allowlist entry. HEAD is clean; purging history requires a force-push and owner approval (guide II.29.4 step 3).",
+      "action_pending": "owner decision on history purge"
+    },
+    {
+      "sha256": "93231d4c8ab8096cae5c7bfd1ae179966e8f0fba20bcbcfdd2f4fcc9028bd73e",
+      "kind": "home path",
+      "where": ["src/bugReport.test.ts"],
+      "status": "removed from HEAD in the II.29 gate slice; still readable in history",
+      "reason": "Test fixture used to prove stack-trace scrubbing used a plausible short user name. Replaced with a reserved example path (`/home/example-user`). Historical copies remain.",
+      "action_pending": "covered by the same owner decision on history purge"
+    }
+  ]
+}

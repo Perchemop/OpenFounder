@@ -6,3 +6,4 @@ summary
 gitleaks
 sbom
 action pinning
+personal data scan

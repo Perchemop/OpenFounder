@@ -26,6 +26,10 @@ This checklist maps the guide's pre-launch requirements to evidence and owner.
 |---|---|---|---|
 | SAST in CI (CodeQL) | .github/workflows/codeql.yml | Done | Maintainer |
 | Secret scanning in CI (gitleaks) | ci.yml job | Done | Maintainer |
+| Personal-data + secret scan (tree, history, metadata) | `scripts/personal-data-scan.js`, required `personal data scan` job | Done | Maintainer |
+| Release assets scanned before publishing | `release.yml` step (guide §II.29.6) | Done | Maintainer |
+| History purge for two published values | `docs/security/known-historical-findings.json` | Pending owner decision | Human |
+| Repository description/homepage/topics set | Currently `description: "Test"`, no homepage, no topics | Pending | Human |
 | Dependency review on PRs | dependency-review-action (pinned `v4.9.0`); advisory until Dependency graph is enabled | Advisory | Human |
 | SBOM generated and licence-class gate | CI job + release.yml | Done | Maintainer |
 | Dependabot configured | .github/dependabot.yml | Done | Maintainer |

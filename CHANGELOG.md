@@ -7,6 +7,15 @@ semantic versioning for its export schema and application releases.
 
 ### Security
 
+- Mandatory personal-data and secret scan (guide §II.29): `scripts/personal-data-scan.js` scans the
+  working tree (dot-directories included), the whole history plus commit metadata, and release
+  assets; the `personal data scan` job is a required check and `release.yml` scans the extracted
+  tarball before publishing
+- Test fixtures no longer use a plausible personal-looking home path; they use the reserved
+  `/home/example-user`
+- Two pre-existing history findings (an OS account name in agent config, fixed at HEAD by PR #52,
+  and the test-fixture path) are recorded by SHA-256 in
+  `docs/security/known-historical-findings.json`; the history purge is pending an owner decision
 - Dependabot now watches `github-actions` as well as `npm` (guide §II.25)
 - Visual evidence captures the error state as well as empty and landing, using the real error
   boundary (inert without `?__forceError=1`)

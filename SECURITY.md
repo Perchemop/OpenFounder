@@ -24,6 +24,31 @@ for it before the issue is triaged.
   published.
 - Credit in the release notes if you wish (you may stay anonymous).
 
+## Personal data and secrets: scan gate, and a published-history notice
+
+The build guide requires a mandatory personal-data and secret scan (§II.29). It runs in CI as a
+**required** check on every pull request — over the working tree (dot-directories included), the
+whole git history, and the commit metadata — and in the release job over the extracted tarball and
+the released assets before anything is published. The scanner is
+`scripts/personal-data-scan.js`; every hit is classified, never just counted.
+
+**Notice (2026-10-28).** Two values that should not have been committed were found in git history
+and are recorded, **by SHA-256 only**, in `docs/security/known-historical-findings.json`:
+
+1. a maintainer OS account name, used in a shell allowlist entry in `.opencode/agents/*.md`;
+2. a plausible-looking home path used as a test fixture in `src/bugReport.test.ts`.
+
+Both are removed from the current tree (the first by PR #52, the second in the scan-gate change).
+Removing them from `HEAD` does not remove them from history, forks, or cached views, so the
+residual finding stands until a history purge is performed — a deliberate action awaiting owner
+approval, since GitHub offers no way to rewrite history silently and branch protection with
+`enforce_admins` has to be lifted to force-push.
+
+No credential was involved: neither value is a token, key, or password, so no rotation is required.
+The defect is a privacy one — publishing values that could identify a real person — and it is
+recorded here rather than quietly deleted, because a quiet deletion would leave the copy in history
+undocumented.
+
 ## Scope and threat model
 
 OpenFounder is a **static, local-first web application**. There is no server component, no

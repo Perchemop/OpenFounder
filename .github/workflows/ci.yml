@@ -105,6 +105,20 @@ jobs:
       - name: Every remote action is pinned to a commit SHA
         run: node scripts/check-action-pinning.js
 
+  personal-data:
+    name: personal data scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          # The whole history is scanned, not just HEAD (guide II.29.2).
+          fetch-depth: 0
+      - name: Scan the working tree (dot-directories included)
+        run: node scripts/personal-data-scan.js
+      - name: Scan the whole history and the commit metadata
+        run: node scripts/personal-data-scan.js history
+
   sbom:
     name: sbom
     runs-on: ubuntu-latest
@@ -147,6 +161,7 @@ jobs:
       - gitleaks
       - sbom
       - pinning
+      - personal-data
     if: always()
     steps:
       - name: Report outcome
@@ -160,7 +175,8 @@ jobs:
           echo "| gitleaks | ${{ needs.gitleaks.result }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| sbom | ${{ needs.sbom.result }} |" >> "$GITHUB_STEP_SUMMARY"
           echo "| action pinning | ${{ needs.pinning.result }} |" >> "$GITHUB_STEP_SUMMARY"
-          if [ "${{ needs.verify.result }}" != "success" ] || [ "${{ needs.build.result }}" != "success" ] || [ "${{ needs.gitleaks.result }}" != "success" ] || [ "${{ needs.sbom.result }}" != "success" ] || [ "${{ needs.pinning.result }}" != "success" ]; then
+          echo "| personal data scan | ${{ needs.personal-data.result }} |" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ needs.verify.result }}" != "success" ] || [ "${{ needs.build.result }}" != "success" ] || [ "${{ needs.gitleaks.result }}" != "success" ] || [ "${{ needs.sbom.result }}" != "success" ] || [ "${{ needs.pinning.result }}" != "success" ] || [ "${{ needs.personal-data.result }}" != "success" ]; then
             echo "" >> "$GITHUB_STEP_SUMMARY"
             echo "One or more required jobs failed. See the failing job logs." >> "$GITHUB_STEP_SUMMARY"
             exit 1

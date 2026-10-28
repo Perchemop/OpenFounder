@@ -2,6 +2,44 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-28 · Mandatory personal-data and secret scan gate (§II.29)
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+**Task brief.** Adopt guide §II.29 as a real gate. Acceptance criteria: a scanner covering the tree
+(dot-directories included), the whole history plus commit metadata, and release assets; wired as a
+**required** check and into the release job; every hit classified; the current tree clean; the
+two pre-existing history findings recorded without re-publishing the values; an owner decision
+raised for the history purge. Out of scope: performing the history purge (needs owner approval).
+
+### Done in this session
+
+- `scripts/personal-data-scan.js` — three modes (`tree`, `history`, `asset <dir>`), the guide's
+  pattern set, and an explicit allow-list with a reason per allowed hit; known historical findings
+  are matched by SHA-256 through `docs/security/known-historical-findings.json`
+- `ci.yml`: new **required** `personal data scan` job (full-history checkout; tree then history),
+  added to `.ci-required.txt` and to the `summary` gate
+- `release.yml`: scans the extracted tarball and the asset directory before the draft release is
+  published (guide §II.29.6 / §II.24.3)
+- `src/bugReport.test.ts`: the stack-scrubbing fixture now uses the reserved `/home/example-user`
+  instead of a plausible personal-looking path
+- `docs/security/known-historical-findings.json`, `SECURITY.md` notice, `DECISIONS.md` D-015,
+  `docs/launch-checklist.md` rows
+
+### Scan results
+
+- Tree: 182 files scanned, 12 allowed hits, 0 unclassified
+- History + metadata: 29 allowed hits, 0 unclassified (16 of them the known home-path finding)
+- Findings at HEAD: none. Residual: two values remain readable in history, recorded by SHA-256
+
+### Owner decision raised
+
+- History purge (force-push) for the two findings — guide §II.29.4 step 3 requires explicit approval
+
+### Verification
+
+- CI result recorded below (`personal data scan` must report success)
+
 ## 2026-10-27 · Command palette covers hiring
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

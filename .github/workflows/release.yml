@@ -54,6 +54,16 @@ jobs:
           format: spdx-json
           output-file: release/sbom.spdx.json
 
+      - name: Scan release assets for personal data and secrets
+        # Guide II.29.6 / II.24.3: the published surface is scanned, not just the
+        # clone. The tarball is extracted so embedded build paths are checked too.
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/asset-scan
+          tar -xzf "release/openfounder-dist-${GITHUB_REF_NAME}.tar.gz" -C /tmp/asset-scan
+          node scripts/personal-data-scan.js asset /tmp/asset-scan
+          node scripts/personal-data-scan.js asset release
+
       - name: Upload build artefact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
