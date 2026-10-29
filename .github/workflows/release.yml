@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          # Full history: the release-time history scan below needs it (II.29.2).
+          fetch-depth: 0
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
@@ -63,6 +66,7 @@ jobs:
           tar -xzf "release/openfounder-dist-${GITHUB_REF_NAME}.tar.gz" -C /tmp/asset-scan
           bash scripts/scan-personal-data.sh --path /tmp/asset-scan
           bash scripts/scan-personal-data.sh --path release
+          bash scripts/scan-personal-data.sh --history
 
       - name: Upload build artefact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

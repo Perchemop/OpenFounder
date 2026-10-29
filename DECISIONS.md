@@ -181,4 +181,8 @@ allowed with a reason; everything else fails.
 *Pending owner decision:* purging history for the two recorded findings. That needs a force-push
 and `enforce_admins` lifted temporarily, so it is an owner-approved action, not a reflex.
 *Rejected:* two scanners with two pattern sets (drift); a tree-only gate (a suggestion, not a gate);
-listing the known values in clear text in the baseline.
+listing the known values in clear text in the baseline; scanning every ref (`git log --all`) — it
+would fail a pull request because of a leak on somebody else's unmerged branch, which is exactly
+how a gate earns a reputation for being flaky and gets switched off. The scope is the ancestry of
+the checked-out commit: base branch plus pull-request commits on a PR, the published history on
+`main` and on a release tag.

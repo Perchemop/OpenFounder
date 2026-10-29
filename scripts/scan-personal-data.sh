@@ -6,7 +6,7 @@
 # Usage:
 #   bash scripts/scan-personal-data.sh              # scan git-tracked files
 #   bash scripts/scan-personal-data.sh --path DIR   # scan a directory (release assets)
-#   bash scripts/scan-personal-data.sh --history    # scan every commit + commit metadata
+#   bash scripts/scan-personal-data.sh --history    # scan published history + commit metadata
 #
 # Scans for:
 #   * an absolute home path for a real user: /home/<name>, /Users/<name>
@@ -157,13 +157,19 @@ scan_history() {
     local value fail=0
     local values
 
+    # Scope: the ancestry of the checked-out commit. On a pull request that is
+    # the merge commit, so it covers the base branch and the pull request's own
+    # commits; on a push to main and on a release tag it is the published
+    # history. Scanning every ref (`--all`) was rejected: it would fail a pull
+    # request because of a leak on somebody else's unmerged branch, and a gate
+    # that can fail for unrelated reasons gets switched off.
     values="$(
         {
             # Added lines: the content that entered the repository.
-            git log -p --all --unified=0 --no-color \
+            git log -p HEAD --unified=0 --no-color \
                 | grep -E '^\+' | grep -v '^+++' | sed 's/^+//'
             # Commit metadata (guide II.29.2 part 4).
-            git log --all --format='%an <%ae>%n%cn <%ce>'
+            git log HEAD --format='%an <%ae>%n%cn <%ce>'
         } | grep -oE "$HOME_RE|$EMAIL_RE" | sort -u
     )"
 
