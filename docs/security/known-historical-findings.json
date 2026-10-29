@@ -1,0 +1,27 @@
+{
+  "note": "Known personal-data findings that existed in git history. Values are recorded as SHA-256 only, never in clear text (guide II.29.1: a document may describe the defect, it must not reproduce the value). `scripts/scan-personal-data.sh --history` stays red for any value not listed here. Remove an entry only after a history purge has been performed and verified.",
+  "scan": "bash scripts/scan-personal-data.sh --history",
+  "findings": [
+    {
+      "sha256": "40aaa5591a99d559f747b8966e8f0d0fec8fba2236347ccb443a9142bde351b8",
+      "kind": "home path",
+      "where": [
+        ".opencode/agents/ci-runner.md",
+        ".opencode/agents/designer.md",
+        ".opencode/agents/fixer.md",
+        ".opencode/agents/tester.md"
+      ],
+      "status": "removed from HEAD (PR #52, commit 12ab9d5); still readable in history",
+      "reason": "Known historical leak of the maintainer OS account name inside a shell allowlist entry. HEAD is clean; purging history needs a force-push and owner approval (guide II.29.4 step 3).",
+      "action_pending": "owner decision on history purge"
+    },
+    {
+      "sha256": "93231d4c8ab8096cae5c7bfd1ae179966e8f0fba20bcbcfdd2f4fcc9028bd73e",
+      "kind": "home path",
+      "where": ["src/bugReport.test.ts"],
+      "status": "removed from HEAD (PR #55); still readable in history",
+      "reason": "A stack-trace scrubbing test used a plausible short user name as its fixture. It was replaced with the generic placeholder /home/user, which the scan permits. Historical copies remain.",
+      "action_pending": "covered by the same owner decision on history purge"
+    }
+  ]
+}

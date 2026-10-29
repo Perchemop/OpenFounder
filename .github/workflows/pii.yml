@@ -5,8 +5,12 @@ name: Personal data scan
 # path or email address is present in tracked files, so a leak cannot merge.
 # Secret scanning (gitleaks) runs as its own required check.
 #
-# The whole-history scan and the release-artefact scan are release-time
-# duties (guide II.29.2 and II.29.6) and are run before any release is cut.
+# The whole-history scan runs in this same job (guide II.29.2 part 2): a value
+# deleted from HEAD is still readable in the earlier commit, so the tree scan
+# alone would be a suggestion, not a gate. Known findings that are already
+# published and awaiting an owner-approved purge are matched by SHA-256 in
+# docs/security/known-historical-findings.json — never by their clear value.
+# The release-artefact scan runs in release.yml before a draft is published.
 
 on:
   pull_request:
@@ -22,5 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          # Full history: the scan below covers every commit and the metadata.
+          fetch-depth: 0
       - name: Scan tracked files for personal data
         run: bash scripts/scan-personal-data.sh
+      - name: Scan the whole history and the commit metadata
+        run: bash scripts/scan-personal-data.sh --history

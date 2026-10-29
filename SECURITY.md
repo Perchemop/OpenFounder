@@ -66,6 +66,31 @@ judge what counts as a vulnerability here:
 - No privileged token is ever embedded in the client: bug reporting opens a pre-filled issue URL
   in the user's own GitHub session, and update checks call the public Releases API anonymously.
 
+## Personal data and secrets: the scan gate, and a published-history notice
+
+The build guide requires a mandatory personal-data and secret scan (guide §II.29). It runs as the
+required **Personal data scan** check on every pull request and every push to `main`, over the
+working tree (dot-directories included), the whole history, and the commit metadata. The release
+job runs the same scanner over the extracted tarball and the published asset set before a draft
+release is created. The scanner is `scripts/scan-personal-data.sh`; every hit is classified, never
+just counted.
+
+**Notice (2026-10-28).** Two values that should not have been committed were found in git history
+and are recorded, **by SHA-256 only**, in `docs/security/known-historical-findings.json`:
+
+1. a maintainer OS account name, used in a shell allowlist entry in `.opencode/agents/*.md`;
+2. a plausible-looking home path used as a test fixture in `src/bugReport.test.ts`.
+
+Both are gone from the current tree (the first in PR #52, the second in PR #55). Removing a value
+from `HEAD` does not remove it from history, forks, or cached views, so the residual finding stands
+until a history purge is performed — a deliberate action awaiting the owner's approval, because it
+needs a force-push and GitHub offers no way to rewrite history quietly.
+
+No credential was involved: neither value is a token, key, or password, so no rotation is required.
+The defect is a privacy one — publishing values that could identify a real person — and it is
+recorded here rather than quietly deleted, because a quiet deletion would leave the copy in history
+undocumented.
+
 ## Incident response
 
 1. **Triage** — the maintainer (or a security subteam member, once one exists) confirms the

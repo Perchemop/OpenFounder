@@ -17,6 +17,7 @@ Format:
 - Tag CI run: <run id / url> (workflow: Release)
 - Assets: <list with sizes/checksums file>
 - Checksums verified: <command and result>
+- Personal-data scan: <tree / history / asset result, with the run id> (guide §II.29)
 
 ## §2.5 legal checklist
 
