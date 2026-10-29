@@ -7,6 +7,12 @@ semantic versioning for its export schema and application releases.
 
 ### Security
 
+- `scripts/scan-personal-data.sh` gains `--history` (every commit plus commit metadata) and the
+  required **Personal data scan** job now runs it, so a value deleted from `HEAD` no longer passes;
+  known published findings are matched by SHA-256 in `docs/security/known-historical-findings.json`
+- `release.yml` scans the extracted tarball and the published assets before a draft release is
+  created (guide §II.29.6)
+- `SECURITY.md` records the two pre-existing history findings and the pending purge decision
 - Dependabot now watches `github-actions` as well as `npm` (guide §II.25)
 - Visual evidence captures the error state as well as empty and landing, using the real error
   boundary (inert without `?__forceError=1`)

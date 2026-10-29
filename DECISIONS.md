@@ -157,3 +157,28 @@ present but disabled with a placeholder token, and the owner chose to leave it t
 have to be created, stored, and rotated for no capability this repository needs today.
 *Rejected:* enabling the MCP with a fine-scoped PAT now; it can be revisited if a workflow needs
 MCP-only features (for example server-side issue search) that `gh` cannot express.
+
+## D-015 · 2026-10-28 · One personal-data scanner, extended with history and release-asset coverage
+
+Guide §II.29 (owner directive 2026-10-27) makes a personal-data and secret scan mandatory. A
+parallel branch of work had already added `scripts/scan-personal-data.sh` plus the required
+**Personal data scan** check (PR #55). Rather than ship a second, competing scanner, that single
+scanner was extended:
+
+- `--history` scans every commit's added lines **and the commit metadata**, because a value deleted
+  from `HEAD` stays readable in the earlier commit (§II.29.2 part 2 and part 4).
+- The same job runs it, so the required check keeps its name and the gate stays one gate.
+- `release.yml` runs the scanner with `--path` over the extracted tarball and the asset directory
+  before a draft release is published (§II.29.6, §II.24.3).
+- Known history findings are matched by the **SHA-256** of the value, listed in
+  `docs/security/known-historical-findings.json`, so the gate stays red for anything new without
+  re-publishing the value it is meant to contain.
+
+Classification stays explicit: synthetic values (`dev@example.com`, `/home/runner`, `/home/user`),
+documented placeholders, `git@host` SSH remotes, and service mailboxes (`noreply@…`, `*-bot@…`) are
+allowed with a reason; everything else fails.
+
+*Pending owner decision:* purging history for the two recorded findings. That needs a force-push
+and `enforce_admins` lifted temporarily, so it is an owner-approved action, not a reflex.
+*Rejected:* two scanners with two pattern sets (drift); a tree-only gate (a suggestion, not a gate);
+listing the known values in clear text in the baseline.

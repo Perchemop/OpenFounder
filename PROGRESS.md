@@ -2,6 +2,47 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-28 · Personal-data gate extended: history and release assets
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+**Task brief.** Guide §II.29 needs the *full* scan, not a tree scan. A parallel change had already
+landed the tree gate and its required check (PR #55), so this slice extends that one scanner rather
+than adding a second. Acceptance criteria: `--history` covers every commit's added lines and the
+commit metadata; the required check runs it; release assets are scanned before publishing; known
+published findings are matched without reproducing their values; tree, history and asset scans all
+clean. Out of scope: performing the history purge (needs owner approval).
+
+### Done in this session
+
+- `scripts/scan-personal-data.sh`: new `--history` mode (added lines from every commit **and**
+  `%an <%ae>`/`%cn <%ce>` metadata), value-only allow-lists, and SHA-256 baseline matching; the
+  allow-lists gained service mailboxes (`noreply@…`, `*-bot@…`) after classifying the two bot
+  addresses that appear in the commit metadata
+- Fixed a real bug in my first cut: `printf | grep -q` under `pipefail` can fail an *allowed* value
+  via SIGPIPE, so classification now uses native `[[ =~ ]]` matching
+- `.github/workflows/pii.yml`: `fetch-depth: 0` and the history step, inside the same required job
+- `release.yml`: scans the extracted tarball and the asset directory before the draft release
+- `docs/security/known-historical-findings.json` (SHA-256 only), `SECURITY.md` notice,
+  `DECISIONS.md` D-015, `docs/launch-checklist.md` rows, `docs/releases/README.md` field
+- Superseded my duplicate PR #54 after finding PR #55 on `main`
+
+### Scan results (local pre-check; CI is authoritative)
+
+- Tree: clean. History + metadata: clean, with the two known findings classified by hash
+- Positive control: a scratch directory containing a planted non-CI home path and a planted
+  non-synthetic email address is rejected by `--path`, so the scanner is not vacuously green.
+  (The values are deliberately not quoted here — the scan itself caught this paragraph the first
+  time it was written with them inline, which is the rule in §II.29.1 working as intended.)
+
+### Owner decision raised
+
+- History purge (force-push) for the two recorded findings
+
+### Verification
+
+- CI result recorded below — the required `Personal data scan` check must pass both steps
+
 ## 2026-10-27 · Command palette covers hiring
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
