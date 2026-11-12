@@ -2,6 +2,41 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-10-29 · End-to-end audit, and the first correctness fixes
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+**Task brief.** Run a complete end-to-end audit of the product including the design/GUI, record it
+as an artefact, and fix what it finds. Acceptance criteria: the audit covers domain/data, AI,
+security & privacy, accessibility, design/GUI, code quality, documentation and verification, with
+severity and `file:line` evidence; each finding is either fixed here or carries a sequenced plan;
+every fix is proven by CI. Out of scope for this slice: the larger remediation phases (mobile
+layout, AI resilience, design tokens), which follow as their own slices.
+
+### Done in this session
+
+- `docs/audit/2026-10-29-end-to-end-audit.md` — the audit, built from source inspection plus the
+  CI-rendered screenshots (1280/768/390 px and the error state): 9 areas, a scorecard, a findings
+  register, and a 6-phase remediation plan
+- Fixed **DATA-01**: the bundled example project could not be imported (`null` vs `.optional()`).
+  `validateExportPackage` now normalises `null` to "absent" at the boundary (DECISIONS.md D-016);
+  `src/db/exampleProject.test.ts` runs both shipped copies through the real validator
+- Fixed **DATA-05**: keyboard Delete on a canvas node now removes its edges too
+- Fixed **DATA-06**: "wipe all local data" now clears the app's local/session keys as well as
+  IndexedDB
+
+### Confirmed by evidence, scheduled next (see the audit's §12)
+
+- **UI-01** the phone layout is broken: the fixed 256 px sidebar leaves ~134 px, and the 390 px
+  screenshot is 514 px wide — horizontal overflow, clipped buttons, one-word-per-line headings
+- **AI-01** auto-fill ignores the selected provider and posts workspace data (including customer
+  quotes) to the app's own server; **AI-02** no AI call has a timeout or abort
+- **DOC-01/DOC-02** `ACCESSIBILITY.md` and `SECURITY.md` state a posture the code contradicts
+
+### Verification
+
+- CI result recorded below — the required checks must be green before merge
+
 ## 2026-10-28 · Personal-data gate extended: history and release assets
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

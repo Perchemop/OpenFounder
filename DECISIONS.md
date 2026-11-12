@@ -158,6 +158,31 @@ have to be created, stored, and rotated for no capability this repository needs 
 *Rejected:* enabling the MCP with a fine-scoped PAT now; it can be revisited if a workflow needs
 MCP-only features (for example server-side issue search) that `gh` cannot express.
 
+## D-016 · 2026-10-29 · `null` is "absent" at the import boundary
+
+The export schema uses `.optional()` for fields that may be absent, which Zod
+resolves to `undefined`. JSON has no `undefined`, so a hand-written or
+third-party export (and the app's own bundled example project) can carry `null`
+instead — and `.optional()` rejected it, which made the release's headline
+example artefact un-importable.
+
+- `validateExportPackage` now normalises `null`-valued object properties away
+  before parsing, so a missing value and an explicit `null` mean the same thing
+  where the schema says the field is optional.
+- Required fields are unaffected: if a required field arrives as `null` its key
+  disappears and validation still fails.
+- Prototype keys (`__proto__`, `constructor`, `prototype`) are dropped rather
+  than copied, so the normalisation cannot itself become a pollution vector.
+- A test (`src/db/exampleProject.test.ts`) runs both shipped copies of
+  `example-project-tradepulse.json` through the real validator.
+
+*Why:* the alternative — tightening 109 `.optional()` fields to `.nullish()` or
+regenerating the asset by hand — either loosens more schema than necessary or
+fixes only the copy we happen to ship, leaving the next imported export to
+break. One normalisation at the boundary fixes the class.
+*Rejected:* accepting `null` everywhere (weakens required-field errors);
+stripping nulls only from the bundled asset (does not help a user's export).
+
 ## D-015 · 2026-10-28 · One personal-data scanner, extended with history and release-asset coverage
 
 Guide §II.29 (owner directive 2026-10-27) makes a personal-data and secret scan mandatory. A
