@@ -5,6 +5,20 @@ semantic versioning for its export schema and application releases.
 
 ## [Unreleased]
 
+### Fixed
+
+- **The bundled example project can be imported again.** It stored `null` for fields the export
+  schema declares `.optional()` (which accepts only `undefined`), so the Settings → Data
+  "Import Example Project" button failed validation and refused the app's own release artefact.
+  The import boundary now treats `null` as absent, while a genuinely required field arriving as
+  `null` still fails. A new `src/db/exampleProject.test.ts` runs both shipped copies of the asset
+  through the real validator, so this cannot regress silently
+- Canvas: pressing Delete/Backspace on a selected node now deletes its edges too. The keyboard path
+  removed the node but left the edges in IndexedDB, which is why the integrity audit could report
+  orphaned edges after a keyboard-only edit
+- "Wipe all local data" now also clears the app's `localStorage`/`sessionStorage` keys (active
+  project, settings, session API keys, update cache); previously only IndexedDB was dropped
+
 ### Security
 
 - `scripts/scan-personal-data.sh` gains `--history` (every commit plus commit metadata) and the
@@ -23,6 +37,10 @@ semantic versioning for its export schema and application releases.
 
 ### Docs
 
+- `docs/audit/2026-10-29-end-to-end-audit.md`: a full product audit (domain/data, AI layer,
+  security & privacy, accessibility, design/GUI, code quality, documentation, verification) with a
+  findings register (severity + file:line evidence) and a sequenced remediation plan. It supersedes
+  the design-only `docs/design/ui-audit-and-improvement-plan.md` where the two disagree
 - `docs/capability-inventory.md`: the `CAP-nnn` capability list required by guide §II.27.3, mapped
   one-to-one onto the existing parity IDs, with a source and status per row
 - `docs/releases/`: per-release §2.5 legal-checklist records for v0.1.0 and v0.2.0, each naming the

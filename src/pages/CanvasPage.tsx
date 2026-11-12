@@ -151,12 +151,10 @@ export const CanvasPage: React.FC<CanvasPageProps> = ({ projectId }) => {
   const handleNodeKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, node: CanvasNode) => {
     if (event.key === 'Delete' || event.key === 'Backspace') {
       event.preventDefault();
-      void db.canvasNodes.delete(node.id);
-      setNodes((current) => current.filter((item) => item.id !== node.id));
-      setEdges((current) =>
-        current.filter((edge) => edge.fromNodeId !== node.id && edge.toNodeId !== node.id)
-      );
-      setSelectedNodeId(null);
+      // Reuse the one delete path: the previous inline version removed the node
+      // but left its edges in IndexedDB, so keyboard deletion quietly created
+      // orphaned edges that the integrity audit then (correctly) flagged.
+      void handleDeleteNode(node.id);
       return;
     }
 

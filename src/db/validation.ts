@@ -600,13 +600,42 @@ export interface ValidationResult {
   errors?: string[];
 }
 
+/**
+ * JSON has one "absent" value where JavaScript has two. A hand-written or
+ * third-party export can carry `null` for a field this schema declares
+ * `.optional()` — and `.optional()` accepts only `undefined`. Treating `null`
+ * as absent at the import boundary is what lets the app import its own released
+ * example project (guide R-048) and any equivalent export, without loosening
+ * the schema: a value that is genuinely required and arrives as `null` still
+ * fails, because the key disappears and the field is then missing.
+ *
+ * Prototype-pollution keys are dropped rather than assigned, so a crafted
+ * package cannot walk out of the object.
+ */
+function normalizeNulls(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(normalizeNulls);
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [key, val] of Object.entries(value as Record<string, unknown>)) {
+      if (val === null) continue;
+      if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+      out[key] = normalizeNulls(val);
+    }
+    return out;
+  }
+  return value;
+}
+
 export function validateExportPackage(rawInput: unknown): ValidationResult {
   if (!rawInput || typeof rawInput !== 'object') {
     return { valid: false, errors: ['Input is empty or not a valid JSON object.'] };
   }
 
+  // `null` and a missing key both mean "no value" at this boundary (see above).
+  const input = normalizeNulls(rawInput);
+
   // Pre-check for security: prevent arbitrary prototype pollution or functions
-  const jsonString = JSON.stringify(rawInput);
+  const jsonString = JSON.stringify(input);
   if (jsonString.includes('<script') || jsonString.includes('javascript:')) {
     return {
       valid: false,
@@ -614,7 +643,7 @@ export function validateExportPackage(rawInput: unknown): ValidationResult {
     };
   }
 
-  const result = ExportPackageSchema.safeParse(rawInput);
+  const result = ExportPackageSchema.safeParse(input);
   if (!result.success) {
     const errorMessages = (result.error.issues || []).map((e) => {
       const path = e.path.join('.');

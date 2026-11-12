@@ -601,9 +601,35 @@ export async function deleteProject(projectId: string): Promise<void> {
   });
 }
 
+/**
+ * Everything this app keeps for a person in *this browser*: the IndexedDB
+ * workspace plus the local/session keys that sit outside it. Dropping only the
+ * database left the active-project id, the saved settings and the session API
+ * keys behind, so a "wipe everything" did not actually wipe everything.
+ */
+const LOCAL_STORAGE_PREFIX = 'openfounder_';
+
 export async function wipeAllLocalData(): Promise<void> {
   await db.delete();
   await db.open();
+
+  for (const [storage, label] of [
+    [typeof localStorage !== 'undefined' ? localStorage : null, 'localStorage'],
+    [typeof sessionStorage !== 'undefined' ? sessionStorage : null, 'sessionStorage'],
+  ] as const) {
+    if (!storage) continue;
+    try {
+      const keys: string[] = [];
+      for (let i = 0; i < storage.length; i += 1) {
+        const key = storage.key(i);
+        if (key && key.startsWith(LOCAL_STORAGE_PREFIX)) keys.push(key);
+      }
+      for (const key of keys) storage.removeItem(key);
+    } catch (err) {
+      // A blocked or full storage must not stop the wipe of the database.
+      console.warn(`Failed to clear ${label}:`, err);
+    }
+  }
 }
 
 export async function runWorkspaceDiagnostics(projectId: string): Promise<{
