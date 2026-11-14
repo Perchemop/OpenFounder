@@ -104,7 +104,7 @@ test('core loop: create project → evidence → promotion guard → export → 
   //    a verbatim quote → refused. Then add the quote → allowed.
   // ------------------------------------------------------------------
   // Open the edit modal for the claim row.
-  await page.click('button[title="Edit claim and evidence"]').first();
+  await page.locator('button[title="Edit claim and evidence"]').first().click();
   await page.waitForLoadState('networkidle');
 
   await page.getByLabel('Current Status').selectOption('customer_confirmed');
