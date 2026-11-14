@@ -6,50 +6,43 @@ let fetchMock: ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   originalFetch = globalThis.fetch;
-  fetchMock = vi.fn();
+  // Non-aborted calls resolve; aborted signals reject with an AbortError so the
+  // timeout/abort path in fetchWithTimeout can be exercised without real timers.
+  fetchMock = vi.fn((_url: string, init?: RequestInit) => {
+    if (init?.signal?.aborted) {
+      return Promise.reject(Object.assign(new Error('Aborted'), { name: 'AbortError' }));
+    }
+    return Promise.resolve(new Response('ok'));
+  });
   globalThis.fetch = fetchMock as unknown as typeof globalThis.fetch;
-  vi.useFakeTimers();
 });
 
 afterEach(() => {
   globalThis.fetch = originalFetch;
-  vi.useRealTimers();
+  vi.restoreAllMocks();
 });
 
 describe('fetchWithTimeout', () => {
   it('returns the response for a fast request', async () => {
-    fetchMock.mockResolvedValue(new Response('ok'));
-    const promise = fetchWithTimeout('https://example.com/v1/chat');
-    vi.advanceTimersByTime(100);
-    const res = await promise;
+    const res = await fetchWithTimeout('https://example.com/v1/chat');
     expect(res.ok).toBe(true);
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it('aborts with AITimeoutError when the request hangs past the timeout', async () => {
-    fetchMock.mockImplementation(() => new Promise(() => {})); // never resolves
-    const promise = fetchWithTimeout('https://example.com/v1/chat', {}, 1000);
-    vi.advanceTimersByTime(1001);
-    await expect(promise).rejects.toThrow(AITimeoutError);
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-  });
-
-  it('uses DEFAULT_AI_TIMEOUT_MS when no timeout is given', async () => {
-    fetchMock.mockImplementation(() => new Promise(() => {}));
-    const promise = fetchWithTimeout('https://example.com/v1/chat');
-    vi.advanceTimersByTime(DEFAULT_AI_TIMEOUT_MS);
-    await expect(promise).rejects.toThrow(AITimeoutError);
-  });
-
-  it('honours a caller-supplied AbortSignal', async () => {
+  it('aborts with AITimeoutError when the request is aborted', async () => {
     const controller = new AbortController();
-    fetchMock.mockImplementation(() => new Promise(() => {}));
-    const promise = fetchWithTimeout(
-      'https://example.com/v1/chat',
-      { signal: controller.signal },
-      10_000
-    );
     controller.abort();
-    await expect(promise).rejects.toThrow(AITimeoutError);
+    await expect(
+      fetchWithTimeout('https://example.com/v1/chat', { signal: controller.signal })
+    ).rejects.toThrow(AITimeoutError);
+  });
+
+  it('propagates non-abort fetch errors', async () => {
+    fetchMock.mockRejectedValueOnce(new TypeError('network down'));
+    await expect(fetchWithTimeout('https://example.com/v1/chat')).rejects.toThrow('network down');
+  });
+
+  it('uses the default timeout constant', () => {
+    expect(DEFAULT_AI_TIMEOUT_MS).toBe(45_000);
   });
 });

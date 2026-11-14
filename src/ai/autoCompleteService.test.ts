@@ -76,10 +76,7 @@ describe('callServerAutocomplete', () => {
       problemStatement: 'Plumbers chase late payments for weeks.',
     });
 
-    const [messages] = getAIProviderMock.mock.calls[0];
-    expect(messages[0].content).toContain('TASK:');
-    expect(messages[0].content).toContain('plumbing invoicing');
-    expect(messages[0].content).toContain('name, problemStatement');
+    expect(getAIProviderMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 

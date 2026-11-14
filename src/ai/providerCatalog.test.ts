@@ -48,7 +48,7 @@ describe('provider catalogue', () => {
     expect(detectProviderFromKey('gsk_abc123')?.id).toBe('groq');
     expect(detectProviderFromKey('AIzaSyABC123')?.id).toBe('gemini');
     expect(detectProviderFromKey('sk-abc123')?.id).toBe('openai'); // generic sk- falls to OpenAI
-    expect(detectProviderFromKey('not-a-key-format')?.id).toBeNull();
+    expect(detectProviderFromKey('not-a-key-format')).toBeNull();
     expect(detectProviderFromKey('abcd')).toBeNull();
     expect(detectProviderFromKey('')).toBeNull();
     expect(detectProviderFromKey(undefined)).toBeNull();
