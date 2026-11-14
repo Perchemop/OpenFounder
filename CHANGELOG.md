@@ -7,6 +7,12 @@ semantic versioning for its export schema and application releases.
 
 ### Added
 
+- (nothing yet)
+
+## [0.3.0] — 2026-11-15
+
+### Added
+
 - **Seamless AI provider setup ("paste one key"):** Settings → AI Providers now
   offers a catalogue of providers (NVIDIA NIM, OpenRouter, Groq, Together,
   Fireworks, Cerebras, Mistral, DeepSeek, xAI, Perplexity, OpenAI, Anthropic,
