@@ -2,6 +2,42 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-11-14 · Seamless AI providers: paste one key, NVIDIA included
+
+**Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
+
+**Task brief.** Let a user run all AI features by pasting a single API key, with
+NVIDIA NIM as a first-class provider and a comprehensive list behind it.
+Acceptance criteria: one "paste key" input auto-detects the vendor from the key
+prefix and fills endpoint + model; the app lists models the key can use; the
+Co-Founder panel and every auto-fill action route through the chosen provider
+(offline → no network); every AI call has a timeout/abort; proven by unit tests
+and CI.
+
+### Done in this session
+
+- `src/ai/providerCatalog.ts` — 16 presets (offline, NVIDIA NIM, OpenRouter,
+  Groq, Together, Fireworks, Cerebras, Mistral, DeepSeek, xAI, Perplexity,
+  OpenAI, Anthropic, Gemini, Ollama, self-hosted server, custom OpenAI-compatible)
+  with key-prefix detection and per-preset endpoint/model defaults
+- `src/ai/modelDiscovery.ts` — best-effort live model listing per provider
+- `src/ai/http.ts` — shared `fetchWithTimeout` + `AITimeoutError` (45s default)
+- All providers now use `fetchWithTimeout`; Anthropic direct-browser header
+  fixed (`anthropic-dangerous-direct-browser-access`)
+- `src/ai/autoCompleteService.ts` — auto-fill routes through the selected
+  provider; Offline Rules makes zero network requests; falls back to
+  deterministic templates on any error
+- `src/types/index.ts` + `src/db/index.ts` — `providerId` on AI provider config
+- `src/components/modals/SettingsModal.tsx` — paste-key UI, live model picker,
+  per-provider connection test
+- Tests: `providerCatalog.test.ts`, `modelDiscovery.test.ts`, `http.test.ts`,
+  `autoCompleteService.test.ts`
+- Docs: `docs/ai-providers.md`, README AI section, CHANGELOG [Unreleased]
+
+### Verification
+
+- CI result recorded below — required checks green before merge
+
 ## 2026-10-29 · End-to-end audit, and the first correctness fixes
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.

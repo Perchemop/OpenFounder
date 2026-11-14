@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | UI | React 19 + TypeScript, Vite 6 | Function components, pages under `src/pages` |
 | Styling | Tailwind CSS 4 via `@tailwindcss/vite` | Utility classes, dark mode by class |
-| Persistence | Dexie 4 (IndexedDB) | Three schema versions, per-project tables |
+| Persistence | Dexie 4 (IndexedDB) | Seven schema versions (current v7), per-project tables |
 | Validation | Zod 4 | Export packages validated before import |
 | AI | Provider interface + six implementations | Server Gemini, direct Gemini, OpenAI-compatible, Anthropic, Ollama, offline rules |
 | Server | Express (optional) | `server.ts` serves the API and static build |

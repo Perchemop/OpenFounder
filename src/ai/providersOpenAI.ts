@@ -1,5 +1,6 @@
 import type { AIChatMessage, AIProviderConfig } from '../types';
 import { BASE_COFOUNDER_PROMPT, type AIProvider, type AIProviderResult } from './providerTypes';
+import { fetchWithTimeout } from './http';
 
 export class OpenAICompatibleProvider implements AIProvider {
   async sendMessage(
@@ -28,7 +29,7 @@ export class OpenAICompatibleProvider implements AIProvider {
         ...messages.map((m) => ({ role: m.role, content: m.content })),
       ];
 
-      const response = await fetch(`${endpoint}/chat/completions`, {
+      const response = await fetchWithTimeout(`${endpoint}/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +61,7 @@ export class OpenAICompatibleProvider implements AIProvider {
     if (!key) return { success: false, message: 'Please enter an API key.' };
 
     try {
-      const res = await fetch(`${endpoint}/chat/completions`, {
+      const res = await fetchWithTimeout(`${endpoint}/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

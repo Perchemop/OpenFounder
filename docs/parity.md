@@ -2,7 +2,8 @@
 
 Parity here means "the capability exists and is wired to real data", not visual similarity to
 any product. Status values: **Done** (implemented, test or CI covered), **Partial** (works but
-has a known gap), **Planned**.
+has a known gap), **Planned**, **Out of scope** (deliberately not implemented this version, with
+the reason recorded — mirrors the `out of scope` status in `docs/capability-inventory.md`).
 
 | ID | Capability | Status | Where |
 | --- | --- | --- | --- |
@@ -26,7 +27,7 @@ has a known gap), **Planned**.
 | C-18 | AI co-founder with provider fallback | Done | `src/ai/*` |
 | C-19 | Offline deterministic guidance | Done | `providersOffline.ts` |
 | C-20 | Keyboard command palette | Done | `CommandPalette` |
-| C-21 | Accessibility audit | Done | `ACCESSIBILITY.md`; reduced motion, `:focus-visible`, `role="alert"` errors, 24×24 targets; human keyboard + screen-reader pass recorded 2026-10-25 in `docs/qc/manual-qc.md`; automated axe scan in `.github/workflows/a11y.yml` |
+| C-21 | Accessibility audit | Done | `ACCESSIBILITY.md`; reduced motion, `:focus-visible`, `role="alert"` errors, 24×24 targets; human keyboard + screen-reader pass recorded 2026-10-24 in `docs/qc/manual-qc.md`; automated axe scan in `.github/workflows/a11y.yml` |
 | C-24 | Objectives and key results with derived progress | Done | `GoalsPage`, `src/utils/okr.ts` |
 | C-27 | One-page validation report with provenance | Done | `src/utils/validationReport.ts` |
 | C-25 | Advisor and mentor log with commitments | Done | `AdvisorsPage`, `src/utils/advisorLog.ts` |
@@ -34,8 +35,9 @@ has a known gap), **Planned**.
 | C-28 | Bug / crash reporting from inside the app | Done | `src/bugReport.ts`, `BugReportModal` |
 | C-29 | Update check against releases | Done | `src/updateCheck.ts`, `UpdateCheckPanel` |
 | C-22 | Full-text workspace search | Done | `src/utils/workspaceSearch.ts`, `CommandPalette` — covers evidence, research, interviews, risks, roadmap, goals, advisors, team, hiring roles and candidates, experiments, competitors, features |
-| C-23 | Cloud sync / multi-device | Planned (out of scope v1) | — |
+| C-23 | Cloud sync / multi-device | Out of scope (v1) | — |
 | C-30 | First-hire pipeline (roles and candidates with guarded stages) | Done | `HiringPage`, `src/utils/hiringPipeline.ts` (stage guard, fill state, next action), `db.hiringRoles`, `db.candidates`, export/import schema v7 |
+| C-31 | Installable PWA with offline shell | Done | `public/manifest.json`, `public/icon.svg`, `public/icon-maskable.svg`, `public/sw.js`, `src/main.tsx` — service worker registered only in production builds, `/api/` never cached; CI `build (static)` green |
 
 ## Known gaps recorded honestly
 

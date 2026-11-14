@@ -32,13 +32,20 @@ import {
 import { getAIProvider } from '../../ai/providers';
 import {
   GEMINI_MODEL_PRESETS,
-  OPENAI_MODEL_PRESETS,
-  ANTHROPIC_MODEL_PRESETS,
-  OLLAMA_MODEL_PRESETS,
   parseFallbackModels,
   formatFallbackModels,
   DEFAULT_GEMINI_MODEL,
 } from '../../ai/modelDefaults';
+import {
+  applyPreset,
+  detectProviderFromKey,
+  getKeyForPreset,
+  getPreset,
+  listPresets,
+  resolvePresetForConfig,
+  type ProviderPreset,
+} from '../../ai/providerCatalog';
+import { fetchProviderModels } from '../../ai/modelDiscovery';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -207,6 +214,54 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const isGemini =
     localConfig.activeProvider === 'server_gemini' || localConfig.activeProvider === 'direct_gemini';
 
+  const [liveModels, setLiveModels] = useState<string[]>([]);
+  const [liveModelsLoading, setLiveModelsLoading] = useState(false);
+  const [detectedPreset, setDetectedPreset] = useState<ProviderPreset | undefined>(undefined);
+
+  /** The catalogue preset behind the current config (falls back to matching the endpoint). */
+  const selectedPreset = resolvePresetForConfig(localConfig) ?? getPreset('offline_rules')!;
+  const keyForPreset = getKeyForPreset(localConfig, selectedPreset);
+  const presetNeedsKey = selectedPreset.needsKey;
+
+  useEffect(() => {
+    if (!presetNeedsKey || !keyForPreset.trim()) {
+      setLiveModels([]);
+      return;
+    }
+    setLiveModelsLoading(true);
+    const timer = setTimeout(() => {
+      fetchProviderModels(selectedPreset, keyForPreset)
+        .then((models) => setLiveModels(models))
+        .finally(() => setLiveModelsLoading(false));
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [selectedPreset.id, keyForPreset, presetNeedsKey]);
+
+  const handlePresetChange = (id: string) => {
+    const preset = getPreset(id);
+    if (!preset) return;
+    const existingKey = getKeyForPreset(localConfig, preset);
+    setLocalConfig(applyPreset(localConfig, preset, existingKey || undefined));
+    setDetectedPreset(undefined);
+    // The effect below refetches models whenever the preset or key changes.
+  };
+
+  const handleKeyChange = (value: string) => {
+    const detected = detectProviderFromKey(value);
+    const target =
+      detected && detected.id !== selectedPreset.id ? detected : selectedPreset;
+    setLocalConfig(applyPreset(localConfig, target, value));
+    setDetectedPreset(
+      detected && detected.id !== selectedPreset.id ? detected : undefined
+    );
+    // The effect below refetches models whenever the key or preset changes.
+  };
+
+  const providerModelOptions = () => [
+    ...selectedPreset.modelPresets.map((m) => m.value),
+    ...liveModels,
+  ];
+
   return (
     <div
       ref={dialogRef}
@@ -262,34 +317,93 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   Active Intelligence Engine
                 </label>
                 <select
-                  value={localConfig.activeProvider}
-                  onChange={(e) =>
-                    setLocalConfig({ ...localConfig, activeProvider: e.target.value as AIProviderConfig['activeProvider'] })
-                  }
+                  value={selectedPreset.id}
+                  onChange={(e) => handlePresetChange(e.target.value)}
                   className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 text-zinc-900 dark:text-zinc-100"
                 >
-                  <option value="server_gemini">Server Gemini (Zero-setup server proxy)</option>
-                  <option value="direct_gemini">Direct Google Gemini API (Client-side key)</option>
-                  <option value="openai">OpenAI / Compatible (Groq, OpenRouter, Mistral…)</option>
-                  <option value="anthropic">Anthropic Claude (Direct API)</option>
-                  <option value="ollama">Local Ollama (100% Offline & Private)</option>
-                  <option value="offline_rules">Offline Rule-Based Co-Founder (Free)</option>
+                  {listPresets().map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.label}
+                    </option>
+                  ))}
                 </select>
               </div>
 
-              {localConfig.activeProvider === 'direct_gemini' && (
-                <div>
-                  <label className="block font-medium text-zinc-800 dark:text-zinc-200 mb-1">Google Gemini API Key</label>
+              {presetNeedsKey && (
+                <div className="flex-1 min-w-0">
+                  <label className="block font-medium text-[11px] text-zinc-600 dark:text-zinc-400 mb-1">
+                    Paste your {selectedPreset.label} API key
+                  </label>
                   <input
                     type="password"
-                    placeholder="AIzaSy..."
-                    value={localConfig.directGeminiKey || ''}
-                    onChange={(e) => setLocalConfig({ ...localConfig, directGeminiKey: e.target.value })}
+                    placeholder={`Paste your key (${selectedPreset.keyPrefixes[0] || '…'})`}
+                    value={keyForPreset}
+                    onChange={(e) => handleKeyChange(e.target.value)}
                     className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 font-mono text-zinc-900 dark:text-zinc-100"
                   />
-                  <p className="text-[11px] text-zinc-500 mt-1">Stored in browser localStorage only.</p>
+                  {detectedPreset && (
+                    <p className="text-[11px] text-emerald-700 dark:text-emerald-400 mt-1">
+                      Detected {detectedPreset.label} — endpoint and model filled in automatically.
+                    </p>
+                  )}
+                  {selectedPreset.keyUrl && (
+                    <a
+                      href={selectedPreset.keyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] text-emerald-600 dark:text-emerald-400 underline hover:text-emerald-500 dark:hover:text-emerald-300 mt-1 inline-block"
+                    >
+                      Get an API key →
+                    </a>
+                  )}
                 </div>
               )}
+            </div>
+            <p className="text-[11px] text-zinc-500 mt-1">{selectedPreset.note}</p>
+
+            {presetNeedsKey && (
+              <div className="space-y-2">
+                <label className="block font-medium text-zinc-800 dark:text-zinc-200 mb-1">
+                  Model
+                  {liveModels.length ? ` (live from ${selectedPreset.label})` : ''}
+                </label>
+                <div className="relative">
+                  <input
+                    list="provider-model-presets"
+                    placeholder={selectedPreset.defaultModel || ''}
+                    value={localConfig.openaiModel || localConfig.anthropicModel || localConfig.ollamaModel || localConfig.geminiModel || ''}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      switch (selectedPreset.transport) {
+                        case 'openai':
+                          setLocalConfig({ ...localConfig, openaiModel: next });
+                          break;
+                        case 'anthropic':
+                          setLocalConfig({ ...localConfig, anthropicModel: next });
+                          break;
+                        case 'ollama':
+                          setLocalConfig({ ...localConfig, ollamaModel: next });
+                          break;
+                        case 'gemini':
+                          setLocalConfig({ ...localConfig, geminiModel: next });
+                          break;
+                        default:
+                          break;
+                      }
+                    }}
+                    className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 font-mono text-zinc-900 dark:text-zinc-100"
+                  />
+                  <datalist id="provider-model-presets">
+                    {providerModelOptions().map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </datalist>
+                </div>
+                {liveModelsLoading && (
+                  <p className="text-[11px] text-zinc-400">Loading models…</p>
+                )}
+              </div>
+            )
 
               {isGemini && (
                 <div className="space-y-3 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/30">
@@ -344,65 +458,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 font-mono text-zinc-900 dark:text-zinc-100"
                     />
                   </div>
-                  <div>
-                    <label className="block font-medium text-zinc-800 dark:text-zinc-200 mb-1">API Key</label>
-                    <input
-                      type="password"
-                      placeholder="sk-..."
-                      value={localConfig.openaiKey || ''}
-                      onChange={(e) => setLocalConfig({ ...localConfig, openaiKey: e.target.value })}
-                      className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 font-mono text-zinc-900 dark:text-zinc-100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-medium text-zinc-800 dark:text-zinc-200 mb-1">Model</label>
-                    <input
-                      type="text"
-                      list="openai-model-presets"
-                      placeholder="gpt-4o"
-                      value={localConfig.openaiModel || ''}
-                      onChange={(e) => setLocalConfig({ ...localConfig, openaiModel: e.target.value })}
-                      className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 font-mono text-zinc-900 dark:text-zinc-100"
-                    />
-                    <datalist id="openai-model-presets">
-                      {OPENAI_MODEL_PRESETS.map((p) => (
-                        <option key={p.value} value={p.value}>{p.label}</option>
-                      ))}
-                    </datalist>
-                  </div>
                 </div>
               )}
 
-              {localConfig.activeProvider === 'anthropic' && (
-                <div className="space-y-3">
-                  <div>
-                    <label className="block font-medium text-zinc-800 dark:text-zinc-200 mb-1">Anthropic API Key</label>
-                    <input
-                      type="password"
-                      placeholder="sk-ant-..."
-                      value={localConfig.anthropicKey || ''}
-                      onChange={(e) => setLocalConfig({ ...localConfig, anthropicKey: e.target.value })}
-                      className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 font-mono text-zinc-900 dark:text-zinc-100"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-medium text-zinc-800 dark:text-zinc-200 mb-1">Model</label>
-                    <input
-                      type="text"
-                      list="anthropic-model-presets"
-                      placeholder="claude-3-5-sonnet-20241022"
-                      value={localConfig.anthropicModel || ''}
-                      onChange={(e) => setLocalConfig({ ...localConfig, anthropicModel: e.target.value })}
-                      className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 font-mono text-zinc-900 dark:text-zinc-100"
-                    />
-                    <datalist id="anthropic-model-presets">
-                      {ANTHROPIC_MODEL_PRESETS.map((p) => (
-                        <option key={p.value} value={p.value}>{p.label}</option>
-                      ))}
-                    </datalist>
-                  </div>
-                </div>
-              )}
+
 
               {localConfig.activeProvider === 'ollama' && (
                 <div className="space-y-3">
@@ -418,22 +477,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     <p className="text-[11px] text-zinc-500 mt-1">
                       Ensure CORS is enabled: <code>OLLAMA_ORIGINS="*" ollama serve</code>
                     </p>
-                  </div>
-                  <div>
-                    <label className="block font-medium text-zinc-800 dark:text-zinc-200 mb-1">Ollama Model</label>
-                    <input
-                      type="text"
-                      list="ollama-model-presets"
-                      placeholder="llama3.2"
-                      value={localConfig.ollamaModel || ''}
-                      onChange={(e) => setLocalConfig({ ...localConfig, ollamaModel: e.target.value })}
-                      className="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg p-2 font-mono text-zinc-900 dark:text-zinc-100"
-                    />
-                    <datalist id="ollama-model-presets">
-                      {OLLAMA_MODEL_PRESETS.map((p) => (
-                        <option key={p.value} value={p.value}>{p.label}</option>
-                      ))}
-                    </datalist>
                   </div>
                 </div>
               )}

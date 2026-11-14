@@ -50,7 +50,7 @@ parity file answers *what exists and how it is evidenced*.
 | CAP-028 | In-app bug reporting | A crash or manual report previews a scrubbed payload before anything is sent | No token is stored; the user can cancel | Original design | implemented | C-28 |
 | CAP-029 | Update check | The app compares its version with the latest GitHub Release and fails soft offline | Offline shows a clear state, no spinner trap | Original design | implemented | C-29 |
 | CAP-030 | First-hire pipeline | Roles and candidates are tracked locally with guarded stage moves | A candidate cannot jump straight to Hired; export/import carries both | Original design (decision log, not an ATS) | implemented | C-30 |
-| CAP-031 | Installable PWA with offline shell | The app installs and keeps working offline after first load | Production-only service worker; API responses never cached | Original design | implemented | — |
+| CAP-031 | Installable PWA with offline shell | The app installs and keeps working offline after first load | Production-only service worker; API responses never cached | Original design | implemented | C-31 |
 
 ## Recorded exclusions
 

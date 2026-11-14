@@ -26,9 +26,18 @@ for it before the issue is triaged.
 
 ## Scope and threat model
 
-OpenFounder is a **static, local-first web application**. There is no server component, no
-database, and no account system. This is what the project does and does not trust — use it to
-judge what counts as a vulnerability here:
+OpenFounder's **default distribution is a static, local-first web application**: project data
+lives in the browser's IndexedDB, there is no account system, and nothing leaves the browser
+unless the user exports data or configures an external AI provider.
+
+An **optional, self-hosted Express server** ships alongside the static build (`server.ts`,
+`package.json` `build:server`/`start`) and exposes `/api/ai/*` endpoints. When run, it can proxy
+AI calls and hold a server-side `GEMINI_API_KEY`; in that mode the server is part of the trust
+boundary and the key it holds is in scope. The server is not deployed by the static GitHub Pages
+workflow, and running it is an explicit opt-in by the operator.
+
+This is what the project does and does not trust — use it to judge what counts as a vulnerability
+here:
 
 **In scope:**
 
@@ -45,6 +54,8 @@ judge what counts as a vulnerability here:
   reachable at runtime.
 - The release artefacts: anything that lets a tag produce an artefact that differs from the
   tagged source.
+- When the optional server is run: leakage of the server-held `GEMINI_API_KEY`, or any path
+  that makes it send data to a provider the operator did not configure.
 
 **Out of scope (by design, not by neglect):**
 

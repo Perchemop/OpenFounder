@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { ProjectProvider, useProject } from './context/ProjectContext';
 import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
@@ -76,6 +76,9 @@ function AppContent() {
     loadDemoProject,
   } = useProject();
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const sidebarToggleRef = useRef<HTMLButtonElement>(null);
+
   if (loading) {
     return (
       <div className="h-screen w-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 space-y-3">
@@ -88,7 +91,7 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-white transition-colors">
+    <div className="min-h-screen min-w-0 overflow-x-hidden bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-white transition-colors">
       {/* Skip to main content for keyboard and screen-reader users */}
       <a
         href="#main-content"
@@ -107,18 +110,24 @@ function AppContent() {
         isAIPanelOpen={isAIPanelOpen}
         theme={theme}
         onToggleTheme={toggleTheme}
+        isSidebarOpen={isSidebarOpen}
+        onToggleSidebar={() => setIsSidebarOpen((open) => !open)}
+        sidebarToggleRef={sidebarToggleRef}
       />
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex min-w-0 overflow-hidden">
         <Sidebar
           activeTab={activeTab}
           onSelectTab={setActiveTab}
           unverifiedCount={unverifiedEvidenceCount}
           activeExperimentCount={activeExperimentsCount}
           openRisksCount={openRisksCount}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          toggleRef={sidebarToggleRef}
         />
 
-        <main id="main-content" className="flex-1 overflow-y-auto relative">
+        <main id="main-content" className="flex-1 min-w-0 overflow-y-auto relative">
           {currentProject ? (
             <>
               {activeTab === 'dashboard' && (
@@ -291,24 +300,24 @@ function AppContent() {
               )}
             </>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center p-8 text-center space-y-4">
-              <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+            <div className="h-full flex flex-col items-center justify-center p-4 sm:p-8 text-center space-y-4 min-w-0">
+              <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 text-balance">
                 No active project selected
               </h2>
-              <p className="text-xs text-zinc-500 max-w-sm">
+              <p className="text-xs text-zinc-500 max-w-sm text-balance">
                 Create a new idea workspace to begin recording evidence and
                 testing your riskiest assumptions.
               </p>
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 w-full max-w-md">
                 <button
                   onClick={() => setIsNewProjectModalOpen(true)}
-                  className="px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity"
+                  className="w-full sm:w-auto px-4 py-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity"
                 >
                   Create New Project
                 </button>
                 <button
                   onClick={loadDemoProject}
-                  className="px-4 py-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs font-semibold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                  className="w-full sm:w-auto px-4 py-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs font-semibold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
                 >
                   Load Demo Workspace (TradePulse)
                 </button>
