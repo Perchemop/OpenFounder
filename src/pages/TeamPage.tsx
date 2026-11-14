@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Users, Plus, Trash2, UserPlus2, AlertTriangle, CheckCircle2, X } from 'lucide-react';
 import type { SkillRequirement, TeamCommitment, TeamMember } from '../types';
-import { db, generateId } from '../db';
+import { useConfirm } from '../components/ui/ConfirmDialog';import { db, generateId } from '../db';
 import {
   COVERAGE_LABELS,
   deriveSkillCoverage,
@@ -67,7 +67,7 @@ export const TeamPage: React.FC<TeamPageProps> = ({
 
   const coverage = useMemo(() => deriveSkillCoverage(requirements, members), [requirements, members]);
   const summary = useMemo(() => summarizeSkillCoverage(coverage), [coverage]);
-
+  const { confirm, dialog: confirmDialog } = useConfirm();
   const addMember = async () => {
     if (!name.trim()) {
       setMemberError('A team member needs a name.');
@@ -95,7 +95,11 @@ export const TeamPage: React.FC<TeamPageProps> = ({
   };
 
   const deleteMember = async (member: TeamMember) => {
-    const confirmed = window.confirm(`Remove ${member.name} from the team?`);
+    const confirmed = await confirm({
+      title: 'Remove team member',
+      message: `Remove ${member.name} from the team?`,
+      destructive: true,
+    });
     if (!confirmed) return;
     await db.teamMembers.delete(member.id);
     onTeamUpdated();
@@ -122,7 +126,11 @@ export const TeamPage: React.FC<TeamPageProps> = ({
   };
 
   const deleteRequirement = async (requirement: SkillRequirement) => {
-    const confirmed = window.confirm(`Delete "${requirement.skill}" from the requirements?`);
+    const confirmed = await confirm({
+      title: 'Delete requirement',
+      message: `Delete "${requirement.skill}" from the requirements?`,
+      destructive: true,
+    });
     if (!confirmed) return;
     await db.skillRequirements.delete(requirement.id);
     onTeamUpdated();
@@ -460,10 +468,10 @@ export const TeamPage: React.FC<TeamPageProps> = ({
           <span>Every requirement is covered at the level you set.</span>
         </p>
       )}
+      {confirmDialog}
     </div>
   );
 };
-
 function SummaryCard({
   label,
   value,

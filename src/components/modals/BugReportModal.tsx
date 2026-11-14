@@ -51,11 +51,14 @@ export const BugReportModal: React.FC<BugReportModalProps> = ({ isOpen, onClose,
     <div
       ref={dialogRef}
       tabIndex={-1}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="bug-report-modal-title"
       className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-start justify-center p-4 pt-16 overflow-y-auto"
     >
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-2xl w-full shadow-2xl">
         <div className="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800">
-          <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
+          <h2 id="bug-report-modal-title" className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 flex items-center space-x-2">
             <Bug className="w-4 h-4 text-amber-500" />
             <span>Report a problem</span>
           </h2>

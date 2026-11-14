@@ -238,8 +238,12 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
     <div
       ref={dialogRef}
       tabIndex={-1}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="command-palette-title"
       className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-start justify-center pt-20 p-4"
     >
+      <h2 id="command-palette-title" className="sr-only">Command Palette</h2>
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col max-h-[70vh]">
         {/* Search bar */}
         <div className="p-3 border-b border-zinc-200 dark:border-zinc-800 flex items-center space-x-2 bg-zinc-50 dark:bg-zinc-950">

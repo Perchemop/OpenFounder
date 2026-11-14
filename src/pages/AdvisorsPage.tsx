@@ -9,7 +9,7 @@ import {
   X,
 } from 'lucide-react';
 import type { Advisor, AdvisorCommitment, AdvisorSession } from '../types';
-import { db, generateId } from '../db';
+import { useConfirm } from '../components/ui/ConfirmDialog';import { db, generateId } from '../db';
 import {
   URGENCY_LABELS,
   lastSessionDate,
@@ -67,7 +67,7 @@ export const AdvisorsPage: React.FC<AdvisorsPageProps> = ({
 }) => {
   const today = toIsoDate(new Date());
   const [openAdvisorId, setOpenAdvisorId] = useState<string | null>(null);
-
+  const { confirm, dialog: confirmDialog } = useConfirm();
   const [advisorName, setAdvisorName] = useState('');
   const [advisorRole, setAdvisorRole] = useState('');
   const [advisorOrg, setAdvisorOrg] = useState('');
@@ -129,9 +129,11 @@ export const AdvisorsPage: React.FC<AdvisorsPageProps> = ({
   };
 
   const deleteAdvisor = async (advisor: Advisor) => {
-    const confirmed = window.confirm(
-      `Delete ${advisor.name} and their ${advisor.sessions.length} logged session(s)?`
-    );
+    const confirmed = await confirm({
+      title: 'Delete advisor',
+      message: `Delete ${advisor.name} and their ${advisor.sessions.length} logged session(s)?`,
+      destructive: true,
+    });
     if (!confirmed) return;
     await db.advisors.delete(advisor.id);
     onAdvisorsUpdated();
@@ -600,6 +602,7 @@ export const AdvisorsPage: React.FC<AdvisorsPageProps> = ({
           })}
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

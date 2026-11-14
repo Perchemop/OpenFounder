@@ -11,7 +11,7 @@ import {
   Pencil,
 } from 'lucide-react';
 import type { KeyResult, MetricDirection, MetricUnit, Objective } from '../types';
-import { db, generateId } from '../db';
+import { useConfirm } from '../components/ui/ConfirmDialog';import { db, generateId } from '../db';
 import {
   applyKeyResultValue,
   formatMetricValue,
@@ -91,7 +91,7 @@ export const GoalsPage: React.FC<GoalsPageProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const summary = useMemo(() => summarizeOkrs(objectives), [objectives]);
-
+  const { confirm, dialog: confirmDialog } = useConfirm();
   const resetForm = () => {
     setTitle('');
     setDescription('');
@@ -178,9 +178,11 @@ export const GoalsPage: React.FC<GoalsPageProps> = ({
   };
 
   const deleteObjective = async (objective: Objective) => {
-    const confirmed = window.confirm(
-      `Delete "${objective.title}" and its ${objective.keyResults.length} key result(s)?`
-    );
+    const confirmed = await confirm({
+      title: 'Delete objective',
+      message: `Delete "${objective.title}" and its ${objective.keyResults.length} key result(s)?`,
+      destructive: true,
+    });
     if (!confirmed) return;
     await db.objectives.delete(objective.id);
     onGoalsUpdated();
@@ -548,10 +550,10 @@ export const GoalsPage: React.FC<GoalsPageProps> = ({
           </div>
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 };
-
 function SummaryCard({
   label,
   value,

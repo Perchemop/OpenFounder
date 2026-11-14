@@ -35,6 +35,8 @@ import type {
   AIProviderConfig,
 } from '../types';
 import type { WorkspaceTab } from '../components/layout/Sidebar';
+import { Toast } from '../components/ui/Toast';
+import type { ToastInput, ToastItem } from '../components/ui/useToast';
 
 // ---------------------------------------------------------------------------
 // Context shape
@@ -90,6 +92,10 @@ export interface ProjectContextValue {
   setIsSettingsModalOpen: (open: boolean) => void;
   isCommandPaletteOpen: boolean;
   setIsCommandPaletteOpen: (open: boolean) => void;
+
+  // Toasts
+  toast: (input: ToastInput) => string;
+  dismissToast: (id: string) => void;
 
   // Actions
   selectProject: (id: string) => Promise<void>;
@@ -154,6 +160,20 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+
+  // Toasts
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const toast = useCallback((input: ToastInput) => {
+    const id = `toast_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    setToasts((prev) => [
+      ...prev,
+      { id, title: input.title, message: input.message, type: input.type ?? 'info' },
+    ]);
+    return id;
+  }, []);
+  const dismissToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   const setAiConfig = useCallback((config: AIProviderConfig) => {
     setAiConfigState(config);
@@ -392,6 +412,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       setIsSettingsModalOpen,
       isCommandPaletteOpen,
       setIsCommandPaletteOpen,
+      toast,
+      dismissToast,
       selectProject,
       refreshProjects,
       reloadCurrentProjectData,
@@ -431,6 +453,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       isNewProjectModalOpen,
       isSettingsModalOpen,
       isCommandPaletteOpen,
+      toast,
+      dismissToast,
       selectProject,
       refreshProjects,
       reloadCurrentProjectData,
@@ -439,7 +463,10 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <ProjectContext.Provider value={value}>{children}</ProjectContext.Provider>
+    <ProjectContext.Provider value={value}>
+      {children}
+      <Toast toasts={toasts} onDismiss={dismissToast} />
+    </ProjectContext.Provider>
   );
 }
 

@@ -39,8 +39,9 @@ import {
 } from './importRemap';
 import { CURRENT_APP_VERSION } from '../updateCheck';
 
-export { validateWorkspaceReferences } from './validation';
+export { validateExportPackage, validateWorkspaceReferences } from './validation';
 export type {
+  ValidationResult,
   WorkspaceReferenceInput,
   WorkspaceReferenceResult,
 } from './validation';
@@ -276,6 +277,38 @@ export async function checkImportCollision(pkg: ExportPackage): Promise<{
   };
 }
 
+/** Machine-readable shape carried by an {@link ImportCollisionError}. */
+export interface ImportCollisionDetails {
+  code: 'COLLISION';
+  existingProject: Project;
+  incomingProject: Project;
+}
+
+/**
+ * Thrown by {@link importProjectPackage} when the package targets a project id
+ * that already exists and the caller has not opted into overwriting it.
+ *
+ * DATA-04: an import must never silently destroy a newer edit of a project that
+ * happens to share an id (the bundled example projects use fixed ids). Catching
+ * code can inspect `existingProject` and then re-run with `{ overwrite: true }`
+ * to deliberately replace it, or `{ importAsNew: true }` to import a copy.
+ */
+export class ImportCollisionError extends Error implements ImportCollisionDetails {
+  readonly code = 'COLLISION' as const;
+  readonly existingProject: Project;
+  readonly incomingProject: Project;
+
+  constructor(existingProject: Project, incomingProject: Project) {
+    super(
+      `A project with ID "${incomingProject.id}" already exists ("${existingProject.name}"). ` +
+        'Re-import with { overwrite: true } to replace it, or { importAsNew: true } to import a copy.'
+    );
+    this.name = 'ImportCollisionError';
+    this.existingProject = existingProject;
+    this.incomingProject = incomingProject;
+  }
+}
+
 export async function exportProjectPackage(projectId: string): Promise<ExportPackage> {
   const project = await db.projects.get(projectId);
   if (!project) throw new Error(`Project with ID ${projectId} not found.`);
@@ -328,7 +361,7 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     db.chatMessages.where('projectId').equals(projectId).toArray(),
   ]);
 
-  return {
+  const pkg: ExportPackage = {
     schemaVersion: 7,
     exportedAt: new Date().toISOString(),
     appVersion: CURRENT_APP_VERSION,
@@ -356,11 +389,24 @@ export async function exportProjectPackage(projectId: string): Promise<ExportPac
     candidates,
     chatMessages,
   };
+
+  // DATA-02: refuse to emit a package the app itself could not re-import. Rows
+  // are written by page code that does not validate on the way in, so this is
+  // the one boundary that guarantees the app never produces an invalid export.
+  const validation = validateExportPackage(pkg);
+  if (!validation.valid) {
+    const details = (validation.errors ?? []).slice(0, 5).join('\n• ');
+    throw new Error(
+      `Export validation failed for project "${project.name}" — refusing to emit an invalid package:\n• ${details}`
+    );
+  }
+
+  return pkg;
 }
 
 export async function importProjectPackage(
   rawInput: unknown,
-  options: { importAsNew?: boolean; customNewName?: string } = {}
+  options: { importAsNew?: boolean; customNewName?: string; overwrite?: boolean } = {}
 ): Promise<string> {
   const validation = validateExportPackage(rawInput);
   if (!validation.valid || !validation.data) {
@@ -369,6 +415,7 @@ export async function importProjectPackage(
   }
   const pkg = validation.data;
   const shouldRemap = Boolean(options.importAsNew);
+  const allowOverwrite = Boolean(options.overwrite);
 
   let targetProjectId = pkg.project.id;
   let targetProject: Project = { ...pkg.project };
@@ -381,6 +428,14 @@ export async function importProjectPackage(
       name: options.customNewName || `${pkg.project.name} (Copy)`,
       updatedAt: Date.now(),
     };
+  } else if (!allowOverwrite) {
+    // DATA-04: never silently overwrite. Checked before the delete-then-insert
+    // transaction below, so a refused import writes nothing and leaves the
+    // existing project (and every child row) untouched.
+    const existingProject = await db.projects.get(targetProjectId);
+    if (existingProject) {
+      throw new ImportCollisionError(existingProject, pkg.project);
+    }
   }
 
   await db.transaction(

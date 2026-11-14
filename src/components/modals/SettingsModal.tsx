@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
+import { useToast } from '../ui/useToast';
 import { BugReportModal } from './BugReportModal';
 import { UpdateCheckPanel } from '../UpdateCheckPanel';
 import { CURRENT_APP_VERSION } from '../../updateCheck';
@@ -65,6 +66,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onConfigUpdated,
 }) => {
   const dialogRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'ai' | 'privacy' | 'data' | 'diagnostics'>('ai');
   const [localConfig, setLocalConfig] = useState<AIProviderConfig>(config);
   const [testStatus, setTestStatus] = useState<{ testing: boolean; result?: { success: boolean; message: string } }>({
@@ -130,6 +132,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const handleSaveSettings = () => {
     saveStoredSettings(localConfig);
     onConfigUpdated(localConfig);
+    toast({ message: 'Settings saved', type: 'success' });
     onClose();
   };
 
@@ -159,7 +162,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       downloadAnchor.click();
       downloadAnchor.remove();
     } catch (e: any) {
-      alert(`Export failed: ${e.message}`);
+      toast({ message: `Export failed: ${e.message}`, type: 'error' });
     }
   };
 
@@ -171,10 +174,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       const pkg = JSON.parse(text);
       await importProjectPackage(pkg);
       setImportStatus(`Successfully imported project: "${pkg.project.name}"`);
+      toast({ message: `Successfully imported project: "${pkg.project.name}"`, type: 'success' });
       await loadDbStats();
       onProjectUpdated();
     } catch (err: any) {
       setImportStatus(`Import failed: ${err.message}`);
+      toast({ message: `Import failed: ${err.message}`, type: 'error' });
     }
   };
 
@@ -187,10 +192,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       const pkg = await res.json();
       await importProjectPackage(pkg);
       setImportStatus(`Successfully imported example project: "${pkg.project.name}"`);
+      toast({ message: `Successfully imported example project: "${pkg.project.name}"`, type: 'success' });
       await loadDbStats();
       onProjectUpdated();
     } catch (err: any) {
       setImportStatus(`Example import failed: ${err.message}`);
+      toast({ message: `Example import failed: ${err.message}`, type: 'error' });
     }
   };
 
@@ -266,11 +273,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     <div
       ref={dialogRef}
       tabIndex={-1}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settings-modal-title"
       className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
     >
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50 dark:bg-zinc-950">
-          <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+          <h2 id="settings-modal-title" className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
             Workspace Settings & Privacy Controls
           </h2>
           <button
