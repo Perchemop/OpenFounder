@@ -4,11 +4,10 @@ Readiness percentages are updated **only from verified evidence** (green CI, mer
 where the guide requires it — a human pass). A capability listed as Done has code behind it and
 tests behind the code.
 
-Current stage: **v0.2.0 released (2026-10-25); v0.3.0 pending release.** `main` is ahead of the
-`v0.2.0` tag with unreleased, CI-verified work (AI providers, responsive shell, a11y fixes, E2E
-specs, docs sweep). `release.yml` builds a draft release from the tagged commit; a maintainer
-reviews and publishes it. The gap is recorded in `PROGRESS.md` per the release-currency
-directive; the sections below are the path to v1.0.0.
+Current stage: **v0.3.0 released (2026-11-14).** `main` matches the latest tag. `release.yml`
+built and published the static tarball, SHA-256 checksums, SBOM, and example-project artefact;
+all required CI checks were green before the tag was pushed. The sections below are the path to
+v1.0.0.
 
 ## v0.1.0 — first functional test build (release gate)
 

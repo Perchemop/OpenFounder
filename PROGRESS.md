@@ -2,33 +2,31 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
-## Pending release gap (documented per AGENTS.md release-currency directive)
+## Release currency (resolved)
 
-**main is ahead of the latest tag `v0.2.0` (2026-10-25).** CI is green on `main` for all required
-checks, and `release.yml` builds a draft release (static tarball, SHA-256 checksums, SBOM, example
-project), but no tag has been cut and no release published for the unreleased work.
+**v0.3.0 published (2026-11-14).** The release gap documented in the previous session is closed:
+`main` now matches the latest tag `v0.3.0`. `release.yml` built and published the static tarball,
+SHA-256 checksums, SBOM, and example-project artefact; all required CI checks were green before
+the tag was pushed.
 
-**Unreleased on main (since v0.2.0):**
+**What shipped in v0.3.0 (since v0.2.0):**
 - Seamless AI providers: paste one API key; NVIDIA NIM, OpenRouter, Groq, Together, Fireworks,
   Cerebras, Mistral, DeepSeek, xAI, Perplexity, OpenAI, Anthropic, Gemini, Ollama, app server,
   custom OpenAI-compatible endpoint; key-prefix detection + live model listing; 45s timeout/abort
   on every AI call; auto-fill routes through the chosen provider (offline → no network)
-  (PR #59)
 - Responsive shell: off-canvas sidebar drawer below `md`, no horizontal overflow at 390/768/1280 px
-  (PR #58)
-- Data integrity: import nulls for optional fields (example project now importable), canvas edge
-  cleanup on node delete, wipe clears local/session keys (PR #58)
-- End-to-end audit: `docs/audit/2026-10-29-end-to-end-audit.md` with findings register and
-  remediation plan (PR #58)
-- Browser verification specs: responsive, e2e smoke, expanded axe + visual (PR #60)
-- Real a11y defects fixed: `select-name` on Risk Register filters, `label` on New Project inputs
-  (PR #60)
-- Docs sweep + metadata versions (CITATION.cff, metadata.json) aligned to 0.2.0 (PR #60)
+- Accessibility as a gate: `role="dialog"`/`aria-modal` on all modals, toast system with
+  `aria-live="polite"`, axe scan extended to 5 pages + modals + dark mode and added as a required
+  check on `main`
+- Data integrity: export validates before emitting, import collision detection + `ImportDialog`,
+  canvas edge cleanup, wipe clears local/session keys
+- Design system: `docs/design/tokens.md`, `@theme` block, shared `Button`/`Card`/`Input`,
+  `ConfirmDialog`, native `confirm()` replaced
+- Verification: functional e2e core-loop spec (create → evidence → promotion guard → export → import)
+- Docs sweep + metadata versions (CITATION.cff, metadata.json) aligned to 0.2.0
 
-**Next release (v0.3.0 candidate):** `release.yml` produces a draft from the tagged commit; a
-maintainer reviews and publishes it (draft is not public). Record here rather than cutting a
-release, because publishing is a maintainer action. The gap is documented so the next session
-knows a release is due.
+**No pending release gap.** If future work accumulates on `main` beyond the latest tag, record it
+here per the AGENTS.md release-currency directive.
 
 ## 2026-11-14 · Documentation truthfulness sweep (audit DOC-01…DOC-09)
 
