@@ -4,19 +4,19 @@ import { test, expect, type Page } from '@playwright/test';
  * Visual evidence for the designer agent (guide section 27.12).
  *
  * These are *artefacts*, not assertions: the job uploads `snapshots/` so a
- * human or the designer can look at the rendered product. Two things are still
- * enforced, because they are real bugs rather than taste:
+ * human or the designer can look at the rendered product. Two things are
+ * still enforced, because they are real bugs rather than taste:
  *
  *   1. no uncaught exception or console error on load, and
  *   2. the app actually painted something (the screenshot is not a blank frame).
  *
- * Covered: the landing screen at three viewports, the empty state (no stored
- * project), and the error state (the real error boundary, forced with
- * `?__forceError=1`).
+ * Covered: the landing screen at three viewports, the empty state, the error
+ * state, the main workspace tabs at desktop, dark mode, and the phone drawer
+ * open/closed.
  *
- * What is *not* covered yet: screens behind the workspace tabs, because there
- * are no stable selectors for them (no role="tab", no data-testid). When those
- * land, add a loop here instead of guessing at CSS classes.
+ * What is *not* covered yet: deep interactions inside each tab (claim editing,
+ * promotion, export), because there are no stable selectors for them. Add a
+ * loop here once those land.
  */
 
 const OUT = 'snapshots';
@@ -32,12 +32,17 @@ async function settle(page: Page) {
   );
 }
 
-test('landing screen at three viewports', async ({ page }) => {
+const errorsFor = (page: Page): string[] => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
   page.on('console', (m) => {
     if (m.type() === 'error') errors.push(`console.error: ${m.text()}`);
   });
+  return errors;
+};
+
+test('landing screen at three viewports', async ({ page }) => {
+  const errors = errorsFor(page);
 
   for (const [name, width, height] of [
     ['desktop', 1280, 800],
@@ -92,4 +97,63 @@ test('empty state with no stored project', async ({ page, context }) => {
   await settle(page);
   await page.screenshot({ path: `${OUT}/empty-state.png`, fullPage: true });
   console.log(`captured ${OUT}/empty-state.png`);
+});
+
+test('workspace tabs at desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
+  await page.click('button:has-text("Load Demo Workspace (TradePulse)")');
+  await page.waitForLoadState('networkidle');
+
+  const tabs: Array<[string, string]> = [
+    ['Evidence Ledger', '#nav-evidence'],
+    ['Risk Register', '#nav-risks'],
+    ['Hiring Pipeline', '#nav-hiring'],
+    ['Reports & Exports', '#nav-documents'],
+  ];
+
+  const errors = errorsFor(page);
+  for (const [label, selector] of tabs) {
+    await page.click(selector);
+    await page.waitForLoadState('networkidle');
+    await page.screenshot({
+      path: `${OUT}/tab-${label.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.png`,
+      fullPage: true,
+    });
+    console.log(`captured tab ${label}`);
+  }
+
+  expect(
+    errors,
+    `workspace tabs must load without errors:\n${errors.join('\n')}`,
+  ).toEqual([]);
+});
+
+test('phone drawer open and closed', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
+  await page.screenshot({ path: `${OUT}/phone-drawer-closed.png`, fullPage: true });
+
+  await page.click('[data-testid="sidebar-toggle"]');
+  await page.waitForTimeout(300); // let the slide transition finish
+  await page.screenshot({ path: `${OUT}/phone-drawer-open.png`, fullPage: true });
+  console.log(`captured phone drawer open + closed`);
+});
+
+test('dark mode demo dashboard', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+
+  await page.click('button:has-text("Switch to light mode"), button:has-text("Switch to dark mode")');
+  await page.waitForLoadState('networkidle');
+
+  await page.click('button:has-text("Load Demo Workspace (TradePulse)")');
+  await page.waitForLoadState('networkidle');
+  await page.screenshot({ path: `${OUT}/dashboard-dark.png`, fullPage: true });
+  console.log(`captured ${OUT}/dashboard-dark.png`);
 });

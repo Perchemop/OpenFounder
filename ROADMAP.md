@@ -51,6 +51,15 @@ not exist yet; they are tracked here rather than being invented:
 - `CODEOWNERS` — code ownership routing
 - `NOTICE` — third-party attribution notice
 
+## Follow-ups recorded by the 2026-10-29 documentation-truthfulness sweep (DOC-03)
+
+- **2026-11-14 · Example-project version drift.** Both shipped copies of
+  `assets/example-project-tradepulse.json` and `public/assets/example-project-tradepulse.json`
+  still declare `appVersion: "0.1.0"` while the application is at 0.2.0. The import path
+  does not read `appVersion`, so this is cosmetic, but the asset and the app version must agree
+  before the next release. Tracked here; the asset itself is updated in a code slice, not in
+  this documentation pass.
+
 ## Out of scope (recorded, not forgotten)
 
 Two-sided cofounder or investor matching, licensed course content, enterprise integrations, and

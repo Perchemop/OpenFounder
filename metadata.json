@@ -1,6 +1,7 @@
 {
   "name": "OpenFounder",
   "description": "FOSS AI product co-founder and idea-validation workspace. Local-first, privacy-driven founder workflow from idea to MVP and launch.",
+  "version": "0.2.0",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

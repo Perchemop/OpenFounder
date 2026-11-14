@@ -68,6 +68,18 @@ semantic versioning for its export schema and application releases.
   push protection, vulnerability reporting, branch protection with the nine required checks, a
   second admin, and MFA; stale rows corrected (action pinning and the axe scan are done;
   dependency review is advisory until Dependency graph is on)
+- Documentation-truthfulness sweep against `docs/audit/2026-10-29-end-to-end-audit.md` (DOC-01…DOC-09):
+  `ACCESSIBILITY.md` known limitations rewritten to match CI reality (modal semantics, unmeasured
+  contrast, axe covers 2 of 19 screens); `SECURITY.md` threat model corrected to include the
+  optional Express server; `CITATION.cff` and `metadata.json` brought to 0.2.0 (example-asset
+  `appVersion: "0.1.0"` recorded as a follow-up); `REQUIREMENTS_TRACEABILITY.md` gains a
+  "Done (untested)" status (D-017) and the stale R-052 note is corrected; required-check and
+  workflow counts aligned to `.ci-required.txt` (9 checks, 7 workflows); `docs/design/
+  ui-audit-and-improvement-plan.md` marked superseded with fixed critical rows marked fixed;
+  human a11y-pass date, `docs/scope.md` R-005 cross-reference, C-23 wording, and CAP-031 parity
+  row corrected; `ROADMAP.md` no longer claims a non-existent format gate and lists
+  PRIVACY.md/SUPPORT.md/CODEOWNERS/NOTICE as follow-ups; `ATTRIBUTION.md` corrected to record the
+  four bundled screenshot PNGs
 
 ### Changed
 
