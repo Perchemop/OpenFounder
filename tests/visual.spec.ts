@@ -149,7 +149,7 @@ test('dark mode demo dashboard', async ({ page }) => {
   await page.goto('/');
   await page.waitForLoadState('networkidle');
 
-  await page.click('button:has-text("Switch to light mode"), button:has-text("Switch to dark mode")');
+  await page.click('[id="btn-theme-toggle"]');
   await page.waitForLoadState('networkidle');
 
   await page.click('button:has-text("Load Demo Workspace (TradePulse)")');

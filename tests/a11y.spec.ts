@@ -59,7 +59,7 @@ test('axe accessibility scan: workspace tabs (demo)', async ({ page }) => {
 test('axe accessibility scan: Settings modal open', async ({ page }) => {
   await page.goto('/');
   await page.waitForLoadState('networkidle');
-  await page.click('button:has-text("Settings")');
+  await page.click('[id="btn-settings-trigger"]');
   await page.waitForLoadState('networkidle');
   await scanAxe(page, 'Settings modal');
 });
@@ -77,7 +77,7 @@ test('axe accessibility scan: demo dashboard in dark mode', async ({ page }) => 
   await page.waitForLoadState('networkidle');
 
   // Toggle dark mode via the theme button in the navbar.
-  await page.click('button:has-text("Switch to light mode"), button:has-text("Switch to dark mode")');
+  await page.click('[id="btn-theme-toggle"]');
   await page.waitForLoadState('networkidle');
 
   await page.click('button:has-text("Load Demo Workspace (TradePulse)")');

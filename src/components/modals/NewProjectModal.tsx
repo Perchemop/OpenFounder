@@ -248,6 +248,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
           <div className="flex flex-col sm:flex-row gap-2">
             <input
               type="text"
+              aria-label="Rough concept (one-line idea)"
               placeholder="Rough concept (e.g. AI bookkeeping for freelancers, EV charging locator, coffee subscription)..."
               value={magicSeed}
               onChange={(e) => setMagicSeed(e.target.value)}
@@ -353,10 +354,11 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                  <label className="block font-medium text-zinc-700 dark:text-zinc-300 mb-1" htmlFor="category-input">
                     Industry Category
                   </label>
                   <input
+                    id="category-input"
                     type="text"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}

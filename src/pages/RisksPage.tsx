@@ -241,6 +241,7 @@ export const RisksPage: React.FC<RisksPageProps> = ({
         })}
 
         <select
+          aria-label="Filter by category"
           value={filterCategory}
           onChange={(e) => changeCategoryFilter(e.target.value)}
           className="ml-2 px-2 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 border-0 text-xs text-zinc-700 dark:text-zinc-300"
@@ -311,6 +312,7 @@ export const RisksPage: React.FC<RisksPageProps> = ({
 
                     <td className="p-3.5 whitespace-nowrap">
                       <select
+                        aria-label="Status"
                         value={risk.status}
                         onChange={(e) =>
                           handleUpdateStatus(risk.id, e.target.value as RiskItem['status'])
