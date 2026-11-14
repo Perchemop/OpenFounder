@@ -18,7 +18,7 @@ beforeEach(() => {
 
 afterEach(() => {
   globalThis.fetch = originalFetch;
-  vi.unstubAllMocks();
+  vi.restoreAllMocks();
 });
 
 function okResponse(data: unknown): Response {

@@ -358,7 +358,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   )}
                 </div>
               )}
-            </div>
             <p className="text-[11px] text-zinc-500 mt-1">{selectedPreset.note}</p>
 
             {presetNeedsKey && (
@@ -403,7 +402,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <p className="text-[11px] text-zinc-400">Loading models…</p>
                 )}
               </div>
-            )
+            )}
 
               {isGemini && (
                 <div className="space-y-3 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-800/30">

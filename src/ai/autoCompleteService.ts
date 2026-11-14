@@ -65,7 +65,7 @@ Use empty strings for anything unknown. Be concrete, realistic, and focused on g
  * On any error or unparsable reply, returns null so the page falls back to its
  * deterministic generator exactly as before.
  */
-async function callServerAutocomplete<T>(
+export async function callServerAutocomplete<T>(
   task: string,
   seedText: string,
   context: Record<string, any>,
@@ -78,7 +78,14 @@ async function callServerAutocomplete<T>(
 
   try {
     const result = await provider.sendMessage(
-      [{ role: 'user', content: structuredPrompt(task, seedText, context, fields) }],
+      [
+        {
+          id: `auto-${Date.now()}`,
+          role: 'user',
+          content: structuredPrompt(task, seedText, context, fields),
+          timestamp: Date.now(),
+        },
+      ],
       JSON.stringify(context || {}).slice(0, 3000),
       config
     );
