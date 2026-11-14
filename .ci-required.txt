@@ -9,3 +9,6 @@ action pinning
 
 # pii.yml — personal-data gate (guide II.29)
 Personal data scan
+
+# a11y.yml — accessibility smoke (axe)
+Accessibility Smoke

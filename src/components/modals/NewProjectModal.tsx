@@ -191,6 +191,9 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
     <div
       ref={dialogRef}
       tabIndex={-1}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="new-project-modal-title"
       className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4"
     >
       <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
@@ -201,7 +204,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
               <FolderPlus className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              <h2 id="new-project-modal-title" className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                 New Project Setup
               </h2>
               <p className="text-[11px] text-zinc-500">
