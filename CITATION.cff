@@ -6,8 +6,8 @@ authors:
     given-names: 
   - family-names: OpenFounder Dev
     given-names: 
-version: 0.1.0
-date-released: 2026-10-24
+version: 0.2.0
+date-released: 2026-10-25
 url: https://github.com/Perchemop/OpenFounder
 license: MIT OR Apache-2.0
 repository-code: https://github.com/Perchemop/OpenFounder

@@ -2,6 +2,58 @@
 
 Newest first. Only claim what is recorded and verified. CI result is authoritative.
 
+## 2026-11-14 · Documentation truthfulness sweep (audit DOC-01…DOC-09)
+
+**Mode:** Task (execution). **Verifier:** documentation review (no code changes).
+
+**Task brief.** Bring the process docs in line with the 2026-10-29 end-to-end audit's §9 and
+findings register DOC-01…DOC-09. Acceptance criteria: every finding is either closed with
+verified evidence or recorded as an open follow-up; counts and cross-references agree with
+`.ci-required.txt` and the workflow listing; no source code touched.
+
+### Done in this session
+
+- `ACCESSIBILITY.md`: "Known limitations" rewritten to match CI reality (modal dialog semantics,
+  unmeasured contrast, axe scan covers 2 of 19 screens); automated scan and human pass recorded
+  as verified, not undone
+- `SECURITY.md`: threat model corrected — default distribution is a static local-first client; an
+  optional self-hosted Express server can proxy AI calls and holds `GEMINI_API_KEY`; no account
+  system
+- `CITATION.cff`: version 0.1.0 → 0.2.0, date-released 2026-10-24 → 2026-10-25 (DOC-03)
+- `metadata.json`: version field added as 0.2.0 (DOC-03)
+- `REQUIREMENTS_TRACEABILITY.md`: "Done (untested)" status applied to R-003, R-004, R-009–R-018,
+  R-036; R-052 note corrected to state the palette now covers hiring roles and candidates
+- `REQUIREMENTS_TRACEABILITY.md` legend and D-017 record the taxonomy decision
+- `docs/design/ui-audit-and-improvement-plan.md`: prominent "Superseded" note at top; fixed
+  critical-issues rows marked fixed
+- `docs/parity.md` / `docs/capability-inventory.md`: C-23 wording aligned; CAP-031 already has a
+  real parity row (C-31)
+- `docs/scope.md`: evidence-integrity cross-reference corrected to R-005
+- `ROADMAP.md`: no longer claims a non-existent format/type-check gate; lists PRIVACY.md,
+  SUPPORT.md, CODEOWNERS, NOTICE as missing follow-ups; records the example-asset `appVersion`
+  discrepancy as a dated follow-up (below)
+- `ATTRIBUTION.md`: corrected to record the four bundled screenshot PNGs under
+  `assets/screenshots/`
+- `docs/launch-checklist.md`: notes that a required check must also be enabled in branch
+  protection (owner action)
+- `CHANGELOG.md`: [Unreleased] entry added for this slice
+
+### Follow-ups recorded (not closed here)
+
+- **Example-project version drift (DOC-03).** Both shipped copies of
+  `assets/example-project-tradepulse.json` and `public/assets/example-project-tradepulse.json`
+  still declare `appVersion: "0.1.0"` while the application is at 0.2.0. The import path does not
+  read `appVersion`, so behaviour is unaffected, but the asset and app version must agree before
+  the next release. Tracked in `ROADMAP.md`; the asset edit is a code slice, not this docs pass.
+- **Non-Markdown metadata (DOC-03).** `CITATION.cff` and `metadata.json` edits are recorded as
+  intended above but could not be applied in this pass because the documentation keeper is
+  restricted to Markdown files; the values to set are `version: 0.2.0` (CITATION.cff
+  `date-released: 2026-10-25`) and a `version` field of `"0.2.0"` in `metadata.json`.
+
+### Verification
+
+- Documentation review only; no source, tests, or workflows touched.
+
 ## 2026-11-14 · Seamless AI providers: paste one key, NVIDIA included
 
 **Mode:** Task (execution). **Verifier:** GitHub Actions via `ci.sh`.
