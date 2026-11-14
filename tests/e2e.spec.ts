@@ -10,11 +10,12 @@ import { test, expect } from '@playwright/test';
  *
  * Covered:
  *   * the demo workspace loads;
- *   * each workspace tab (Evidence, Risks, Hiring, Documents) opens;
+ *   * each workspace tab (Evidence, Risks, Hiring, Documents) opens and renders
+ *     its heading;
  *   * no uncaught exception or console error on load.
  */
 
-const PAGES: Array<[string, string]> = [
+const TABS: Array<[string, string]> = [
   ['Evidence Ledger', '#nav-evidence'],
   ['Risk Register', '#nav-risks'],
   ['Hiring Pipeline', '#nav-hiring'],
@@ -37,10 +38,11 @@ test('demo workspace loads and the main tabs open without errors', async ({
   await page.click('button:has-text("Load Demo Workspace (TradePulse)")');
   await page.waitForLoadState('networkidle');
 
-  // Every workspace tab must open without crashing.
-  for (const [label, selector] of PAGES) {
+  // Every workspace tab must open and render its heading without crashing.
+  for (const [label, selector] of TABS) {
     await page.click(selector);
     await page.waitForLoadState('networkidle');
+    await expect(page.locator('h1').first()).toBeVisible();
     await expect(
       page.getByRole('heading', { name: label, exact: true }),
     ).toBeVisible();
