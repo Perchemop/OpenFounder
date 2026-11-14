@@ -5,6 +5,23 @@ semantic versioning for its export schema and application releases.
 
 ## [Unreleased]
 
+### Added
+
+- **Seamless AI provider setup ("paste one key"):** Settings → AI Providers now
+  offers a catalogue of providers (NVIDIA NIM, OpenRouter, Groq, Together,
+  Fireworks, Cerebras, Mistral, DeepSeek, xAI, Perplexity, OpenAI, Anthropic,
+  Gemini, Ollama, the app's own server, plus a custom OpenAI-compatible
+  endpoint). Pasting a key detects the vendor from the key's prefix, fills in
+  the endpoint and a starting model, and lists the models that key can use —
+  `docs/ai-providers.md` has the full catalogue
+- The Co-Founder panel and every "AI Suggest / Auto-Fill" action now route
+  through the provider chosen in Settings: picking Offline Rules means no
+  network request is made anywhere, direct providers are called from the
+  browser, and the app's server is used only when that mode is selected
+- All AI calls now have a 45-second timeout with an abort path, so an
+  unreachable provider can no longer hang the chat composer or the auto-fill
+  buttons
+
 ### Fixed
 
 - **The bundled example project can be imported again.** It stored `null` for fields the export
@@ -48,7 +65,7 @@ semantic versioning for its export schema and application releases.
 - `CONTRIBUTING.md`: explicit local commands (`bun run lint|test|build:static`) and the Playwright
   command, with the CI-only restriction scoped to the maintainer's machine
 - `docs/launch-checklist.md`: numbered owner click-path for Dependency graph, secret scanning and
-  push protection, vulnerability reporting, branch protection with the eight required checks, a
+  push protection, vulnerability reporting, branch protection with the nine required checks, a
   second admin, and MFA; stale rows corrected (action pinning and the axe scan are done;
   dependency review is advisory until Dependency graph is on)
 

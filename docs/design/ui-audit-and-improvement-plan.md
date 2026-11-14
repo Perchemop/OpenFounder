@@ -1,9 +1,15 @@
 # UI & Design Audit — OpenFounder
 
+> **⚠ SUPERSEDED (2026-10-29).** This design-only review has been superseded by the full
+> end-to-end audit in [`docs/audit/2026-10-29-end-to-end-audit.md`](../audit/2026-10-29-end-to-end-audit.md).
+> Where the two documents disagree, the audit is authoritative. Several critical issues listed
+> in §4 below have since been fixed (marked in the table); the remaining items are tracked by
+> the audit's findings register and remediation plan.
+
 **Date:** 2026-10-25  
 **Scope:** React 19 + Vite + Tailwind CSS v4, local-first IndexedDB workspace  
 **Reviewer:** Design audit (code-level + structural review)  
-**Status:** Baseline — first formal UI/design audit
+**Status:** Superseded — kept as the design baseline; see the 2026-10-29 end-to-end audit
 
 ---
 
@@ -339,18 +345,21 @@ OpenFounder is a functional, local-first founder validation workspace with 18 fe
 
 ## 4. Critical Issues (Needs Attention Before v1.0.0)
 
-| # | Issue | Severity | Location |
-|---|---|---|---|
-| 1 | No automated accessibility scan in CI (axe placeholder exists but not wired) | High | `.github/workflows/a11y.yml` |
-| 2 | Human QC pass completed but results not yet merged to main | High | `docs/qc/manual-qc.md` |
-| 3 | Decorative icons lack `aria-hidden="true"` | Medium | All components |
-| 4 | Form fields may lack explicit `<label>` associations | Medium | All form pages |
-| 5 | No skip-to-content link | Medium | `src/App.tsx` |
-| 6 | No toast/notification system | Medium | All pages |
-| 7 | No mobile drawer for sidebar | Medium | `src/components/layout/Sidebar.tsx` |
-| 8 | Color contrast not measured against WCAG 2.2 AA | Medium | All components |
-| 9 | SettingsModal monolithic (695 lines) — maintainability risk | Low | `src/components/modals/SettingsModal.tsx` |
-| 10 | No design token documentation | Low | `docs/design/` |
+Status as of the 2026-10-29 end-to-end audit: items 1, 2, 3 and 5 are fixed; the rest remain open
+(see the audit's findings register for the authoritative list).
+
+| # | Issue | Severity | Location | Status |
+|---|---|---|---|---|
+| 1 | No automated accessibility scan in CI (axe placeholder exists but not wired) | High | `.github/workflows/a11y.yml` | **Fixed** — real `@axe-core/playwright` scan runs in CI (`tests/a11y.spec.ts`); still not a required check (audit A11Y-04) |
+| 2 | Human QC pass completed but results not yet merged to main | High | `docs/qc/manual-qc.md` | **Fixed** — human pass recorded and approved 2026-10-24 in `docs/qc/manual-qc.md` |
+| 3 | Decorative icons lack `aria-hidden="true"` | Medium | All components | **Fixed** — `aria-hidden="true"` added across pages/components (~83 uses; audit §6) |
+| 4 | Form fields may lack explicit `<label>` associations | Medium | All form pages | Open — labels are mostly implicit (wrapping); only 1 explicit `htmlFor` (audit A11Y-05) |
+| 5 | No skip-to-content link | Medium | `src/App.tsx` | **Fixed** — skip-to-content link present in `src/App.tsx` (audit §6) |
+| 6 | No toast/notification system | Medium | All pages | Open — audit UI-04 |
+| 7 | No mobile drawer for sidebar | Medium | `src/components/layout/Sidebar.tsx` | Open — audit UI-01 (phone layout broken) |
+| 8 | Color contrast not measured against WCAG 2.2 AA | Medium | All components | Open — audit A11Y-03 |
+| 9 | SettingsModal monolithic (695 lines) — maintainability risk | Low | `src/components/modals/SettingsModal.tsx` | Open |
+| 10 | No design token documentation | Low | `docs/design/` | Open — audit UI-02 |
 
 ---
 

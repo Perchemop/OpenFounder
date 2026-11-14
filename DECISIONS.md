@@ -211,3 +211,23 @@ would fail a pull request because of a leak on somebody else's unmerged branch, 
 how a gate earns a reputation for being flaky and gets switched off. The scope is the ancestry of
 the checked-out commit: base branch plus pull-request commits on a PR, the published history on
 `main` and on a release tag.
+
+## D-017 · 2026-11-12 · Traceability gains a "Done (untested)" status instead of downgrading rows
+
+`REQUIREMENTS_TRACEABILITY.md` defined **Done** as "implemented and unit-tested" while marking
+R-003, R-004, R-009–R-018 and R-036 **Done** with no entry in the Tests column (audit DOC-04).
+Rather than silently rewriting the legend or renumbering requirements, the legend is narrowed:
+
+- **Done** keeps its strict meaning: implemented **and** unit-tested.
+- **Done (untested)** is new: the requirement's acceptance criteria are met in code, but no
+  dedicated unit test covers it yet. Each such row keeps its `—` Tests cell and cites audit
+  DOC-04, so the gap is visible in the table itself.
+
+Applied to exactly the rows the audit listed: R-003, R-004, R-009–R-018, R-036. Rows the audit did
+not flag (for example R-028, a licensing statement) keep their status.
+
+*Why:* the requirements are real and shipped; downgrading them to "Partial" would misstate the
+product, while leaving them "Done" under the old legend over-claimed the verification. A separate
+status states both facts honestly and gives the test-writing work a precise queue.
+*Rejected:* downgrading those rows to **Partial** (understates what is built); redefining
+**Done** as "implemented" (weakens the standard for every other row); deleting the legend.

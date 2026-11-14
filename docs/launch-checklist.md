@@ -33,7 +33,7 @@ This checklist maps the guide's pre-launch requirements to evidence and owner.
 | Dependency review on PRs | dependency-review-action (pinned `v4.9.0`); advisory until Dependency graph is enabled | Advisory | Human |
 | SBOM generated and licence-class gate | CI job + release.yml | Done | Maintainer |
 | Dependabot configured | .github/dependabot.yml | Done | Maintainer |
-| Action SHAs pinned | All six workflows pinned; enforced by the `action pinning` CI job | Done | Maintainer |
+| Action SHAs pinned | All seven workflows pinned; enforced by the `action pinning` CI job | Done | Maintainer |
 | Toolchain pinned | Bun pinned to `1.4.4` in every workflow | Done | Maintainer |
 | Branch protection + required checks | Repo settings | Human action required | Human |
 | Two administrators | Repo settings | Human action required | Human |
@@ -95,11 +95,12 @@ These settings live in the GitHub web UI and need repository-admin access. Do th
    - tick **Require status checks to pass before merging**, then **Require branches to be up to
      date**, and select these checks by name:
      `verify (ubuntu-latest)`, `verify (macos-latest)`, `verify (windows-latest)`,
-     `build (static)`, `summary`, `gitleaks`, `sbom`, `action pinning`;
+     `build (static)`, `summary`, `gitleaks`, `sbom`, `action pinning`,
+      `Personal data scan`;
    - tick **Do not allow bypassing the above settings** so the rule applies to admins too;
    - click **Create**/**Save changes**.
    Note: the check names only appear in the picker after each has run at least once on a PR —
-   all eight have, so they should be listed.
+   all nine have, so they should be listed. `.ci-required.txt` is the source of truth for the required-check set; a check listed there but not enabled in branch protection is not a gate.
 5. **Add a second administrator** — open
    `https://github.com/Perchemop/OpenFounder/settings/access` → **Add people** → set the person’s
    role to **Admin** → **Add**. A second admin is the recovery path if the owner account loses
@@ -112,7 +113,7 @@ These settings live in the GitHub web UI and need repository-admin access. Do th
    `gh api repos/Perchemop/OpenFounder --jq '.security_and_analysis'` and
    `gh api repos/Perchemop/OpenFounder/branches/main/protection --jq '.required_status_checks.contexts'`.
    The first should show secret scanning and push protection `enabled`; the second should list the
-   eight checks.
+   nine checks.
 
 If a step is refused by GitHub (for example a plan limitation on private repositories), stop and
 tell me which step failed with the message shown — I will adjust the checklist rather than guess.

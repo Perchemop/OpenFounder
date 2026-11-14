@@ -16,7 +16,7 @@ first functional test build; the sections below it are the path to v1.0.0.
 | App identity, theme, window title | Done | `OpenFounder`, light/dark theme |
 | Crash / error boundary | Done | `ErrorBoundary` + `BugReportModal` with scrubbed payload |
 | Update check | Done | `src/updateCheck.ts`, fail-soft with an hour cache |
-| CI green (format/type check, tests, build) | Done | `.github/workflows/ci.yml`, `.ci-required.txt` |
+| CI green (type check `tsc --noEmit`, tests, build) | Done | `.github/workflows/ci.yml`, `.ci-required.txt` |
 | README with build and run instructions | Done | `README.md` |
 | CHANGELOG entry for 0.1.0 | Done | `## [0.1.0] — 2026-10-24` section |
 | Legal baseline (LICENSE, ATTRIBUTION, no secrets) | Done | dual licence MIT OR Apache-2.0 (D-009); ATTRIBUTION current |
@@ -40,6 +40,17 @@ first functional test build; the sections below it are the path to v1.0.0.
 | `docs/parity.md` has no Planned rows for v1 scope | Done (C-23 cloud sync is explicitly out of scope) |
 | Manual QC checklist executed and recorded | Done |
 
+## Missing standard files (follow-ups, not yet present)
+
+The following community/privacy files are referenced by the audit and launch checklist but do
+not exist yet; they are tracked here rather than being invented:
+
+- `PRIVACY.md` — privacy notice (local key storage, optional key persistence, crash-report
+  submission) — see `SECURITY.md` SEC-04 / audit SEC-04
+- `SUPPORT.md` — support and contact guidance
+- `CODEOWNERS` — code ownership routing
+- `NOTICE` — third-party attribution notice
+
 ## Out of scope (recorded, not forgotten)
 
 Two-sided cofounder or investor matching, licensed course content, enterprise integrations, and
@@ -52,7 +63,7 @@ autonomous external actions (sending email, moving money, incorporating companie
   verified in CI.
 - **Reporting and operations:** ~40% (report content built, Markdown and JSON export; no
   reporting-to-maintainers yet).
-- **Accessibility:** code-level work done (focus traps, canvas keyboard navigation, skip-to-content, ARIA labels, reduced motion, visible focus, announced errors, 24×24 touch targets); human audit completed 2026-10-25; automated axe CI scan passing.
+- **Accessibility:** code-level work done (focus traps, canvas keyboard navigation, skip-to-content, ARIA labels, reduced motion, visible focus, announced errors, 24×24 touch targets); human audit completed 2026-10-24 (see `docs/qc/manual-qc.md`); automated axe CI scan passing.
 - **Overall to v1.0.0:** roughly 90%, with remaining items being performance tuning at scale,
   the human import round-trip check, and the owner-only GitHub security settings.
 - **PWA:** installable with an offline app shell (`public/manifest.json`, `public/sw.js`).

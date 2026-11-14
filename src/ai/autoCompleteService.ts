@@ -11,25 +11,93 @@ import type {
   RoadmapItem,
   CanvasNode,
 } from '../types';
+import { loadSettings } from '../db';
+import { getAIProvider } from './providersDispatch';
+import { OfflineRuleBasedProvider } from './providersOffline';
 
-// Generic fetch wrapper with robust error fallback
-async function callServerAutocomplete<T>(
+// Human-readable names for the autocomplete tasks, used to brief the provider.
+const TASK_LABELS: Record<string, string> = {
+  full_project_setup: 'Full project setup from a one-line idea',
+  suggest_field: 'Suggest a value for one project field',
+  evidence_claims: 'Founding evidence claims for a project',
+  experiment_suite: 'A set of validation experiments',
+  interview_questions: "Mom Test style customer-interview questions",
+  interview_sample: 'A realistic customer-interview sample',
+  competitor_discovery: 'Competitor profiles',
+  lean_canvas: 'A lean business model canvas',
+  gtm_strategy: 'A go-to-market plan',
+  landing_page_copy: 'Landing page copy',
+  mvp_features: 'MVP feature backlog',
+  roadmap_milestones: 'Roadmap milestones with gates',
+};
+
+function structuredPrompt(
+  task: string,
+  seedText: string | undefined,
+  context: Record<string, any>,
+  fields: string[]
+): string {
+  const label = TASK_LABELS[task] || task;
+  const contextJson = JSON.stringify(context || {}).slice(0, 3000);
+  return `You are the OpenFounder automated founder assistant.
+Return ONLY valid JSON — no markdown code fences, no conversational text outside the JSON.
+
+TASK: ${label}
+SEED INPUT: ${seedText || '(none — use your best startup judgment)'}
+REQUESTED KEYS: ${fields.join(', ')}
+PROJECT CONTEXT (trimmed): ${contextJson}
+
+Respond with a JSON object containing exactly these keys: ${fields.join(', ')}.
+Use empty strings for anything unknown. Be concrete, realistic, and focused on genuine customer pains and measurable numbers.`;
+}
+
+/**
+ * Route an autocomplete request through the provider the user chose in Settings,
+ * instead of always calling this app's own server.
+ *
+ * Privacy behaviour:
+ *  * 'offline_rules' → no network at all; callers use their deterministic
+ *    templates. This keeps the 100%-offline promise even for auto-fill.
+ *  * any direct provider (NVIDIA, OpenAI, Anthropic, …) → the key goes straight
+ *    from the browser to that vendor, never via this app's server.
+ *  * 'server_gemini' → this app's own self-hosted server, which holds the key.
+ *
+ * On any error or unparsable reply, returns null so the page falls back to its
+ * deterministic generator exactly as before.
+ */
+export async function callServerAutocomplete<T>(
   task: string,
   seedText: string,
   context: Record<string, any>,
   fields: string[]
 ): Promise<T | null> {
-  try {
-    const res = await fetch('/api/ai/autocomplete', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ task, seedText, context, fields }),
-    });
+  const config = loadSettings();
+  const provider = getAIProvider(config.activeProvider);
 
-    if (!res.ok) return null;
-    const json = await res.json();
-    return json.data as T;
-  } catch (err) {
+  if (provider instanceof OfflineRuleBasedProvider) return null;
+
+  try {
+    const result = await provider.sendMessage(
+      [
+        {
+          id: `auto-${Date.now()}`,
+          role: 'user',
+          content: structuredPrompt(task, seedText, context, fields),
+          timestamp: Date.now(),
+        },
+      ],
+      JSON.stringify(context || {}).slice(0, 3000),
+      config
+    );
+
+    if (result.error || !result.reply) return null;
+
+    let cleaned = result.reply.trim();
+    // Strip accidental markdown fences, mirroring the old server's leniency.
+    cleaned = cleaned.replace(/^```json\s*/i, '').replace(/```$/, '').trim();
+    const parsed = JSON.parse(cleaned);
+    return parsed as T;
+  } catch {
     return null;
   }
 }

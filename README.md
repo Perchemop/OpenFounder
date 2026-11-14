@@ -39,18 +39,28 @@ OpenFounder helps founders move from idea → validated problem → tested solut
 - **Documents** – Exportable packages
 
 ### AI Co-Founder
-Multiple providers with configurable models and graceful fallback:
+Multiple providers with configurable models and graceful fallback, all driven by a single
+"paste your API key" flow in **Settings → AI Providers**:
 
 | Provider | Notes |
 |----------|--------|
-| Server Gemini | Uses `GEMINI_API_KEY` (recommended for hosted) |
-| Direct Gemini (BYOK) | Browser → Google; primary + ordered fallback models on 429/503 |
-| OpenAI-compatible | OpenAI, Groq, Together, DeepSeek, LocalAI… |
-| Anthropic Claude | Direct browser API |
+| Built-in offline assistant | 100% free, zero network, deterministic heuristics (default) |
+| NVIDIA NIM | 100+ models via one key from build.nvidia.com; free developer tier (`nvapi-…`) |
+| OpenRouter | One key reaches models from most labs (`sk-or-…`) |
+| Groq | Very fast inference, generous free tier (`gsk_`) |
+| Together AI / Fireworks / Cerebras | Open-weight models, OpenAI-compatible |
+| Mistral / DeepSeek / xAI / Perplexity | OpenAI-compatible endpoints |
+| OpenAI | `sk-…` |
+| Anthropic Claude | Direct browser API (`sk-ant-…`) |
+| Google Gemini (AI Studio) | `AIza…`, primary + ordered fallback models on 429/503 |
 | Ollama | Fully local / privacy-first |
-| Offline Rules | 100% free, zero network, deterministic heuristics |
+| This app's server | Uses `GEMINI_API_KEY` (recommended for hosted) |
 
-**Settings → AI Providers** lets you pick provider, model presets (or custom IDs), Gemini fallback list, temperature, and max tokens. Keys can stay session-only or persist in localStorage.
+The provider picker recognises your key, fills in the endpoint and a starting
+model, and lists the models that key can use — no base URLs or model ids to
+copy. Keys are session-only by default (or opt-in localStorage) and are sent
+only to the vendor you choose. See `docs/ai-providers.md` for the full list and
+the privacy behaviour of each mode.
 
 Keyboard shortcuts:
 - `⌘/Ctrl + J` → Toggle AI Co-founder panel

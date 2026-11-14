@@ -181,6 +181,7 @@ export function setSessionKey(provider: 'direct_gemini' | 'openai' | 'anthropic'
 
 export const DEFAULT_AI_CONFIG: AIProviderConfig = {
   activeProvider: 'offline_rules',
+  providerId: 'offline_rules',
   geminiModel: 'gemini-2.0-flash',
   geminiFallbackModels: [
     'gemini-2.0-flash',

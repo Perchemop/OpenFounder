@@ -1,5 +1,6 @@
 import type { AIChatMessage, AIProviderConfig } from '../types';
 import { BASE_COFOUNDER_PROMPT, type AIProvider, type AIProviderResult } from './providerTypes';
+import { fetchWithTimeout } from './http';
 
 export class AnthropicProvider implements AIProvider {
   async sendMessage(
@@ -33,13 +34,16 @@ export class AnthropicProvider implements AIProvider {
         formattedMessages.push({ role: 'user', content: 'Review my project status.' });
       }
 
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      const response = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': key,
           'anthropic-version': '2023-06-01',
-          'dangerously-allow-browser': 'true',
+          // Anthropic blocks browser calls unless this exact header is present;
+          // the previous value ('dangerously-allow-browser') was ignored, so
+          // every direct Claude call failed CORS.
+          'anthropic-dangerous-direct-browser-access': 'true',
         },
         body: JSON.stringify({
           model,
@@ -71,13 +75,13 @@ export class AnthropicProvider implements AIProvider {
     if (!key) return { success: false, message: 'Please enter an Anthropic API key.' };
 
     try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      const res = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': key,
           'anthropic-version': '2023-06-01',
-          'dangerously-allow-browser': 'true',
+          'anthropic-dangerous-direct-browser-access': 'true',
         },
         body: JSON.stringify({
           model: config.anthropicModel || 'claude-3-5-sonnet-20241022',

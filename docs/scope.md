@@ -7,7 +7,7 @@
 | Projects | Create, select, update, delete a founder workspace; stage tracking |
 | Phases | Ten guided founder phases with tasks, completion criteria, and phase history |
 | Evidence ledger | Claims with six evidence statuses, confidence, notes, source, next test |
-| Evidence integrity | Block unsupported promotion to research/customer/experiment status (see R-021) |
+| Evidence integrity | Block unsupported promotion to research/customer/experiment status (see R-005) |
 | Risk register | Category, probability × impact score, mitigation, next test, status |
 | Experiments | Hypothesis, method, sample size, success/failure criteria, results |
 | Interviews | Mom-Test style interview log, pain points, verbatim quotes, willingness to pay |

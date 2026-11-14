@@ -27,6 +27,26 @@ overall completion of the application**, not to a convenient stopping point.
 - The application is complete only when the quality gates pass (guide Part I §9,
   the §2.5 per-release legal checklist, and CI green on the default branch).
 
+## Release currency — latest release must be up to date with `main`
+
+Before declaring a session complete (or leaving work awaiting user
+verification), confirm that the latest GitHub Release is current with `main`.
+A release is **not** current if `main` contains commits not reachable from the
+release tag:
+
+```bash
+git merge-base --is-ancestor <latest-tag> origin/main && echo green
+# or
+git log --oneline <latest-tag>..origin/main | head
+```
+
+- If `main` has unreleased commits, either cut a new release tag and publish
+  installable artefacts (per the installable-builds directive) **or** record
+  the pending work explicitly in `PROGRESS.md` / `ROADMAP.md` so the next
+  session knows what still needs releasing.
+- Never leave `main` ahead of the latest release without either publishing a
+  release or documenting the gap.
+
 ## Questions and user input — always via the question tool
 
 If you need a decision, clarification, or input from the owner, **present it

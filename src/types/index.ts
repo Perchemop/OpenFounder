@@ -614,6 +614,12 @@ export interface AIChatMessage {
 
 export interface AIProviderConfig {
   activeProvider: 'server_gemini' | 'direct_gemini' | 'openai' | 'anthropic' | 'ollama' | 'offline_rules';
+  /**
+   * Which catalogue preset is selected (see src/ai/providerCatalog.ts). This is
+   * only a display/detection hint: `activeProvider` still decides the transport,
+   * so an old config without this field keeps working.
+   */
+  providerId?: string;
   directGeminiKey?: string;
   /** Primary Gemini model id (server + direct). */
   geminiModel?: string;

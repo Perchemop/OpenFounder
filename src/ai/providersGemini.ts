@@ -1,5 +1,6 @@
 import type { AIChatMessage, AIProviderConfig } from '../types';
 import { GoogleGenAI } from '@google/genai';
+import { fetchWithTimeout } from './http';
 import { buildGeminiModelCandidates, DEFAULT_GEMINI_MODEL } from './modelDefaults';
 import { BASE_COFOUNDER_PROMPT, type AIProvider, type AIProviderResult } from './providerTypes';
 
@@ -11,7 +12,7 @@ export class ServerGeminiProvider implements AIProvider {
     systemPromptAddition?: string
   ): Promise<AIProviderResult> {
     try {
-      const response = await fetch('/api/ai/chat', {
+      const response = await fetchWithTimeout('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -51,7 +52,7 @@ export class ServerGeminiProvider implements AIProvider {
 
   async testConnection(): Promise<{ success: boolean; message: string }> {
     try {
-      const res = await fetch('/api/ai/status');
+      const res = await fetchWithTimeout('/api/ai/status');
       if (!res.ok) throw new Error('Server returned HTTP ' + res.status);
       const data = await res.json();
       if (data.available) {

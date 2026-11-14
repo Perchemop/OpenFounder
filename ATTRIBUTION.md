@@ -59,7 +59,11 @@ No copyleft, source-available, or network-copyleft dependencies are present. A C
 
 ## Non-code assets
 
-- No images, fonts, audio, or video files are bundled. The mark `assets/logo.svg` is original to this repository (project licence).
+- Four screenshot PNGs are bundled under `assets/screenshots/` (`landing-desktop.png`,
+  `landing-tablet.png`, `landing-phone.png`, `empty-state.png`) and are embedded in `README.md`.
+  They are captured by the CI visual-evidence pipeline and are project assets under the project
+  licence (MIT OR Apache-2.0). No fonts, audio, or video files are bundled. The mark
+  `assets/logo.svg` is original to this repository (project licence).
 - Icons are rendered from `lucide-react` at runtime.
 - Demo data is original and synthetic; every synthetic row carries `isSynthetic: true`.
 

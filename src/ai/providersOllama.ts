@@ -1,5 +1,6 @@
 import type { AIChatMessage, AIProviderConfig } from '../types';
 import { BASE_COFOUNDER_PROMPT, type AIProvider, type AIProviderResult } from './providerTypes';
+import { fetchWithTimeout } from './http';
 
 export class OllamaProvider implements AIProvider {
   async sendMessage(
@@ -19,7 +20,7 @@ export class OllamaProvider implements AIProvider {
         ...messages.map((m) => ({ role: m.role, content: m.content })),
       ];
 
-      const response = await fetch(`${endpoint}/api/chat`, {
+      const response = await fetchWithTimeout(`${endpoint}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -52,7 +53,7 @@ export class OllamaProvider implements AIProvider {
   async testConnection(config: AIProviderConfig): Promise<{ success: boolean; message: string }> {
     const endpoint = (config.ollamaEndpoint || 'http://localhost:11434').replace(/\/$/, '');
     try {
-      const res = await fetch(`${endpoint}/api/tags`);
+      const res = await fetchWithTimeout(`${endpoint}/api/tags`);
       if (res.ok) {
         const data = await res.json();
         const models = (data.models || []).map((m: any) => m.name).join(', ') || 'none';
