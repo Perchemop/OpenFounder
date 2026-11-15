@@ -25,8 +25,12 @@ the tag was pushed.
 - Verification: functional e2e core-loop spec (create → evidence → promotion guard → export → import)
 - Docs sweep + metadata versions (CITATION.cff, metadata.json) aligned to 0.2.0
 
-**No pending release gap.** If future work accumulates on `main` beyond the latest tag, record it
-here per the AGENTS.md release-currency directive.
+**No pending release gap of substance.** One docs-only commit currently sits on `main` ahead of
+the `v0.3.0` tag (2026-11-15 ruleset synchronization: `AGENTS.md` dead-code prohibition + skills
+discipline, `docs/current-model-map.md` guide-read record). It is process documentation, changes
+no shipped behaviour, and is recorded here per the release-currency directive rather than
+warranting a release on its own; it will be included in the next tag. If further work accumulates
+on `main` beyond the latest tag, record it here per the AGENTS.md release-currency directive.
 
 ## 2026-11-14 · Documentation truthfulness sweep (audit DOC-01…DOC-09)
 
