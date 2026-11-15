@@ -2,10 +2,13 @@
 
 Guidance for AI coding agents working on **OpenFounder**.
 
-This repository is built under the local build guide (`guide.md` — kept outside
-the repo and never committed). Read the repository's own records first:
-`ROADMAP.md`, `IMPLEMENTATION_PLAN.md`, `PROGRESS.md`,
-`REQUIREMENTS_TRACEABILITY.md`, `DECISIONS.md`, `CHANGELOG.md`, `README.md`.
+This repository is built under the local build guide (`~/guide.md` plus its
+appendix — kept outside the repo and never committed; guide.md is the single
+source of truth). Read the guide **in full** at session start and record the
+sections read and the guide's version/date in `docs/current-model-map.md`.
+Read the repository's own records first: `ROADMAP.md`, `IMPLEMENTATION_PLAN.md`,
+`PROGRESS.md`, `REQUIREMENTS_TRACEABILITY.md`, `DECISIONS.md`, `CHANGELOG.md`,
+`README.md`.
 
 - **Heavy work runs in GitHub Actions only.** Never run a build, test, lint or
   any `cargo` command on this machine — not even `cargo fmt`. Verify with
@@ -13,6 +16,36 @@ the repo and never committed). Read the repository's own records first:
 - **Git actions are authored as** `"<App Name> Dev" <dev@example.com>`.
 - Suggested subagents live in `.opencode/agents/`; the `orchestrator` plans and
   delegates, and never edits code itself.
+
+## Dead code prohibition (guide hard rule — binds every role)
+
+**No agent shall fix an issue by creating new code or leaving behind dead
+code.** Every write must be planned, tested for integration, and verified to
+work properly with every other piece of code. Concretely, every write:
+
+- Is planned as part of the slice's acceptance criteria — no speculative
+  scaffolding "for later".
+- Is integrated: reachable from the entry points the slice claims to change,
+  never an orphan module, unused export, or dead route.
+- Carries its test in the same slice, and the test exercises the integration,
+  not merely the unit.
+- Leaves the codebase with no leftover debug stubs, commented-out blocks,
+  unused imports, disabled checks, or "temporary" fallbacks that are not fully
+  implemented and documented.
+- Passes CI, satisfies the dependency hygiene gates, and is verified as working
+  end-to-end before merge — a green lint on an unintegrated file is not
+  "working".
+
+A fix that ships dead code is an incomplete fix, and a review that accepts dead
+code is a failed review.
+
+## Skills discipline (guide §19)
+
+Skills are selected per the guide's agent role routing; the supervisor assigns
+skills per task, never heavy local builds. Installed skills are referenced in
+task briefs and their capabilities documented in `DECISIONS.md`. No skill that
+requires `cargo` or resource-intensive builds on the client machine, and no
+skill that conflicts with the clean-room rules, is ever installed.
 
 ## Completion mandate (mandatory)
 

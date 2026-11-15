@@ -7,7 +7,10 @@ semantic versioning for its export schema and application releases.
 
 ### Added
 
-- (nothing yet)
+- Guide synchronization record (`docs/current-model-map.md`): guide `~/guide.md`
+  (2026-11-15, §19 skills + dead-code hard rule) read in full together with its
+  appendix; ruleset synced (global ruleset gains guide §19 and §20; repository
+  `AGENTS.md` gains the dead-code prohibition and skills discipline)
 
 ## [0.3.0] — 2026-11-15
 
